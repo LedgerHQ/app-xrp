@@ -1011,9 +1011,10 @@ const char *const ui_approval_blue_details_name[][7] = {
 };
 
 const bagl_element_t *ui_approval_common_show_details(unsigned int detailidx) {
-    if (strlen(ui_approval_blue_values[detailidx]) *
-            BAGL_FONT_OPEN_SANS_LIGHT_16_22PX_AVG_WIDTH >=
-        160) {
+    if (ui_approval_blue_values[detailidx] != NULL &&
+        strlen(ui_approval_blue_values[detailidx]) *
+                BAGL_FONT_OPEN_SANS_LIGHT_16_22PX_AVG_WIDTH >=
+            160) {
         // display details screen
         ui_details_init(
             ui_approval_blue_details_name[G_ui_approval_blue_state][detailidx],
@@ -1515,6 +1516,8 @@ void ui_approval_blue_init(void) {
 
 void ui_approval_transaction_blue_init(void) {
     unsigned int index = 2;
+    // wipe all cases
+    os_memset(ui_approval_blue_values, 0, sizeof(ui_approval_blue_values));
     ui_approval_blue_ok = (bagl_element_callback_t)io_seproxyhal_touch_tx_ok;
     ui_approval_blue_cancel =
         (bagl_element_callback_t)io_seproxyhal_touch_tx_cancel;
