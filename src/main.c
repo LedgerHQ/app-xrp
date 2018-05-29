@@ -1,19 +1,19 @@
 /*******************************************************************************
-*   Ripple Wallet
-*   (c) 2017 Ledger
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-********************************************************************************/
+ *   Ripple Wallet
+ *   (c) 2017 Ledger
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ ********************************************************************************/
 
 #include "os.h"
 #include "cx.h"
@@ -437,15 +437,7 @@ const bagl_element_t ui_settings_blue[] = {
 
     /*
         {{BAGL_RECTANGLE, 0x00, 30, 146, 260, 1, 1, 0, 0, 0xEEEEEE, COLOR_BG_1,
-       0,
-          0},
-         NULL,
-         0,
-         0,
-         0,
-         NULL,
-         NULL,
-         NULL},
+       0, 0}, NULL, 0, 0, 0, NULL, NULL, NULL},
 
         {{BAGL_LABELINE, 0x00, 30, 174, 160, 30, 0, 0, BAGL_FILL, 0x000000,
           COLOR_BG_1, BAGL_FONT_OPEN_SANS_REGULAR_10_13PX, 0},
@@ -466,12 +458,7 @@ const bagl_element_t ui_settings_blue[] = {
          NULL,
          NULL},
         {{BAGL_NONE | BAGL_FLAG_TOUCHABLE, 0x00, 0, 147, 320, 68, 0, 0,
-       BAGL_FILL,
-          0xFFFFFF, 0x000000, 0, 0},
-         NULL,
-         0,
-         0xEEEEEE,
-         0x000000,
+       BAGL_FILL, 0xFFFFFF, 0x000000, 0, 0}, NULL, 0, 0xEEEEEE, 0x000000,
          ui_settings_blue_toggle_browser,
          ui_settings_out_over,
          ui_settings_out_over},
@@ -479,15 +466,7 @@ const bagl_element_t ui_settings_blue[] = {
         // at the end to minimize the number of refreshed items upon setting
        change
         {{BAGL_ICON, 0x02, 258, 167, 32, 18, 0, 0, BAGL_FILL, 0x000000,
-       COLOR_BG_1,
-          0, 0},
-         NULL,
-         0,
-         0,
-         0,
-         NULL,
-         NULL,
-         NULL},
+       COLOR_BG_1, 0, 0}, NULL, 0, 0, 0, NULL, NULL, NULL},
          */
     {{BAGL_ICON, 0x01, 258, 98, 32, 18, 0, 0, BAGL_FILL, 0x000000, COLOR_BG_1,
       0, 0},
@@ -631,13 +610,12 @@ unsigned int ui_address_blue_prepro(const bagl_element_t *element) {
         unsigned int length = strlen(fullAddress);
         if (length >= (element->component.userid & 0xF) * MAX_CHAR_PER_LINE) {
             os_memset(addressSummary, 0, MAX_CHAR_PER_LINE + 1);
-            os_memmove(
-                addressSummary,
-                fullAddress +
-                    (element->component.userid & 0xF) * MAX_CHAR_PER_LINE,
-                MIN(length -
-                        (element->component.userid & 0xF) * MAX_CHAR_PER_LINE,
-                    MAX_CHAR_PER_LINE));
+            os_memmove(addressSummary,
+                       fullAddress + (element->component.userid & 0xF) *
+                                         MAX_CHAR_PER_LINE,
+                       MIN(length - (element->component.userid & 0xF) *
+                                        MAX_CHAR_PER_LINE,
+                           MAX_CHAR_PER_LINE));
             return 1;
         }
         // nothing to draw for this line
@@ -933,13 +911,12 @@ unsigned int ui_details_blue_prepro(const bagl_element_t *element) {
         unsigned int length = strlen(ui_details_content);
         if (length >= (element->component.userid & 0xF) * MAX_CHAR_PER_LINE) {
             os_memset(addressSummary, 0, MAX_CHAR_PER_LINE + 1);
-            os_memmove(
-                addressSummary,
-                ui_details_content +
-                    (element->component.userid & 0xF) * MAX_CHAR_PER_LINE,
-                MIN(length -
-                        (element->component.userid & 0xF) * MAX_CHAR_PER_LINE,
-                    MAX_CHAR_PER_LINE));
+            os_memmove(addressSummary,
+                       ui_details_content + (element->component.userid & 0xF) *
+                                                MAX_CHAR_PER_LINE,
+                       MIN(length - (element->component.userid & 0xF) *
+                                        MAX_CHAR_PER_LINE,
+                           MAX_CHAR_PER_LINE));
             return 1;
         }
         // nothing to draw for this line
@@ -989,20 +966,40 @@ const char *ui_approval_blue_values[5];
 const char *const ui_approval_blue_details_name[][7] = {
     /*APPROVAL_TRANSACTION*/
     {
-        "AMOUNT", "ADDRESS", "FEES", NULL, NULL, "CONFIRM TRANSACTION",
+        "AMOUNT",
+        "ADDRESS",
+        "FEES",
+        NULL,
+        NULL,
+        "CONFIRM TRANSACTION",
         "Transaction details",
     },
     {
-        "AMOUNT", "ADDRESS", "SOURCE TAG", "FEES", NULL, "CONFIRM TRANSACTION",
+        "AMOUNT",
+        "ADDRESS",
+        "SOURCE TAG",
+        "FEES",
+        NULL,
+        "CONFIRM TRANSACTION",
         "Transaction details",
     },
     {
-        "AMOUNT", "ADDRESS", "DESTINATION TAG", "FEES", NULL,
-        "CONFIRM TRANSACTION", "Transaction details",
+        "AMOUNT",
+        "ADDRESS",
+        "DESTINATION TAG",
+        "FEES",
+        NULL,
+        "CONFIRM TRANSACTION",
+        "Transaction details",
     },
     {
-        "AMOUNT", "ADDRESS", "SOURCE TAG", "DESTINATION TAG", "FEES",
-        "CONFIRM TRANSACTION", "Transaction details",
+        "AMOUNT",
+        "ADDRESS",
+        "SOURCE TAG",
+        "DESTINATION TAG",
+        "FEES",
+        "CONFIRM TRANSACTION",
+        "Transaction details",
     },
 
     /*APPROVAL_MESSAGE*/
@@ -1547,9 +1544,8 @@ void ui_approval_transaction_blue_init(void) {
 /*
 void ui_approval_message_sign_blue_init(void) {
   ui_approval_blue_ok = (bagl_element_callback_t)
-io_seproxyhal_touch_signMessage_ok;
-  ui_approval_blue_cancel = (bagl_element_callback_t)
-io_seproxyhal_touch_signMessage_cancel;
+io_seproxyhal_touch_signMessage_ok; ui_approval_blue_cancel =
+(bagl_element_callback_t) io_seproxyhal_touch_signMessage_cancel;
   G_ui_approval_blue_state = APPROVAL_MESSAGE;
   ui_approval_blue_values[0] = fullAmount;
   ui_approval_blue_values[1] = NULL;
@@ -1722,7 +1718,7 @@ unsigned int ui_approval_prepro(const bagl_element_t *element) {
                         display = 3;
                         goto display_detail;
                     }
-                // no break is intentional
+                    // no break is intentional
                 case 3: // destination tag
                     if (txContent.sourceTagPresent &&
                         txContent.destinationTagPresent) {
@@ -1730,7 +1726,7 @@ unsigned int ui_approval_prepro(const bagl_element_t *element) {
                         display = 3;
                         goto display_detail;
                     }
-                // no break is intentional
+                    // no break is intentional
                 case 4: // fees
                     display = 4;
                     goto display_detail;
@@ -1843,13 +1839,13 @@ unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e) {
         cx_hash_sha512(tmpCtx.transactionContext.rawTx,
                        tmpCtx.transactionContext.rawTxLength, privateKeyData);
         tx = cx_ecdsa_sign(&privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256,
-                           privateKeyData, 32, G_io_apdu_buffer);
+                           privateKeyData, 32, G_io_apdu_buffer, NULL);
         G_io_apdu_buffer[0] = 0x30;
     } else {
-        tx = cx_eddsa_sign(&privateKey, NULL, CX_LAST, CX_SHA512,
+        tx = cx_eddsa_sign(&privateKey, CX_LAST, CX_SHA512,
                            tmpCtx.transactionContext.rawTx,
-                           tmpCtx.transactionContext.rawTxLength,
-                           G_io_apdu_buffer);
+                           tmpCtx.transactionContext.rawTxLength, NULL, 0,
+                           G_io_apdu_buffer, NULL);
     }
 
     os_memset(&privateKey, 0, sizeof(privateKey));
@@ -2019,7 +2015,7 @@ void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer,
         os_memmove((void *)(fullAddress + 8),
                    tmpCtx.publicKeyContext.address + addressLength - 4, 4);
 
-// prepare for a UI based reply
+        // prepare for a UI based reply
 #if defined(TARGET_BLUE)
         strcpy(fullAddress, tmpCtx.publicKeyContext.address);
         UX_DISPLAY(ui_address_blue, ui_address_blue_prepro);
@@ -2369,8 +2365,7 @@ __attribute__((section(".boot"))) int main(void) {
 
 #if defined(TARGET_BLUE)
                 // setup the status bar colors (remembered after wards, even
-                // more if
-                // another app does not resetup after app switch)
+                // more if another app does not resetup after app switch)
                 UX_SET_STATUS_BAR_COLOR(0xFFFFFF, COLOR_APP);
 #endif // #if defined(TARGET_BLUE)
 

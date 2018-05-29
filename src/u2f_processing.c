@@ -116,6 +116,7 @@ void u2f_handle_sign(u2f_service_t *service, uint8_t p1, uint8_t p2,
         u2f_send_fragmented_response(service, U2F_CMD_MSG,
                                      (uint8_t *)SW_BAD_KEY_HANDLE,
                                      sizeof(SW_BAD_KEY_HANDLE), true);
+        return;
     }
     // Check that it looks like an APDU
     os_memmove(G_io_apdu_buffer, buffer + 65, keyHandleLength);
