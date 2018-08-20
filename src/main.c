@@ -1,5 +1,5 @@
 /*******************************************************************************
- *   Ripple Wallet
+ *   XRP Wallet
  *   (c) 2017 Ledger
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -182,7 +182,7 @@ const bagl_element_t ui_idle_blue[] = {
     /// TOP STATUS BAR
     {{BAGL_LABELINE, 0x00, 0, 45, 320, 30, 0, 0, BAGL_FILL, 0xFFFFFF, COLOR_APP,
       BAGL_FONT_OPEN_SANS_SEMIBOLD_10_13PX | BAGL_FONT_ALIGNMENT_CENTER, 0},
-     "RIPPLE",
+     "XRP",
      0,
      0,
      0,
@@ -215,9 +215,9 @@ const bagl_element_t ui_idle_blue[] = {
      NULL,
      NULL},
 
-    // BADGE_RIPPLE.GIF
+    // BADGE_XRP.GIF
     {{BAGL_ICON, 0x00, 135, 178, 50, 50, 0, 0, BAGL_FILL, 0, COLOR_BG_1, 0, 0},
-     &C_badge_ripple,
+     &C_badge_XRP,
      0,
      0,
      0,
@@ -228,7 +228,7 @@ const bagl_element_t ui_idle_blue[] = {
     {{BAGL_LABELINE, 0x00, 0, 270, 320, 30, 0, 0, BAGL_FILL, 0x000000,
       COLOR_BG_1,
       BAGL_FONT_OPEN_SANS_LIGHT_16_22PX | BAGL_FONT_ALIGNMENT_CENTER, 0},
-     "Open Ripple wallet",
+     "Open XRP wallet",
      0,
      0,
      0,
@@ -313,7 +313,7 @@ const ux_menu_entry_t menu_about[] = {
     UX_MENU_END};
 
 const ux_menu_entry_t menu_main[] = {
-    {NULL, NULL, 0, &C_icon_ripple, "Use wallet to", "view accounts", 33, 12},
+    {NULL, NULL, 0, &C_icon_XRP, "Use wallet to", "view accounts", 33, 12},
     {menu_settings, NULL, 0, NULL, "Settings", NULL, 0, 0},
     {menu_about, NULL, 0, NULL, "About", NULL, 0, 0},
     {NULL, os_sched_exit, 0, &C_icon_dashboard, "Quit app", NULL, 50, 29},

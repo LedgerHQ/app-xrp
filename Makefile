@@ -20,7 +20,7 @@ $(error Environment variable BOLOS_SDK is not set)
 endif
 include $(BOLOS_SDK)/Makefile.defines
 
-APPNAME = Ripple 
+APPNAME = XRP 
 APP_LOAD_PARAMS=--appFlags 0x40 --path "44'/144'" --curve secp256k1 --curve ed25519 $(COMMON_LOAD_PARAMS) 
 
 APPVERSION_M=1
@@ -30,7 +30,7 @@ APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 
 #prepare hsm generation
 ifeq ($(TARGET_NAME),TARGET_BLUE)
-ICONNAME=app_ripple.gif
+ICONNAME=app_XRP.gif
 else
 ICONNAME=icon.gif
 endif
@@ -98,3 +98,5 @@ include $(BOLOS_SDK)/Makefile.rules
 #add dependency on custom makefile filename
 dep/%.d: %.c Makefile.genericwallet
 
+listvariants:
+	@echo VARIANTS XRP
