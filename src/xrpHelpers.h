@@ -20,14 +20,14 @@
 
 unsigned short xrp_public_key_to_encoded_base58(
     unsigned char WIDE *in, unsigned short inlen, unsigned char *out,
-    unsigned short outlen, unsigned short version, unsigned char alreadyHashed);
+    unsigned short outlen, unsigned short version,
+    unsigned char alreadyHashed);
 
 unsigned short xrp_decode_base58_address(unsigned char WIDE *in,
-                                         unsigned short inlen,
-                                         unsigned char *out,
-                                         unsigned short outlen);
+                                            unsigned short inlen,
+                                            unsigned char *out,
+                                            unsigned short outlen);
 
-unsigned short xrp_compress_public_key(cx_ecfp_public_key_t *publicKey,
-                                       uint8_t *out, uint32_t outlen);
+unsigned short xrp_compress_public_key(cx_ecfp_public_key_t *publicKey, uint8_t *out, uint32_t outlen);
 
 unsigned short xrp_print_amount(uint64_t amount, uint8_t *out, uint32_t outlen);

@@ -20,7 +20,7 @@
 #include <stdbool.h>
 
 void xrp_public_key_hash160(unsigned char WIDE *in, unsigned short inlen,
-                            unsigned char *out) {
+                               unsigned char *out) {
     union {
         cx_sha256_t shasha;
         cx_ripemd160_t riprip;
@@ -33,12 +33,10 @@ void xrp_public_key_hash160(unsigned char WIDE *in, unsigned short inlen,
     cx_hash(&u.riprip.header, CX_LAST, buffer, 32, out);
 }
 
-unsigned short xrp_public_key_to_encoded_base58(unsigned char WIDE *in,
-                                                unsigned short inlen,
-                                                unsigned char *out,
-                                                unsigned short outlen,
-                                                unsigned short version,
-                                                unsigned char alreadyHashed) {
+unsigned short xrp_public_key_to_encoded_base58(
+    unsigned char WIDE *in, unsigned short inlen, unsigned char *out,
+    unsigned short outlen, unsigned short version,
+    unsigned char alreadyHashed) {
     unsigned char tmpBuffer[26];
     unsigned char checksumBuffer[32];
     cx_sha256_t hash;
@@ -67,9 +65,9 @@ unsigned short xrp_public_key_to_encoded_base58(unsigned char WIDE *in,
 }
 
 unsigned short xrp_decode_base58_address(unsigned char WIDE *in,
-                                         unsigned short inlen,
-                                         unsigned char *out,
-                                         unsigned short outlen) {
+                                            unsigned short inlen,
+                                            unsigned char *out,
+                                            unsigned short outlen) {
     unsigned char hashBuffer[32];
     cx_sha256_t hash;
     outlen = xrp_decode_base58(in, inlen, out, outlen);
@@ -87,24 +85,26 @@ unsigned short xrp_decode_base58_address(unsigned char WIDE *in,
     return outlen;
 }
 
-unsigned short xrp_compress_public_key(cx_ecfp_public_key_t *publicKey,
-                                       uint8_t *out, uint32_t outlen) {
+unsigned short xrp_compress_public_key(cx_ecfp_public_key_t *publicKey, uint8_t *out, uint32_t outlen) {
     if (outlen < 33) {
         THROW(EXCEPTION_OVERFLOW);
     }
     if (publicKey->curve == CX_CURVE_256K1) {
         out[0] = ((publicKey->W[64] & 1) ? 0x03 : 0x02);
         os_memmove(out + 1, publicKey->W + 1, 32);
-    } else if (publicKey->curve == CX_CURVE_Ed25519) {
+    }
+    else
+    if (publicKey->curve == CX_CURVE_Ed25519) {
         uint8_t i;
         out[0] = 0xED;
-        for (i = 0; i < 32; i++) {
+        for (i=0; i<32; i++) {
             out[i + 1] = publicKey->W[64 - i];
         }
         if ((publicKey->W[32] & 1) != 0) {
             out[32] |= 0x80;
         }
-    } else {
+    }
+    else {
         THROW(EXCEPTION);
     }
 }
@@ -194,9 +194,8 @@ bool adjustDecimals(char *src, uint32_t srcLength, char *target,
     return true;
 }
 
-unsigned short xrp_print_amount(uint64_t amount, uint8_t *out,
-                                uint32_t outlen) {
-    char tmp[20];
+unsigned short xrp_print_amount(uint64_t amount, uint8_t *out, uint32_t outlen) { 
+    char tmp[20];    
     char tmp2[25];
     uint32_t numDigits = 0, i;
     uint64_t base = 1;
@@ -208,7 +207,7 @@ unsigned short xrp_print_amount(uint64_t amount, uint8_t *out,
         THROW(EXCEPTION);
     }
     base /= 10;
-    for (i = 0; i < numDigits; i++) {
+    for (i=0; i<numDigits; i++) {
         tmp[i] = '0' + ((amount / base) % 10);
         base /= 10;
     }
@@ -216,9 +215,11 @@ unsigned short xrp_print_amount(uint64_t amount, uint8_t *out,
     strcpy(tmp2, "XRP ");
     adjustDecimals(tmp, i, tmp2 + 4, 25, 6);
     if (strlen(tmp2) < outlen - 1) {
-        strcpy(out, tmp2);
-    } else {
+        strcpy(out, tmp2);        
+    }    
+    else {
         out[0] = '\0';
     }
-    return strlen(out);
+    return strlen(out);    
 }
+

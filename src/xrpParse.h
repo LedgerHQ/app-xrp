@@ -31,7 +31,7 @@ typedef struct txContent_t {
     uint64_t amount;
     uint64_t fees;
     uint8_t account[20];
-    uint8_t destination[20];
+    uint8_t destination[20];    
     uint32_t sourceTag;
     uint8_t sourceTagPresent;
     uint32_t destinationTag;
@@ -39,3 +39,4 @@ typedef struct txContent_t {
 } txContent_t;
 
 parserStatus_e parseTx(uint8_t *data, uint32_t length, txContent_t *context);
+

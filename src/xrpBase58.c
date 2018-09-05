@@ -34,10 +34,13 @@ static const unsigned char const BASE58ALPHABET[] = {
     'r', 'p', 's', 'h', 'n', 'a', 'f', '3', '9', 'w', 'B', 'U', 'D', 'N', 'E',
     'G', 'H', 'J', 'K', 'L', 'M', '4', 'P', 'Q', 'R', 'S', 'T', '7', 'V', 'W',
     'X', 'Y', 'Z', '2', 'b', 'c', 'd', 'e', 'C', 'g', '6', '5', 'j', 'k', 'm',
-    '8', 'o', 'F', 'q', 'i', '1', 't', 'u', 'v', 'A', 'x', 'y', 'z'};
+    '8', 'o', 'F', 'q', 'i', '1', 't', 'u', 'v', 'A', 'x', 'y', 'z'
+};
+
 
 unsigned char xrp_decode_base58(unsigned char WIDE *in, unsigned char length,
-                                unsigned char *out, unsigned char maxoutlen) {
+                                   unsigned char *out,
+                                   unsigned char maxoutlen) {
     unsigned char tmp[164];
     unsigned char buffer[164];
     unsigned char i;
@@ -88,7 +91,8 @@ unsigned char xrp_decode_base58(unsigned char WIDE *in, unsigned char length,
 }
 
 unsigned char xrp_encode_base58(unsigned char WIDE *in, unsigned char length,
-                                unsigned char *out, unsigned char maxoutlen) {
+                                   unsigned char *out,
+                                   unsigned char maxoutlen) {
     unsigned char tmp[164];
     unsigned char buffer[164];
     unsigned char j;
