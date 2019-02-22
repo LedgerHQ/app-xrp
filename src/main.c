@@ -98,7 +98,15 @@ unsigned int io_seproxyhal_touch_tx_cancel(const bagl_element_t *e);
 unsigned int io_seproxyhal_touch_address_ok(const bagl_element_t *e);
 unsigned int io_seproxyhal_touch_address_cancel(const bagl_element_t *e);
 void ui_idle(void);
+
+#ifdef TARGET_NANOX
+#include "ux.h"
+ux_state_t G_ux;
+bolos_ux_params_t G_ux_params;
+#else // TARGET_NANOX
 ux_state_t ux;
+#endif // TARGET_NANOX
+
 // display stepped screens
 unsigned int ux_step;
 unsigned int ux_step_count;
@@ -107,8 +115,8 @@ typedef struct internalStorage_t {
     uint8_t initialized;
 } internalStorage_t;
 
-WIDE internalStorage_t N_storage_real;
-#define N_storage (*(WIDE internalStorage_t *)PIC(&N_storage_real))
+WIDE internalStorage_t const N_storage_real;
+#define N_storage (*(volatile internalStorage_t *)PIC(&N_storage_real))
 
 
 const bagl_element_t *ui_menu_item_out_over(const bagl_element_t *e) {
@@ -1127,11 +1135,197 @@ unsigned int ui_approval_nanos_button(unsigned int button_mask,
 
 #endif // #if defined(TARGET_NANOS)
 
+#if defined(TARGET_NANOX)
+//////////////////////////////////////////////////////////////////////
+UX_FLOW_DEF_NOCB(
+    ux_idle_flow_1_step, 
+    bnn, //pnn, 
+    {
+      "", //&C_icon_dashboard,
+      "Application",
+      "is ready",
+    });
+UX_FLOW_DEF_NOCB(
+    ux_idle_flow_2_step, 
+    bn, 
+    {
+      "Version",
+      APPVERSION,
+    });
+UX_FLOW_DEF_VALID(
+    ux_idle_flow_3_step,
+    pb,
+    os_sched_exit(-1),
+    {
+      &C_icon_dashboard,
+      "Quit",
+    });
+const ux_flow_step_t *        const ux_idle_flow [] = {
+  &ux_idle_flow_1_step,
+  &ux_idle_flow_2_step,
+  &ux_idle_flow_3_step,
+  FLOW_END_STEP,
+};
+
+//////////////////////////////////////////////////////////////////////
+UX_FLOW_DEF_NOCB(
+    ux_display_address_flow_1_step, 
+    pnn, 
+    {
+      &C_icon_eye,
+      "Verify",
+      "address",
+    });
+UX_FLOW_DEF_NOCB(
+    ux_display_address_flow_4_step, 
+    bnnn_paging, 
+    {
+      .title = "Address",
+      .text = fullAddress,
+    });
+UX_FLOW_DEF_VALID(
+    ux_display_address_flow_5_step, 
+    pb, 
+    io_seproxyhal_touch_address_ok(NULL),
+    {
+      &C_icon_validate_14,
+      "Approve",
+    });
+UX_FLOW_DEF_VALID(
+    ux_display_address_flow_6_step, 
+    pb, 
+    io_seproxyhal_touch_address_cancel(NULL),
+    {
+      &C_icon_crossmark,
+      "Reject",
+    });
+
+
+const ux_flow_step_t *        const ux_display_address_flow [] = {
+  &ux_display_address_flow_1_step,
+  &ux_display_address_flow_4_step,
+  &ux_display_address_flow_5_step,
+  &ux_display_address_flow_6_step,
+  FLOW_END_STEP,
+};
+
+//////////////////////////////////////////////////////////////////////
+UX_FLOW_DEF_NOCB(ux_approval_1_step, 
+    pnn, 
+    {
+      &C_icon_eye,
+      "Review",
+      "transaction",
+    });
+UX_FLOW_DEF_NOCB(
+    ux_approval_2_step, 
+    bnnn_paging, 
+    {
+      .title = "Amount",
+      .text = fullAmount,
+    });
+UX_FLOW_DEF_NOCB(
+    ux_approval_3_step, 
+    bnnn_paging, 
+    {
+      .title = "Address",
+      .text = fullAddress,
+    });
+UX_FLOW_DEF_NOCB(
+    ux_approval_4_step, 
+    bnnn_paging, 
+    {
+      .title = "Source Tag",
+      .text = tag,
+    });
+UX_FLOW_DEF_NOCB(
+    ux_approval_5_step, 
+    bnnn_paging, 
+    {
+      .title = "Destination Tag",
+      .text = tag2,
+    });
+UX_FLOW_DEF_NOCB(
+    ux_approval_6_step, 
+    bnnn_paging, 
+    {
+      .title = "Fees",
+      .text = maxFee,
+    });
+UX_FLOW_DEF_VALID(
+    ux_approval_7_step, 
+    pbb, 
+    io_seproxyhal_touch_tx_ok(NULL),
+    {
+      &C_icon_validate_14,
+      "Accept",
+      "and send",
+    });
+UX_FLOW_DEF_VALID(
+    ux_approval_8_step, 
+    pb, 
+    io_seproxyhal_touch_tx_cancel(NULL),
+    {
+      &C_icon_crossmark,
+      "Reject",
+    });
+// confirm_full: confirm transaction / Amount: fullAmount / Address: fullAddress / Fees: feesAmount
+// _xx: source tag || destination tag
+const ux_flow_step_t *        const ux_approval_flow_00 [] = {
+  &ux_approval_1_step,
+  &ux_approval_2_step,
+  &ux_approval_3_step,
+  &ux_approval_6_step,
+  &ux_approval_7_step,
+  &ux_approval_8_step,
+  FLOW_END_STEP,
+};
+const ux_flow_step_t *        const ux_approval_flow_10 [] = {
+  &ux_approval_1_step,
+  &ux_approval_2_step,
+  &ux_approval_3_step,
+  &ux_approval_4_step,
+  &ux_approval_6_step,
+  &ux_approval_7_step,
+  &ux_approval_8_step,
+  FLOW_END_STEP,
+};
+const ux_flow_step_t *        const ux_approval_flow_01 [] = {
+  &ux_approval_1_step,
+  &ux_approval_2_step,
+  &ux_approval_3_step,
+  &ux_approval_5_step,
+  &ux_approval_6_step,
+  &ux_approval_7_step,
+  &ux_approval_8_step,
+  FLOW_END_STEP,
+};
+const ux_flow_step_t *        const ux_approval_flow_11 [] = {
+  &ux_approval_1_step,
+  &ux_approval_2_step,
+  &ux_approval_3_step,
+  &ux_approval_4_step,
+  &ux_approval_5_step,
+  &ux_approval_6_step,
+  &ux_approval_7_step,
+  &ux_approval_8_step,
+  FLOW_END_STEP,
+};
+
+#endif // #if defined(TARGET_NANOX)
+
+
 void ui_idle(void) {
 #if defined(TARGET_BLUE)
     UX_DISPLAY(ui_idle_blue, NULL);
 #elif defined(TARGET_NANOS)
     UX_MENU_DISPLAY(0, menu_main, NULL);
+#elif defined(TARGET_NANOX)
+    // reserve a display stack slot if none yet
+    if(G_ux.stack_count == 0) {
+        ux_stack_push();
+    }
+    ux_flow_init(0, ux_idle_flow, NULL);
 #endif // #if TARGET_ID
 }
 
@@ -1357,7 +1551,10 @@ void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer,
         ux_step = 0;
         ux_step_count = 2;
         UX_DISPLAY(ui_address_nanos, ui_address_prepro);
-#endif // #if TARGET
+#elif defined(TARGET_NANOX)
+    os_memmove((void *)fullAddress, tmpCtx.publicKeyContext.address, sizeof(tmpCtx.publicKeyContext.address));
+    ux_flow_init(0, ux_display_address_flow, NULL);
+#endif // TARGET_NANOX
 
         *flags |= IO_ASYNCH_REPLY;
     }
@@ -1404,7 +1601,7 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     addressLength = xrp_public_key_to_encoded_base58(txContent.destination, 20, tmpCtx.publicKeyContext.address, sizeof(tmpCtx.publicKeyContext.address), 0, 1);
     tmpCtx.publicKeyContext.address[addressLength] = '\0';
 
-#if defined(TARGET_BLUE)
+#if defined(TARGET_BLUE) || defined (TARGET_NANOX)
     strcpy(fullAddress, tmpCtx.publicKeyContext.address);
 
 #elif defined (TARGET_NANOS)
@@ -1433,6 +1630,24 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     }
     UX_DISPLAY(ui_approval_nanos, ui_approval_prepro);
 #endif // #if TARGET
+#ifdef TARGET_NANOX
+    if(txContent.sourceTagPresent && txContent.destinationTagPresent) {
+        SPRINTF(tag, "%u", txContent.sourceTag);
+        SPRINTF(tag2, "%u", txContent.destinationTag);
+        ux_flow_init(0, ux_approval_flow_11, NULL);
+    }
+    else if(!txContent.sourceTagPresent && txContent.destinationTagPresent) {
+        SPRINTF(tag2, "%u", txContent.destinationTag);
+        ux_flow_init(0, ux_approval_flow_01, NULL);
+    }
+    else if(txContent.sourceTagPresent && !txContent.destinationTagPresent) {
+        SPRINTF(tag, "%u", txContent.sourceTag);
+        ux_flow_init(0, ux_approval_flow_10, NULL);
+    }
+    else {
+        ux_flow_init(0, ux_approval_flow_00, NULL);
+    }
+#endif // TARGET_NANOX
 
     *flags |= IO_ASYNCH_REPLY;
 }
@@ -1668,6 +1883,11 @@ __attribute__((section(".boot"))) int main(void) {
             TRY {
                 io_seproxyhal_init();
 
+#ifdef TARGET_NANOX
+                // grab the current plane mode setting
+                G_io_app.plane_mode = os_setting_get(OS_SETTING_PLANEMODE, NULL, 0);
+#endif // TARGET_NANOX
+
                 /*
                 if (N_storage.initialized != 0x01) {
                     internalStorage_t storage;
@@ -1676,10 +1896,15 @@ __attribute__((section(".boot"))) int main(void) {
                               sizeof(internalStorage_t));
                 }
                 */
-
+                USB_power(0);
                 USB_power(1);
 
                 ui_idle();
+
+#ifdef HAVE_BLE
+                BLE_power(0, NULL);
+                BLE_power(1, "Nano X");
+#endif // HAVE_BLE
 
     #if defined(TARGET_BLUE)
                 // setup the status bar colors (remembered after wards, even more if
