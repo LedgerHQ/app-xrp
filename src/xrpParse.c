@@ -157,7 +157,7 @@ parserStatus_e processVl(uint8_t *data, uint32_t length, txContent_t *context, u
     offset += 1 + 1;
     switch(fieldId) {
         case XRP_VL_SIGNING_PUB_KEY:
-            if (dataLength != 33) {
+            if (dataLength != 33 && dataLength != 0) {
                 goto error;
             }
             // TODO : check key
