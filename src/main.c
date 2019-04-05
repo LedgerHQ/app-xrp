@@ -1571,7 +1571,7 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
         if ((tmpCtx.transactionContext.pathLength < 0x01) ||
             (tmpCtx.transactionContext.pathLength > MAX_BIP32_PATH)) {
             PRINTF("Invalid path\n");
-            THROW(0x6a80);
+            THROW(0x6a81);
         }
         workBuffer++;
         dataLength--;
@@ -1594,7 +1594,7 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
         THROW(0x6B00);
     }
     if (parseTx(workBuffer, dataLength, &txContent) != USTREAM_FINISHED) {
-        THROW(0x6A80);
+        THROW(0x6A82);
     }
     xrp_print_amount(txContent.amount, fullAmount, sizeof(fullAmount));
     xrp_print_amount(txContent.fees, maxFee, sizeof(fullAmount));
@@ -1760,6 +1760,8 @@ void sample_main(void) {
                 if (rx == 0) {
                     THROW(0x6982);
                 }
+
+                PRINTF("New APDU received:\n%.*H\n", rx, G_io_apdu_buffer);
 
                 handleApdu(&flags, &tx);
             }
