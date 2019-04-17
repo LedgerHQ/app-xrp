@@ -1157,7 +1157,7 @@ UX_FLOW_DEF_VALID(
     pb,
     os_sched_exit(-1),
     {
-      &C_icon_dashboard,
+      &C_icon_dashboard_x,
       "Quit",
     });
 const ux_flow_step_t *        const ux_idle_flow [] = {
