@@ -1384,15 +1384,15 @@ unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e) {
     cx_ecfp_init_private_key(tmpCtx.transactionContext.curve, privateKeyData, 32, &privateKey);
     os_memset(privateKeyData, 0, sizeof(privateKeyData));
     if (tmpCtx.transactionContext.curve == CX_CURVE_256K1) {
-        cx_hash_sha512(tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, privateKeyData);
+        cx_hash_sha512(tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, privateKeyData, 64);
         tx = cx_ecdsa_sign(&privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256,
                       privateKeyData,
-                      32, G_io_apdu_buffer, NULL);
+                      32, G_io_apdu_buffer, sizeof(G_io_apdu_buffer), NULL);
         G_io_apdu_buffer[0] = 0x30;
     }
     else {
         tx = cx_eddsa_sign(&privateKey, CX_LAST, CX_SHA512, tmpCtx.transactionContext.rawTx,
-            tmpCtx.transactionContext.rawTxLength, NULL, 0, G_io_apdu_buffer, NULL);
+            tmpCtx.transactionContext.rawTxLength, NULL, 0, G_io_apdu_buffer, sizeof(G_io_apdu_buffer), NULL);
     }
 
     os_memset(&privateKey, 0, sizeof(privateKey));

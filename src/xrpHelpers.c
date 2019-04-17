@@ -28,9 +28,9 @@ void xrp_public_key_hash160(unsigned char WIDE *in, unsigned short inlen,
     unsigned char buffer[32];
 
     cx_sha256_init(&u.shasha);
-    cx_hash(&u.shasha.header, CX_LAST, in, inlen, buffer);
+    cx_hash(&u.shasha.header, CX_LAST, in, inlen, buffer, 32);
     cx_ripemd160_init(&u.riprip);
-    cx_hash(&u.riprip.header, CX_LAST, buffer, 32, out);
+    cx_hash(&u.riprip.header, CX_LAST, buffer, 32, out, 20);
 }
 
 unsigned short xrp_public_key_to_encoded_base58(
@@ -56,9 +56,9 @@ unsigned short xrp_public_key_to_encoded_base58(
     }
 
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, tmpBuffer, 20 + versionSize, checksumBuffer);
+    cx_hash(&hash.header, CX_LAST, tmpBuffer, 20 + versionSize, checksumBuffer, 32);
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer);
+    cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer, 32);
 
     os_memmove(tmpBuffer + 20 + versionSize, checksumBuffer, 4);
     return xrp_encode_base58(tmpBuffer, 24 + versionSize, out, outlen);
@@ -74,9 +74,9 @@ unsigned short xrp_decode_base58_address(unsigned char WIDE *in,
 
     // Compute hash to verify address
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, out, outlen - 4, hashBuffer);
+    cx_hash(&hash.header, CX_LAST, out, outlen - 4, hashBuffer, 32);
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, hashBuffer, 32, hashBuffer);
+    cx_hash(&hash.header, CX_LAST, hashBuffer, 32, hashBuffer, 32);
 
     if (os_memcmp(out + outlen - 4, hashBuffer, 4)) {
         THROW(INVALID_CHECKSUM);
