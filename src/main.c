@@ -950,7 +950,7 @@ void ui_approval_message_sign_blue_init(void) {
 #if defined(TARGET_NANOS)
 const char * const ui_approval_details[][2] = {
     {"Amount", fullAmount},
-    {"Address", addressSummary},
+    {"Address", fullAddress},
     {"Source Tag", tag},
     {"Destination Tag", tag},
     {"Fees", maxFee},
@@ -1137,22 +1137,22 @@ unsigned int ui_approval_nanos_button(unsigned int button_mask,
 
 #if defined(TARGET_NANOX)
 //////////////////////////////////////////////////////////////////////
-UX_FLOW_DEF_NOCB(
+UX_STEP_NOCB(
     ux_idle_flow_1_step, 
-    bnn, //pnn, 
+    pnn, //pnn, 
     {
-      "", //&C_icon_dashboard,
+      &C_icon_XRP,
       "Application",
       "is ready",
     });
-UX_FLOW_DEF_NOCB(
+UX_STEP_NOCB(
     ux_idle_flow_2_step, 
     bn, 
     {
       "Version",
       APPVERSION,
     });
-UX_FLOW_DEF_VALID(
+UX_STEP_VALID(
     ux_idle_flow_3_step,
     pb,
     os_sched_exit(-1),
@@ -1160,15 +1160,16 @@ UX_FLOW_DEF_VALID(
       &C_icon_dashboard_x,
       "Quit",
     });
-const ux_flow_step_t *        const ux_idle_flow [] = {
-  &ux_idle_flow_1_step,
-  &ux_idle_flow_2_step,
-  &ux_idle_flow_3_step,
-  FLOW_END_STEP,
-};
+
+
+UX_DEF(ux_idle_flow,
+    &ux_idle_flow_1_step,
+    &ux_idle_flow_2_step,
+    &ux_idle_flow_3_step
+);
 
 //////////////////////////////////////////////////////////////////////
-UX_FLOW_DEF_NOCB(
+UX_STEP_NOCB(
     ux_display_address_flow_1_step, 
     pnn, 
     {
@@ -1176,14 +1177,14 @@ UX_FLOW_DEF_NOCB(
       "Verify",
       "address",
     });
-UX_FLOW_DEF_NOCB(
+UX_STEP_NOCB(
     ux_display_address_flow_4_step, 
     bnnn_paging, 
     {
       .title = "Address",
       .text = fullAddress,
     });
-UX_FLOW_DEF_VALID(
+UX_STEP_VALID(
     ux_display_address_flow_5_step, 
     pb, 
     io_seproxyhal_touch_address_ok(NULL),
@@ -1191,7 +1192,7 @@ UX_FLOW_DEF_VALID(
       &C_icon_validate_14,
       "Approve",
     });
-UX_FLOW_DEF_VALID(
+UX_STEP_VALID(
     ux_display_address_flow_6_step, 
     pb, 
     io_seproxyhal_touch_address_cancel(NULL),
@@ -1200,59 +1201,57 @@ UX_FLOW_DEF_VALID(
       "Reject",
     });
 
-
-const ux_flow_step_t *        const ux_display_address_flow [] = {
-  &ux_display_address_flow_1_step,
-  &ux_display_address_flow_4_step,
-  &ux_display_address_flow_5_step,
-  &ux_display_address_flow_6_step,
-  FLOW_END_STEP,
-};
+UX_DEF(ux_display_address_flow,
+    &ux_display_address_flow_1_step,
+    &ux_display_address_flow_4_step,
+    &ux_display_address_flow_5_step,
+    &ux_display_address_flow_6_step
+);
 
 //////////////////////////////////////////////////////////////////////
-UX_FLOW_DEF_NOCB(ux_approval_1_step, 
+UX_STEP_NOCB(ux_approval_1_step, 
     pnn, 
     {
       &C_icon_eye,
       "Review",
       "transaction",
     });
-UX_FLOW_DEF_NOCB(
+UX_STEP_NOCB(
     ux_approval_2_step, 
     bnnn_paging, 
     {
       .title = "Amount",
       .text = fullAmount,
     });
-UX_FLOW_DEF_NOCB(
+UX_STEP_NOCB(
     ux_approval_3_step, 
     bnnn_paging, 
     {
       .title = "Address",
       .text = fullAddress,
     });
-UX_FLOW_DEF_NOCB(
+UX_STEP_NOCB(
     ux_approval_4_step, 
     bnnn_paging, 
     {
       .title = "Source Tag",
       .text = tag,
     });
-UX_FLOW_DEF_NOCB(
+UX_STEP_NOCB(
     ux_approval_5_step, 
     bnnn_paging, 
     {
       .title = "Destination Tag",
       .text = tag2,
     });
-UX_FLOW_DEF_NOCB(
+UX_STEP_NOCB(
     ux_approval_6_step, 
     bnnn_paging, 
     {
       .title = "Fees",
       .text = maxFee,
     });
-UX_FLOW_DEF_VALID(
+UX_STEP_VALID(
     ux_approval_7_step, 
     pbb, 
     io_seproxyhal_touch_tx_ok(NULL),
@@ -1261,7 +1260,7 @@ UX_FLOW_DEF_VALID(
       "Accept",
       "and send",
     });
-UX_FLOW_DEF_VALID(
+UX_STEP_VALID(
     ux_approval_8_step, 
     pb, 
     io_seproxyhal_touch_tx_cancel(NULL),
@@ -1270,47 +1269,8 @@ UX_FLOW_DEF_VALID(
       "Reject",
     });
 // confirm_full: confirm transaction / Amount: fullAmount / Address: fullAddress / Fees: feesAmount
-// _xx: source tag || destination tag
-const ux_flow_step_t *        const ux_approval_flow_00 [] = {
-  &ux_approval_1_step,
-  &ux_approval_2_step,
-  &ux_approval_3_step,
-  &ux_approval_6_step,
-  &ux_approval_7_step,
-  &ux_approval_8_step,
-  FLOW_END_STEP,
-};
-const ux_flow_step_t *        const ux_approval_flow_10 [] = {
-  &ux_approval_1_step,
-  &ux_approval_2_step,
-  &ux_approval_3_step,
-  &ux_approval_4_step,
-  &ux_approval_6_step,
-  &ux_approval_7_step,
-  &ux_approval_8_step,
-  FLOW_END_STEP,
-};
-const ux_flow_step_t *        const ux_approval_flow_01 [] = {
-  &ux_approval_1_step,
-  &ux_approval_2_step,
-  &ux_approval_3_step,
-  &ux_approval_5_step,
-  &ux_approval_6_step,
-  &ux_approval_7_step,
-  &ux_approval_8_step,
-  FLOW_END_STEP,
-};
-const ux_flow_step_t *        const ux_approval_flow_11 [] = {
-  &ux_approval_1_step,
-  &ux_approval_2_step,
-  &ux_approval_3_step,
-  &ux_approval_4_step,
-  &ux_approval_5_step,
-  &ux_approval_6_step,
-  &ux_approval_7_step,
-  &ux_approval_8_step,
-  FLOW_END_STEP,
-};
+
+const ux_flow_step_t * ux_approval_flow[9];
 
 #endif // #if defined(TARGET_NANOX)
 
@@ -1532,28 +1492,20 @@ void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer,
     if (p1 == P1_NON_CONFIRM) {
         *tx = set_result_get_publicKey();
         THROW(0x9000);
-    } else {
-
+    } 
+    else {
         os_memset(fullAddress, 0, sizeof(fullAddress));
-        os_memmove((void *)fullAddress, tmpCtx.publicKeyContext.address, 5);
-        os_memmove((void *)(fullAddress + 5), "...", 3);
-        os_memmove((void *)(fullAddress + 8), tmpCtx.publicKeyContext.address + addressLength - 4, 4);
+        strcpy(fullAddress, tmpCtx.publicKeyContext.address);
 
         // prepare for a UI based reply
 #if defined(TARGET_BLUE)
-        strcpy(fullAddress, tmpCtx.publicKeyContext.address);
         UX_DISPLAY(ui_address_blue, ui_address_blue_prepro);
 #elif defined(TARGET_NANOS)
-#if 0        
-        snprintf(fullAddress, sizeof(fullAddress), " 0x%.*s ", 40,
-                 tmpCtx.publicKeyContext.address);
-#endif                 
         ux_step = 0;
         ux_step_count = 2;
         UX_DISPLAY(ui_address_nanos, ui_address_prepro);
 #elif defined(TARGET_NANOX)
-    os_memmove((void *)fullAddress, tmpCtx.publicKeyContext.address, sizeof(tmpCtx.publicKeyContext.address));
-    ux_flow_init(0, ux_display_address_flow, NULL);
+        ux_flow_init(0, ux_display_address_flow, NULL);
 #endif // TARGET_NANOX
 
         *flags |= IO_ASYNCH_REPLY;
@@ -1601,15 +1553,8 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     addressLength = xrp_public_key_to_encoded_base58(txContent.destination, 20, tmpCtx.publicKeyContext.address, sizeof(tmpCtx.publicKeyContext.address), 0, 1);
     tmpCtx.publicKeyContext.address[addressLength] = '\0';
 
-#if defined(TARGET_BLUE) || defined (TARGET_NANOX)
     strcpy(fullAddress, tmpCtx.publicKeyContext.address);
 
-#elif defined (TARGET_NANOS)
-    os_memset(addressSummary, 0, sizeof(addressSummary));
-    os_memmove((void *)addressSummary, tmpCtx.publicKeyContext.address, 5);
-    os_memmove((void *)(addressSummary + 5), "...", 3);
-    os_memmove((void *)(addressSummary + 8), tmpCtx.publicKeyContext.address + addressLength - 4, 4);
-#endif
     os_memmove(tmpCtx.transactionContext.rawTx, SIGN_PREFIX, sizeof(SIGN_PREFIX));
     os_memmove(tmpCtx.transactionContext.rawTx + sizeof(SIGN_PREFIX), workBuffer, dataLength);
     tmpCtx.transactionContext.rawTxLength = dataLength + sizeof(SIGN_PREFIX);
@@ -1631,22 +1576,30 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     UX_DISPLAY(ui_approval_nanos, ui_approval_prepro);
 #endif // #if TARGET
 #ifdef TARGET_NANOX
+    uint8_t step = 0;
+    ux_approval_flow[step++] = &ux_approval_1_step;
+    ux_approval_flow[step++] = &ux_approval_2_step;
+    ux_approval_flow[step++] = &ux_approval_3_step;
     if(txContent.sourceTagPresent && txContent.destinationTagPresent) {
         SPRINTF(tag, "%u", txContent.sourceTag);
         SPRINTF(tag2, "%u", txContent.destinationTag);
-        ux_flow_init(0, ux_approval_flow_11, NULL);
+        ux_approval_flow[step++] = &ux_approval_4_step;
+        ux_approval_flow[step++] = &ux_approval_5_step;
     }
     else if(!txContent.sourceTagPresent && txContent.destinationTagPresent) {
         SPRINTF(tag2, "%u", txContent.destinationTag);
-        ux_flow_init(0, ux_approval_flow_01, NULL);
+        ux_approval_flow[step++] = &ux_approval_5_step;
     }
     else if(txContent.sourceTagPresent && !txContent.destinationTagPresent) {
         SPRINTF(tag, "%u", txContent.sourceTag);
-        ux_flow_init(0, ux_approval_flow_10, NULL);
+        ux_approval_flow[step++] = &ux_approval_4_step;
     }
-    else {
-        ux_flow_init(0, ux_approval_flow_00, NULL);
-    }
+    ux_approval_flow[step++] = &ux_approval_6_step;
+    ux_approval_flow[step++] = &ux_approval_7_step;
+    ux_approval_flow[step++] = &ux_approval_8_step;
+    ux_approval_flow[step++] = FLOW_END_STEP;
+
+    ux_flow_init(0, ux_approval_flow, NULL);
 #endif // TARGET_NANOX
 
     *flags |= IO_ASYNCH_REPLY;
