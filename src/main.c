@@ -1345,6 +1345,7 @@ unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e) {
     os_memset(privateKeyData, 0, sizeof(privateKeyData));
     if (tmpCtx.transactionContext.curve == CX_CURVE_256K1) {
         cx_hash_sha512(tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, privateKeyData, 64);
+        PRINTF("Hash to sign:\n%.*H\n", 32, privateKeyData);
         tx = cx_ecdsa_sign(&privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256,
                       privateKeyData,
                       32, G_io_apdu_buffer, sizeof(G_io_apdu_buffer), NULL);

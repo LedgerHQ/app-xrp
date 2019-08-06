@@ -41,6 +41,7 @@ unsigned short xrp_public_key_to_encoded_base58(
     unsigned char checksumBuffer[32];
     cx_sha256_t hash;
     unsigned char versionSize = (version > 255 ? 2 : 1);
+    size_t size = outlen;
 
     if (version > 255) {
         tmpBuffer[0] = (version >> 8);
@@ -61,7 +62,10 @@ unsigned short xrp_public_key_to_encoded_base58(
     cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer, 32);
 
     os_memmove(tmpBuffer + 20 + versionSize, checksumBuffer, 4);
-    return xrp_encode_base58(tmpBuffer, 24 + versionSize, out, outlen);
+    if(xrp_encode_base58(tmpBuffer, 24 + versionSize, out, &size)){
+        return 0;
+    }
+    return size;
 }
 
 unsigned short xrp_decode_base58_address(unsigned char WIDE *in,
@@ -70,19 +74,22 @@ unsigned short xrp_decode_base58_address(unsigned char WIDE *in,
                                             unsigned short outlen) {
     unsigned char hashBuffer[32];
     cx_sha256_t hash;
-    outlen = xrp_decode_base58(in, inlen, out, outlen);
+    size_t size = outlen;
+    if(xrp_decode_base58(in, inlen, out, &size)){
+        THROW(EXCEPTION);
+    }
 
     // Compute hash to verify address
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, out, outlen - 4, hashBuffer, 32);
+    cx_hash(&hash.header, CX_LAST, out, size - 4, hashBuffer, 32);
     cx_sha256_init(&hash);
     cx_hash(&hash.header, CX_LAST, hashBuffer, 32, hashBuffer, 32);
 
-    if (os_memcmp(out + outlen - 4, hashBuffer, 4)) {
+    if (os_memcmp(out + size - 4, hashBuffer, 4)) {
         THROW(INVALID_CHECKSUM);
     }
 
-    return outlen;
+    return size;
 }
 
 unsigned short xrp_compress_public_key(cx_ecfp_public_key_t *publicKey, uint8_t *out, uint32_t outlen) {

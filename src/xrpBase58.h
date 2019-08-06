@@ -18,10 +18,6 @@
 #include "os.h"
 #include "cx.h"
 
-unsigned char xrp_decode_base58(unsigned char WIDE *in, unsigned char length,
-                                   unsigned char *out,
-                                   unsigned char maxoutlen);
+int xrp_decode_base58(const char *in, size_t length, unsigned char *out, size_t *outlen);
 
-unsigned char xrp_encode_base58(unsigned char WIDE *in, unsigned char length,
-                                   unsigned char *out,
-                                   unsigned char maxoutlen);
+int xrp_encode_base58(const unsigned char *in, size_t length, unsigned char *out, size_t *outlen);
