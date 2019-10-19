@@ -1338,14 +1338,17 @@ unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e) {
     cx_ecfp_private_key_t privateKey;
     uint32_t tx = 0;
 
+    io_seproxyhal_io_heartbeat();
     os_perso_derive_node_bip32(
         tmpCtx.transactionContext.curve, tmpCtx.transactionContext.bip32Path,
         tmpCtx.transactionContext.pathLength, privateKeyData, NULL);    
     cx_ecfp_init_private_key(tmpCtx.transactionContext.curve, privateKeyData, 32, &privateKey);
     os_memset(privateKeyData, 0, sizeof(privateKeyData));
+    io_seproxyhal_io_heartbeat();
     if (tmpCtx.transactionContext.curve == CX_CURVE_256K1) {
         cx_hash_sha512(tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, privateKeyData, 64);
         PRINTF("Hash to sign:\n%.*H\n", 32, privateKeyData);
+        io_seproxyhal_io_heartbeat();
         tx = cx_ecdsa_sign(&privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256,
                       privateKeyData,
                       32, G_io_apdu_buffer, sizeof(G_io_apdu_buffer), NULL);
@@ -1477,17 +1480,21 @@ void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer,
         dataBuffer += 4;
     }
     tmpCtx.publicKeyContext.getChaincode = (p2Chain == P2_CHAINCODE);
+    io_seproxyhal_io_heartbeat();
     os_perso_derive_node_bip32(curve, bip32Path, bip32PathLength,
                                privateKeyData,
                                (tmpCtx.publicKeyContext.getChaincode
                                     ? tmpCtx.publicKeyContext.chainCode
                                     : NULL));
     cx_ecfp_init_private_key(curve, privateKeyData, 32, &privateKey);
+    io_seproxyhal_io_heartbeat();
     cx_ecfp_generate_pair(curve, &tmpCtx.publicKeyContext.publicKey,
                           &privateKey, 1);
     os_memset(&privateKey, 0, sizeof(privateKey));
     os_memset(privateKeyData, 0, sizeof(privateKeyData));
+    io_seproxyhal_io_heartbeat();
     xrp_compress_public_key(&tmpCtx.publicKeyContext.publicKey, privateKeyData, 33);
+    io_seproxyhal_io_heartbeat();
     addressLength = xrp_public_key_to_encoded_base58(privateKeyData, 33, tmpCtx.publicKeyContext.address, sizeof(tmpCtx.publicKeyContext.address), 0, 0);
     tmpCtx.publicKeyContext.address[addressLength] = '\0';
     if (p1 == P1_NON_CONFIRM) {
