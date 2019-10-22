@@ -99,13 +99,13 @@ unsigned int io_seproxyhal_touch_address_ok(const bagl_element_t *e);
 unsigned int io_seproxyhal_touch_address_cancel(const bagl_element_t *e);
 void ui_idle(void);
 
-#ifdef TARGET_NANOX
+#ifdef HAVE_UX_FLOW
 #include "ux.h"
 ux_state_t G_ux;
 bolos_ux_params_t G_ux_params;
-#else // TARGET_NANOX
+#else // HAVE_UX_FLOW
 ux_state_t ux;
-#endif // TARGET_NANOX
+#endif // HAVE_UX_FLOW
 
 // display stepped screens
 unsigned int ux_step;
@@ -240,7 +240,7 @@ unsigned int ui_idle_blue_button(unsigned int button_mask,
 }
 #endif // #if TARGET_BLUE
 
-#if defined(TARGET_NANOS)
+#if defined(TARGET_NANOS) && !defined(HAVE_UX_FLOW)
 
 const ux_menu_entry_t menu_main[];
 
@@ -255,7 +255,7 @@ const ux_menu_entry_t menu_main[] = {
     {NULL, os_sched_exit, 0, &C_icon_dashboard, "Quit app", NULL, 50, 29},
     UX_MENU_END};
 
-#endif // #if TARGET_NANOS
+#endif // #if TARGET_NANOS && !HAVE_UX_FLOW
 
 #if defined(TARGET_BLUE)
 
@@ -378,7 +378,7 @@ unsigned int ui_address_blue_button(unsigned int button_mask,
 }
 #endif // #if defined(TARGET_BLUE)
 
-#if defined(TARGET_NANOS)
+#if defined(TARGET_NANOS) && !defined(HAVE_UX_FLOW)
 const bagl_element_t ui_address_nanos[] = {
     // type                               userid    x    y   w    h  str rad
     // fill      fg        bg      fid iid  txt   touchparams...       ]
@@ -474,7 +474,7 @@ unsigned int ui_address_prepro(const bagl_element_t *element) {
 
 unsigned int ui_address_nanos_button(unsigned int button_mask,
                                      unsigned int button_mask_counter);
-#endif // #if defined(TARGET_NANOS)
+#endif // #if defined(TARGET_NANOS) && !defined(HAVE_UX_FLOW)
 
 #if defined(TARGET_BLUE)
 // reuse addressSummary for each line content
@@ -947,7 +947,7 @@ void ui_approval_message_sign_blue_init(void) {
 
 #endif // #if defined(TARGET_BLUE)
 
-#if defined(TARGET_NANOS)
+#if defined(TARGET_NANOS) && !defined(HAVE_UX_FLOW)
 const char * const ui_approval_details[][2] = {
     {"Amount", fullAmount},
     {"Address", fullAddress},
@@ -1133,9 +1133,9 @@ unsigned int ui_approval_prepro(const bagl_element_t *element) {
 unsigned int ui_approval_nanos_button(unsigned int button_mask,
                                       unsigned int button_mask_counter);
 
-#endif // #if defined(TARGET_NANOS)
+#endif // #if defined(TARGET_NANOS) !defined(HAVE_UX_FLOW)
 
-#if defined(TARGET_NANOX)
+#if defined(HAVE_UX_FLOW)
 //////////////////////////////////////////////////////////////////////
 UX_STEP_NOCB(
     ux_idle_flow_1_step, 
@@ -1272,20 +1272,20 @@ UX_STEP_VALID(
 
 const ux_flow_step_t * ux_approval_flow[9];
 
-#endif // #if defined(TARGET_NANOX)
+#endif // #if defined(HAVE_UX_FLOW)
 
 
 void ui_idle(void) {
 #if defined(TARGET_BLUE)
     UX_DISPLAY(ui_idle_blue, NULL);
-#elif defined(TARGET_NANOS)
-    UX_MENU_DISPLAY(0, menu_main, NULL);
-#elif defined(TARGET_NANOX)
+#elif defined(HAVE_UX_FLOW)
     // reserve a display stack slot if none yet
     if(G_ux.stack_count == 0) {
         ux_stack_push();
     }
     ux_flow_init(0, ux_idle_flow, NULL);
+#elif defined(TARGET_NANOS)
+    UX_MENU_DISPLAY(0, menu_main, NULL);
 #endif // #if TARGET_ID
 }
 
@@ -1338,14 +1338,17 @@ unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e) {
     cx_ecfp_private_key_t privateKey;
     uint32_t tx = 0;
 
+    io_seproxyhal_io_heartbeat();
     os_perso_derive_node_bip32(
         tmpCtx.transactionContext.curve, tmpCtx.transactionContext.bip32Path,
         tmpCtx.transactionContext.pathLength, privateKeyData, NULL);    
     cx_ecfp_init_private_key(tmpCtx.transactionContext.curve, privateKeyData, 32, &privateKey);
     os_memset(privateKeyData, 0, sizeof(privateKeyData));
+    io_seproxyhal_io_heartbeat();
     if (tmpCtx.transactionContext.curve == CX_CURVE_256K1) {
         cx_hash_sha512(tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, privateKeyData, 64);
         PRINTF("Hash to sign:\n%.*H\n", 32, privateKeyData);
+        io_seproxyhal_io_heartbeat();
         tx = cx_ecdsa_sign(&privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256,
                       privateKeyData,
                       32, G_io_apdu_buffer, sizeof(G_io_apdu_buffer), NULL);
@@ -1477,17 +1480,21 @@ void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer,
         dataBuffer += 4;
     }
     tmpCtx.publicKeyContext.getChaincode = (p2Chain == P2_CHAINCODE);
+    io_seproxyhal_io_heartbeat();
     os_perso_derive_node_bip32(curve, bip32Path, bip32PathLength,
                                privateKeyData,
                                (tmpCtx.publicKeyContext.getChaincode
                                     ? tmpCtx.publicKeyContext.chainCode
                                     : NULL));
     cx_ecfp_init_private_key(curve, privateKeyData, 32, &privateKey);
+    io_seproxyhal_io_heartbeat();
     cx_ecfp_generate_pair(curve, &tmpCtx.publicKeyContext.publicKey,
                           &privateKey, 1);
     os_memset(&privateKey, 0, sizeof(privateKey));
     os_memset(privateKeyData, 0, sizeof(privateKeyData));
+    io_seproxyhal_io_heartbeat();
     xrp_compress_public_key(&tmpCtx.publicKeyContext.publicKey, privateKeyData, 33);
+    io_seproxyhal_io_heartbeat();
     addressLength = xrp_public_key_to_encoded_base58(privateKeyData, 33, tmpCtx.publicKeyContext.address, sizeof(tmpCtx.publicKeyContext.address), 0, 0);
     tmpCtx.publicKeyContext.address[addressLength] = '\0';
     if (p1 == P1_NON_CONFIRM) {
@@ -1501,13 +1508,13 @@ void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer,
         // prepare for a UI based reply
 #if defined(TARGET_BLUE)
         UX_DISPLAY(ui_address_blue, ui_address_blue_prepro);
+#elif defined(HAVE_UX_FLOW)
+        ux_flow_init(0, ux_display_address_flow, NULL);
 #elif defined(TARGET_NANOS)
         ux_step = 0;
         ux_step_count = 2;
         UX_DISPLAY(ui_address_nanos, ui_address_prepro);
-#elif defined(TARGET_NANOX)
-        ux_flow_init(0, ux_display_address_flow, NULL);
-#endif // TARGET_NANOX
+#endif // #if TARGET_ID
 
         *flags |= IO_ASYNCH_REPLY;
     }
@@ -1564,7 +1571,7 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
 #if defined(TARGET_BLUE)
     ux_step_count = 0;
     ui_approval_transaction_blue_init();
-#elif defined(TARGET_NANOS)
+#elif defined(TARGET_NANOS) && !defined(HAVE_UX_FLOW)
     ux_step = 0;
     // "confirm", amount, address, [sourcetag], [destinationtag], fees
     ux_step_count = 4;
@@ -1576,7 +1583,7 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     }
     UX_DISPLAY(ui_approval_nanos, ui_approval_prepro);
 #endif // #if TARGET
-#ifdef TARGET_NANOX
+#ifdef HAVE_UX_FLOW
     uint8_t step = 0;
     ux_approval_flow[step++] = &ux_approval_1_step;
     ux_approval_flow[step++] = &ux_approval_2_step;
@@ -1601,7 +1608,7 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     ux_approval_flow[step++] = FLOW_END_STEP;
 
     ux_flow_init(0, ux_approval_flow, NULL);
-#endif // TARGET_NANOX
+#endif // HAVE_UX_FLOW
 
     *flags |= IO_ASYNCH_REPLY;
 }
