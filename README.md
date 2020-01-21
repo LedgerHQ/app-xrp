@@ -252,6 +252,6 @@ make load
 
 ## Testing
 Manual testing can be conducted with the help of the testing utility 
-`ledger-xrp-tests`. Make sure that your device is running the latest
-firmware and then follow the instructions in the `ledger-xrp-tests`
-repository.
+[TowoLabs/ledger-tests-xrp](https://github.com/TowoLabs/ledger-tests-xrp).
+Make sure that your device is running the latest firmware and then follow
+the instructions in the test repository.
