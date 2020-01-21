@@ -24,7 +24,6 @@
 // Normal field types
 #define STI_UINT16 0x01
 #define STI_UINT32 0x02
-#define STI_UINT64 0x03
 #define STI_HASH128 0x04
 #define STI_HASH256 0x05
 #define STI_AMOUNT 0x06
@@ -33,7 +32,6 @@
 #define STI_OBJECT 0x0E
 #define STI_ARRAY 0x0F
 #define STI_UINT8 0x10
-#define STI_HASH160 0x11
 #define STI_PATHSET 0x12
 
 // Custom field types

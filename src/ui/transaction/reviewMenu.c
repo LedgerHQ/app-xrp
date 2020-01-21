@@ -15,14 +15,12 @@
 *  limitations under the License.
 ********************************************************************************/
 
+#include "reviewMenu.h"
 #include <os.h>
 #include <os_io_seproxyhal.h>
 #include <string.h>
-#include "reviewMenu.h"
-#include "../ux.h"
 #include "../../transaction/transaction.h"
 #include "../../xrp/format/format.h"
-#include "../../limitations.h"
 
 char fieldName[MAX_FIELDNAME_LEN];
 char fieldValue[MAX_FIELD_LEN];
@@ -44,7 +42,7 @@ UX_STEP_CB_INIT(
             fieldValue
         });
 
-void updateTitle(field_t *field, int stepIndex) {
+void updateTitle(field_t *field) {
     memset(fieldName, 0, MAX_FIELDNAME_LEN);
     resolveFieldName(field, fieldName);
 
@@ -63,7 +61,7 @@ void updateContent(int stackSlot) {
     int stepIndex = G_ux.flow_stack[stackSlot].index;
     field_t *field = &transaction->fields[stepIndex];
 
-    updateTitle(field, stepIndex);
+    updateTitle(field);
     updateValue(field);
 }
 
