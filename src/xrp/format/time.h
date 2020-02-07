@@ -22,6 +22,8 @@
 #include "fields.h"
 
 bool isTime(field_t* field);
+bool isTimeDelta(field_t* field);
 void formatTime(field_t* field, char *dst);
+void formatTimeDelta(field_t* field, char *dst);
 
 #endif //LEDGER_APP_XRP_TIME_H

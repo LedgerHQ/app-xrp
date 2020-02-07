@@ -46,6 +46,8 @@ void uint32Formatter(field_t* field, char *dst) {
         formatFlags(field, dst);
     } else if (isTime(field)) {
         formatTime(field, dst);
+    } else if (isTimeDelta(field)) {
+        formatTimeDelta(field, dst);
     } else {
         uint32_t value = readUnsigned32(field->data);
         SNPRINTF(dst, "%u", value);
