@@ -23,6 +23,6 @@
 #include "fields.h"
 
 bool shouldFormatAsString(field_t *field);
-bool isPurelyAscii(const uint8_t *data, uint16_t length);
+bool isPurelyAscii(const uint8_t *data, uint16_t length, bool allowSuffix);
 
 #endif //LEDGER_APP_XRP_STRINGS_H
