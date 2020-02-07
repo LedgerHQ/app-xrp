@@ -25,6 +25,7 @@
 #include "strings.h"
 #include "../../limitations.h"
 #include "transactionTypes.h"
+#include "percentage.h"
 #include <string.h>
 
 void uint8Formatter(field_t* field, char *dst) {
@@ -48,6 +49,8 @@ void uint32Formatter(field_t* field, char *dst) {
         formatTime(field, dst);
     } else if (isTimeDelta(field)) {
         formatTimeDelta(field, dst);
+    } else if (isPercentage(field)) {
+        formatPercentage(field, dst);
     } else {
         uint32_t value = readUnsigned32(field->data);
         SNPRINTF(dst, "%u", value);

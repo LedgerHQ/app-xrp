@@ -15,37 +15,13 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef LEDGER_APP_XRP_LIMITATIONS_H
-#define LEDGER_APP_XRP_LIMITATIONS_H
+#ifndef LEDGER_APP_XRP_PERCENTAGE_H
+#define LEDGER_APP_XRP_PERCENTAGE_H
 
-// Needed to resolve target macros
-#include "bolos_target.h"
+#include <stdbool.h>
+#include "fields.h"
 
-// Hardware independent limits
-#define MAX_BIP32_PATH 10
-#define MAX_ENC_INPUT_SIZE 26
-#define MAX_FIELDNAME_LEN 50
-#define MAX_ARRAY_LEN 8
-#define MAX_PATH_COUNT 6
-#define MAX_STEP_COUNT 8
+bool isPercentage(field_t* field);
+void formatPercentage(field_t* field, char *dst);
 
-// Hardware dependent limits
-//   Ledger Nano X has 30K RAM
-//   Ledger Nano S has 4K RAM
-#if defined(TARGET_NANOX)
-
-#define MAX_FIELD_COUNT 60
-#define MAX_FIELD_LEN 1024
-#define MAX_RAW_TX 10000
-#define FULL_ADDR_FORMAT true
-
-#elif defined(TARGET_NANOS)
-
-#define MAX_FIELD_COUNT 24
-#define MAX_FIELD_LEN 128
-#define MAX_RAW_TX 800
-#define FULL_ADDR_FORMAT false
-
-#endif
-
-#endif //LEDGER_APP_XRP_LIMITATIONS_H
+#endif //LEDGER_APP_XRP_PERCENTAGE_H
