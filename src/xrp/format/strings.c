@@ -32,14 +32,26 @@ bool shouldFormatAsString(field_t *field) {
         case XRP_VL_MEMO_FORMAT:
             return true;
         case XRP_VL_MEMO_DATA:
-            return isPurelyAscii(field->data, field->length);
+            return isPurelyAscii(field->data, field->length, false);
         default:
             return false;
     }
 }
 
-bool isPurelyAscii(const uint8_t *data, uint16_t length) {
+bool isPurelyAscii(const uint8_t *data, uint16_t length, bool allowSuffix) {
+    bool trackingSuffix = false;
+
     for (uint16_t i = 0; i < length; ++i) {
+        if (trackingSuffix && data[i] != 0) {
+            // The suffix can only contain null bytes
+            return false;
+        }
+
+        if (data[i] == 0 && i > 0 && allowSuffix) {
+            trackingSuffix = true;
+            continue;
+        }
+
         if (data[i] < 32 || data[i] > 126) {
             return false;
         }

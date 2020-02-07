@@ -22,6 +22,7 @@
 #include "readers.h"
 #include "../parse/numberHelpers.h"
 #include "../../limitations.h"
+#include "strings.h"
 #include <string.h>
 #include <stdbool.h>
 
@@ -57,7 +58,14 @@ void formatCurrency(uint8_t *currencyData, char *dst, bool omitNonStandard) {
     if (hasNonStandardCurrencyInternal(currencyData)) {
         if (!omitNonStandard) {
             // Nonstandard currency code
-            readHex(dst, &currencyData[0], 20);
+            bool containsOnlyAscii = isPurelyAscii(currencyData, 20, true);
+            bool containsSubstringXRP = strstr(currencyData, "XRP");
+
+            if (containsOnlyAscii && !containsSubstringXRP) {
+                readString(dst, currencyData, 20);
+            } else {
+                readHex(dst, currencyData, 20);
+            }
         }
     } else if (isAllZeros(currencyData, 20)) {
         // Special case for XRP currency
