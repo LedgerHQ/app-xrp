@@ -31,8 +31,8 @@ bool isNormalAccountField(field_t *field) {
 void resolveFieldName(field_t *field, char* dst) {
     if (field->dataType == STI_UINT16) {
         switch (field->id) {
-            CASE(2, "TransactionType")
-            CASE(3, "SignerWeight")
+            CASE(2, "Transaction Type")
+            CASE(3, "Signer Weight")
         }
     }
 
@@ -40,41 +40,41 @@ void resolveFieldName(field_t *field, char* dst) {
         switch (field->id) {
             // 32-bit integers
             CASE(2, "Flags")
-            CASE(3, "SourceTag")
+            CASE(3, "Source Tag")
             CASE(4, "Sequence")
             CASE(10, "Expiration")
-            CASE(11, "TransferRate")
-            CASE(12, "WalletSize")
-            CASE(14, "DestinationTag")
-            CASE(20, "QualityIn")
-            CASE(21, "QualityOut")
-            CASE(25, "OfferSequence")
-            CASE(27, "LastLedgerSequence")
-            CASE(33, "SetFlag")
-            CASE(34, "ClearFlag")
-            CASE(35, "SignerQuorum")
-            CASE(36, "CancelAfter")
-            CASE(37, "FinishAfter")
-            CASE(39, "SettleDelay")
+            CASE(11, "Transfer Rate")
+            CASE(12, "Wallet Size")
+            CASE(14, "Destination Tag")
+            CASE(20, "Quality In")
+            CASE(21, "Quality Out")
+            CASE(25, "Offer Sequence")
+            CASE(27, "Last Ledger Sequence")
+            CASE(33, "Set Flag")
+            CASE(34, "Clear Flag")
+            CASE(35, "Signer Quorum")
+            CASE(36, "Cancel After")
+            CASE(37, "Finish After")
+            CASE(39, "Settle Delay")
         }
     }
 
     if (field->dataType == STI_HASH128) {
         switch (field->id) {
-            CASE(1, "EmailHash")
+            CASE(1, "Email Hash")
         }
     }
 
     if (field->dataType == STI_HASH256) {
         switch (field->id) {
             // 256-bit
-            CASE(5, "PreviousTxnID")
-            CASE(7, "WalletLocator")
-            CASE(9, "AccountTxnID")
-            CASE(17, "InvoiceID")
-            CASE(20, "TicketID")
+            CASE(5, "Previous Txn ID")
+            CASE(7, "Wallet Locator")
+            CASE(9, "Account Txn ID")
+            CASE(17, "Invoice ID")
+            CASE(20, "Ticket ID")
             CASE(22, "Channel")
-            CASE(24, "CheckID")
+            CASE(24, "Check ID")
         }
     }
 
@@ -83,27 +83,27 @@ void resolveFieldName(field_t *field, char* dst) {
             // currency amount
             CASE(1, "Amount")
             CASE(2, "Balance")
-            CASE(3, "LimitAmount")
-            CASE(4, "TakerPays")
-            CASE(5, "TakerGets")
+            CASE(3, "Limit Amount")
+            CASE(4, "Taker Pays")
+            CASE(5, "Taker Gets")
             CASE(8, "Fee")
-            CASE(9, "SendMax")
-            CASE(10, "DeliverMin")
+            CASE(9, "Send Max")
+            CASE(10, "Deliver Min")
         }
     }
 
     if (field->dataType == STI_VL) {
         switch (field->id) {
             // variable length (common)
-            CASE(1, "PublicKey")
+            CASE(1, "Public Key")
             CASE(3, "Sig.PubKey")
             CASE(6, "Signature")
-            CASE(2, "MessageKey")
-            CASE(4, "TxnSig.")
+            CASE(2, "Message Key")
+            CASE(4, "Txn Sig.")
             CASE(7, "Domain")
-            CASE(12, "MemoType")
-            CASE(13, "MemoData")
-            CASE(14, "MemoFormat")
+            CASE(12, "Memo Type")
+            CASE(13, "Memo Data")
+            CASE(14, "Memo Fmt")
             CASE(16, "Fulfillment")
             CASE(17, "Condition")
         }
@@ -117,7 +117,7 @@ void resolveFieldName(field_t *field, char* dst) {
             CASE(4, "Issuer")
             CASE(5, "Authorize")
             CASE(6, "Unauthorize")
-            CASE(8, "RegularKey")
+            CASE(8, "Regular Key")
         }
     }
 
@@ -126,7 +126,7 @@ void resolveFieldName(field_t *field, char* dst) {
             // inner object
             // OBJECT/1 is reserved for end of object
             CASE(10, "Memo")
-            CASE(11, "SignerEntry")
+            CASE(11, "Signer Entry")
             CASE(16, "Signer")
         }
     }
@@ -136,7 +136,7 @@ void resolveFieldName(field_t *field, char* dst) {
             // array of objects
             // ARRAY/1 is reserved for end of array
             CASE(3, "Signers")
-            CASE(4, "SignerEntries")
+            CASE(4, "Signer Entries")
             CASE(9, "Memos")
         }
     }
@@ -144,7 +144,7 @@ void resolveFieldName(field_t *field, char* dst) {
     if (field->dataType == STI_UINT8) {
         switch (field->id) {
             // 8-bit integers
-            CASE(16, "TickSize")
+            CASE(16, "Tick Size")
         }
     }
 
