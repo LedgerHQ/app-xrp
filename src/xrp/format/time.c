@@ -55,6 +55,10 @@ bool isTime(field_t* field) {
     }
 }
 
+bool isTimeDelta(field_t* field) {
+    return field->dataType == STI_UINT32 && field->id == XRP_UINT32_SETTLE_DELAY;
+}
+
 // Inspired from http://git.musl-libc.org/cgit/musl/tree/src/time/__secs_to_tm.c?h=v0.9.15
 int rippleEpochToTM(long long t, tm_mini_t *tm)
 {
@@ -145,4 +149,9 @@ void formatTime(field_t* field, char *dst) {
     rippleEpochToTM(value, &tm);
 
     printTime(&tm, dst);
+}
+
+void formatTimeDelta(field_t* field, char *dst) {
+    uint32_t value = readUnsigned32(field->data);
+    SNPRINTF(dst, "%u s", value);
 }
