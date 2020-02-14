@@ -23,9 +23,9 @@ include $(BOLOS_SDK)/Makefile.defines
 APPNAME = XRP 
 APP_LOAD_PARAMS=--appFlags 0x240 --path "44'/144'" --curve secp256k1 --curve ed25519 $(COMMON_LOAD_PARAMS) 
 
-APPVERSION_M=1
-APPVERSION_N=1
-APPVERSION_P=1
+APPVERSION_M=2
+APPVERSION_N=0
+APPVERSION_P=0
 APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 DEFINES   += UNUSED\(x\)=\(void\)x
 DEFINES   += APPVERSION=\"$(APPVERSION)\"
@@ -33,15 +33,11 @@ DEFINES   += APPVERSION=\"$(APPVERSION)\"
 COIN = xrp
 
 #prepare hsm generation
-ifeq ($(TARGET_NAME),TARGET_BLUE)
-ICONNAME=blue_app_$(COIN).gif
-else
-	ifeq ($(TARGET_NAME),TARGET_NANOX)
+ifeq ($(TARGET_NAME),TARGET_NANOX)
 ICONNAME=nanox_app_$(COIN).gif
-	else
+else
 ICONNAME=nanos_app_$(COIN).gif
-	endif
- endif
+endif
 
 
 ################
@@ -54,7 +50,7 @@ all: default
 ############
 
 DEFINES   += OS_IO_SEPROXYHAL
-DEFINES   += HAVE_BAGL HAVE_SPRINTF HAVE_SNPRINTF_FORMAT_U
+DEFINES   += HAVE_BAGL HAVE_SPRINTF HAVE_SNPRINTF_FORMAT_U HAVE_UX_FLOW
 
 DEFINES   += HAVE_IO_USB HAVE_L4_USBLIB IO_USB_MAX_ENDPOINTS=4 IO_HID_EP_LENGTH=64 HAVE_USB_APDU
 DEFINES   +=  LEDGER_MAJOR_VERSION=$(APPVERSION_M) LEDGER_MINOR_VERSION=$(APPVERSION_N) LEDGER_PATCH_VERSION=$(APPVERSION_P)
@@ -80,7 +76,6 @@ DEFINES       += HAVE_BAGL_ELLIPSIS # long label truncation feature
 DEFINES       += HAVE_BAGL_FONT_OPEN_SANS_REGULAR_11PX
 DEFINES       += HAVE_BAGL_FONT_OPEN_SANS_EXTRABOLD_11PX
 DEFINES       += HAVE_BAGL_FONT_OPEN_SANS_LIGHT_16PX
-DEFINES		  += HAVE_UX_FLOW
 else
 DEFINES   += IO_SEPROXYHAL_BUFFER_SIZE_B=128
 endif
@@ -131,22 +126,10 @@ include $(BOLOS_SDK)/Makefile.glyphs
 
 ### computed variables
 APP_SOURCE_PATH  += src  
-SDK_SOURCE_PATH  += lib_stusb lib_stusb_impl lib_u2f
+SDK_SOURCE_PATH  += lib_stusb lib_stusb_impl lib_u2f lib_ux
 
 ifeq ($(TARGET_NAME),TARGET_NANOX)
 SDK_SOURCE_PATH  += lib_blewbxx lib_blewbxx_impl
-SDK_SOURCE_PATH  += lib_ux
-endif
-
-# If the SDK supports Flow for Nano S, build for it
-
-ifeq ($(TARGET_NAME),TARGET_NANOS)
-
-	ifneq "$(wildcard $(BOLOS_SDK)/lib_ux/src/ux_flow_engine.c)" ""
-		SDK_SOURCE_PATH  += lib_ux
-		DEFINES		       += HAVE_UX_FLOW		
-	endif
-
 endif
 
 load: all

@@ -1,6 +1,7 @@
 /*******************************************************************************
 *   XRP Wallet
 *   (c) 2017 Ledger
+*   (c) 2020 Towo Labs
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -15,28 +16,15 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "os.h"
-#include "cx.h"
+#ifndef LEDGER_APP_XRP_AMOUNT_H
+#define LEDGER_APP_XRP_AMOUNT_H
+
 #include <stdbool.h>
+#include "fields.h"
 
-#define MAX_BIP32_PATH 10
+void amountFormatter(field_t* field, char *dst);
+void currencyFormatter(field_t* field, char *dst);
 
-typedef enum parserStatus_e {
-    USTREAM_PROCESSING,
-    USTREAM_FINISHED,
-    USTREAM_FAULT
-} parserStatus_e;
+bool hasNonStandardCurrency(field_t* field);
 
-typedef struct txContent_t {
-    uint64_t amount;
-    uint64_t fees;
-    uint8_t account[20];
-    uint8_t destination[20];    
-    uint32_t sourceTag;
-    uint8_t sourceTagPresent;
-    uint32_t destinationTag;
-    uint8_t destinationTagPresent;
-} txContent_t;
-
-parserStatus_e parseTx(uint8_t *data, uint32_t length, txContent_t *context);
-
+#endif //LEDGER_APP_XRP_AMOUNT_H

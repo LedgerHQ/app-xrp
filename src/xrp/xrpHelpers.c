@@ -17,7 +17,9 @@
 
 #include "xrpHelpers.h"
 #include "xrpBase58.h"
+#include "parse/numberHelpers.h"
 #include <stdbool.h>
+#include <string.h>
 
 void xrp_public_key_hash160(unsigned char WIDE *in, unsigned short inlen,
                                unsigned char *out) {
@@ -34,17 +36,16 @@ void xrp_public_key_hash160(unsigned char WIDE *in, unsigned short inlen,
 }
 
 unsigned short xrp_public_key_to_encoded_base58(
-    unsigned char WIDE *in, unsigned short inlen, unsigned char *out,
+    unsigned char WIDE *in, unsigned short inlen, char *out,
     unsigned short outlen, unsigned short version,
     unsigned char alreadyHashed) {
     unsigned char tmpBuffer[26];
     unsigned char checksumBuffer[32];
     cx_sha256_t hash;
     unsigned char versionSize = (version > 255 ? 2 : 1);
-    size_t size = outlen;
 
     if (version > 255) {
-        tmpBuffer[0] = (version >> 8);
+        tmpBuffer[0] = (version >> 8u);
         tmpBuffer[1] = version;
     } else {
         tmpBuffer[0] = version;
@@ -62,42 +63,15 @@ unsigned short xrp_public_key_to_encoded_base58(
     cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer, 32);
 
     os_memmove(tmpBuffer + 20 + versionSize, checksumBuffer, 4);
-    if(xrp_encode_base58(tmpBuffer, 24 + versionSize, out, &size)){
-        return 0;
-    }
-    return size;
+    return xrp_encode_base58(tmpBuffer, 24 + versionSize, out, outlen);
 }
 
-unsigned short xrp_decode_base58_address(unsigned char WIDE *in,
-                                            unsigned short inlen,
-                                            unsigned char *out,
-                                            unsigned short outlen) {
-    unsigned char hashBuffer[32];
-    cx_sha256_t hash;
-    size_t size = outlen;
-    if(xrp_decode_base58(in, inlen, out, &size)){
-        THROW(EXCEPTION);
-    }
-
-    // Compute hash to verify address
-    cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, out, size - 4, hashBuffer, 32);
-    cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, hashBuffer, 32, hashBuffer, 32);
-
-    if (os_memcmp(out + size - 4, hashBuffer, 4)) {
-        THROW(INVALID_CHECKSUM);
-    }
-
-    return size;
-}
-
-unsigned short xrp_compress_public_key(cx_ecfp_public_key_t *publicKey, uint8_t *out, uint32_t outlen) {
+void xrp_compress_public_key(cx_ecfp_public_key_t *publicKey, uint8_t *out, uint32_t outlen) {
     if (outlen < 33) {
         THROW(EXCEPTION_OVERFLOW);
     }
     if (publicKey->curve == CX_CURVE_256K1) {
-        out[0] = ((publicKey->W[64] & 1) ? 0x03 : 0x02);
+        out[0] = ((publicKey->W[64] & 1u) ? 0x03 : 0x02);
         os_memmove(out + 1, publicKey->W + 1, 32);
     }
     else
@@ -107,8 +81,8 @@ unsigned short xrp_compress_public_key(cx_ecfp_public_key_t *publicKey, uint8_t 
         for (i=0; i<32; i++) {
             out[i + 1] = publicKey->W[64 - i];
         }
-        if ((publicKey->W[32] & 1) != 0) {
-            out[32] |= 0x80;
+        if ((publicKey->W[32] & 1u) != 0) {
+            out[32] |= 0x80u;
         }
     }
     else {
@@ -116,27 +90,7 @@ unsigned short xrp_compress_public_key(cx_ecfp_public_key_t *publicKey, uint8_t 
     }
 }
 
-#if 0
-unsigned short xrp_print_amount(uint64_t amount, uint8_t *out, uint32_t outlen) {
-    uint64_t partInt;
-    uint64_t partDecimal;
-    partInt = amount / 1000000;
-    partDecimal = amount - (partInt * 1000000);
-    // TODO : handle properly
-    if ((partInt > 0xFFFFFFFF) || (partDecimal > 0xFFFFFFFF)) {
-        THROW(EXCEPTION);
-    }
-    if (partDecimal == 0) {
-        snprintf(out, outlen, "%d", (uint32_t)partInt);
-    }
-    else {
-        snprintf(out, outlen, "%d.%d", (uint32_t)partInt, (uint32_t)partDecimal);
-    }
-    return strlen(out);
-}
-#endif
-
-bool adjustDecimals(char *src, uint32_t srcLength, char *target,
+bool adjustDecimals(const char *src, uint32_t srcLength, char *target,
                     uint32_t targetLength, uint8_t decimals) {
     uint32_t startOffset;
     uint32_t lastZeroOffset = 0;
@@ -201,7 +155,7 @@ bool adjustDecimals(char *src, uint32_t srcLength, char *target,
     return true;
 }
 
-unsigned short xrp_print_amount(uint64_t amount, uint8_t *out, uint32_t outlen) { 
+void xrp_print_amount(uint64_t amount, char *out, uint32_t outlen) {
     char tmp[20];    
     char tmp2[25];
     uint32_t numDigits = 0, i;
@@ -215,7 +169,7 @@ unsigned short xrp_print_amount(uint64_t amount, uint8_t *out, uint32_t outlen) 
     }
     base /= 10;
     for (i=0; i<numDigits; i++) {
-        tmp[i] = '0' + ((amount / base) % 10);
+        tmp[i] = intToNumberChar((amount / base) % 10);
         base /= 10;
     }
     tmp[i] = '\0';
@@ -227,6 +181,5 @@ unsigned short xrp_print_amount(uint64_t amount, uint8_t *out, uint32_t outlen) 
     else {
         out[0] = '\0';
     }
-    return strlen(out);    
 }
 
