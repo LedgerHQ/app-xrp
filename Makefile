@@ -22,6 +22,7 @@ include $(BOLOS_SDK)/Makefile.defines
 
 APPNAME = XRP 
 APP_LOAD_PARAMS=--appFlags 0x240 --path "44'/144'" --curve secp256k1 --curve ed25519 $(COMMON_LOAD_PARAMS) 
+APP_LOAD_PARAMS += --tlvraw 9F:01
 
 APPVERSION_M=2
 APPVERSION_N=0
