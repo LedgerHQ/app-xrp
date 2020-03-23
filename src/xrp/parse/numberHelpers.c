@@ -85,7 +85,7 @@ void formatNumberData(char* dst, uint16_t len, int16_t exponent, uint64_t mantis
 
 void removeTrailingZeros(char* dst, int16_t *exponentParam) {
     size_t strEnd = strlen(dst);
-    for (size_t i = strEnd - 1; i > 1; --i) {
+    for (size_t i = strEnd - 1; i > 0; --i) {
         if (dst[i] == '0') {
             (*exponentParam)++;
             dst[i] = '\0';
@@ -163,7 +163,7 @@ void parseDecimal(char *dst, uint16_t len, int16_t *exponentParam) {
     }
 
     uint32_t uPosShift = (uint32_t) posShift;
-    os_memmove(dst + posShift, dst, uPosShift);
+    os_memmove(dst + posShift, dst, mantissaLength);
     os_memset(dst, '0', uPosShift);
 
     dst[1] = '.';
