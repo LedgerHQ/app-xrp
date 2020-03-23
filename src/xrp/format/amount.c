@@ -86,7 +86,10 @@ void formatIssuedCurrency(field_t* field, char *dst) {
     formatCurrency(&field->data[8], dst, true);
 
     uint16_t textPos = strlen(dst);
-    dst[textPos++] = ' ';
+    if (textPos > 0) {
+        // Only add space if a currency was printed
+        dst[textPos++] = ' ';
+    }
 
     if (value << 1u == 0) {
         // Special case for the value zero
@@ -94,7 +97,12 @@ void formatIssuedCurrency(field_t* field, char *dst) {
         return;
     }
 
-    if (mantissa < 1000000000000000 || mantissa > 9999999999999999) {
+    if (exponent < EXP_MIN || exponent > EXP_MAX) {
+        SNPRINTF(dst, "Invalid exponent!");
+        return;
+    }
+
+    if (mantissa < MANTISSA_MIN || mantissa > MANTISSA_MAX) {
         SNPRINTF(dst, "Invalid mantissa!");
         return;
     }
