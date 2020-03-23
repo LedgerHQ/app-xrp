@@ -20,7 +20,12 @@
 
 #include <stdint.h>
 
-void parseDecimalNumber(char* dst, uint16_t len, uint8_t sign, int16_t exponent, uint64_t mantissa);
+#define EXP_MIN -96
+#define EXP_MAX 80
+#define MANTISSA_MIN 1000000000000000
+#define MANTISSA_MAX 9999999999999999
+
+void parseDecimalNumber(char* dst, uint16_t maxLen, uint8_t sign, int16_t exponent, uint64_t mantissa);
 char intToNumberChar(uint64_t value);
 void print_uint64_t(char *dst, uint16_t len, uint64_t value);
 
