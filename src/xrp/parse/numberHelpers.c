@@ -20,6 +20,9 @@
 #include "os.h"
 #include "string.h"
 
+// Needed to make app compile with Nano X SDK
+#define __assert_fail os_sched_exit(1);
+
 void normalize(uint64_t *mantissaParam, int16_t *exponentParam);
 
 void parseDecimalNumber(char* dst, uint16_t maxLen, uint8_t sign, int16_t exponent, uint64_t mantissa) {
