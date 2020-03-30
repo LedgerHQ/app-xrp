@@ -121,7 +121,7 @@ void accountFormatter(field_t* field, char *dst) {
         } else {
             // Application is configured with normal address formatting, make sure
             // that the address is moved to the beginning of our dst
-            os_memmove(dst, dst + 50, addrLength);
+            os_memmove(dst, dst + ADDR_DST_OFFSET, addrLength);
             dst[addrLength] = 0;
         }
     } else {
