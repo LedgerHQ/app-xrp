@@ -37,14 +37,14 @@
 #define MAX_FIELD_COUNT 60
 #define MAX_FIELD_LEN 1024
 #define MAX_RAW_TX 10000
-#define FULL_ADDR_FORMAT true
+#define DISPLAY_SEGMENTED_ADDR false
 
 #elif defined(TARGET_NANOS)
 
 #define MAX_FIELD_COUNT 24
 #define MAX_FIELD_LEN 128
 #define MAX_RAW_TX 800
-#define FULL_ADDR_FORMAT false
+#define DISPLAY_SEGMENTED_ADDR true
 
 #endif
 
