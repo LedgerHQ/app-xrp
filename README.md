@@ -214,7 +214,7 @@ communicate between the client and the device.
 
 The protocol changes are fully backwards-compatible with previous versions of
 [hw-app-xrp](https://www.npmjs.com/package/@ledgerhq/hw-app-xrp), but in order
-to sign larger transactions you must use version 6.0.0 or above of [hw-app-xrp](https://www.npmjs.com/package/@ledgerhq/hw-app-xrp).
+to sign larger transactions you must use version 5.12.0 or above of [hw-app-xrp](https://www.npmjs.com/package/@ledgerhq/hw-app-xrp).
 
 ### Limitations
 Because of resource constraints the following limits apply for the respective
