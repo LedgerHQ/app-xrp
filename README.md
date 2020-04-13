@@ -1,7 +1,7 @@
 # XRP Wallet App for Ledger Nano S and Ledger Nano X
 
 ## Introduction
-This repository contains the source code for the XRP wallet app that makes it possible to store XRP-based asset and securely sign any transaction for the XRP Ledger using Ledger Nano S and Ledger Nano X devices. 
+This repository contains the source code for the XRP wallet app that makes it possible to securely store XRP and assets issued on the XRP Ledger using Ledger Nano S and Ledger Nano X devices. 
 
 To add Ledger Nano S and Ledger Nano X support in your application, please see the
 NPM package [hw-app-xrp](https://www.npmjs.com/package/@ledgerhq/hw-app-xrp)
@@ -218,7 +218,7 @@ to sign larger transactions you must use version 5.12.0 or above of [hw-app-xrp]
 
 ### Limitations
 Because of resource constraints the following limits apply for the respective
-hardware devices:
+hardware wallet:
 
 #### Ledger Nano S
 - Maximum fields per transaction: 24 fields
@@ -226,7 +226,6 @@ hardware devices:
 - Maximum transaction size: 800 bytes
 - Maximum number of elements per array field: 8 elements
 - Multi-sign support: Parallel only
-- Address display: Truncated
 
 #### Ledger Nano X
 - Maximum fields per transaction: 60 fields
@@ -234,7 +233,6 @@ hardware devices:
 - Maximum transaction size: 10 000 bytes
 - Maximum number of elements per array field: 8 elements
 - Multi-sign support: Parallel only
-- Address display: Full
 
 ## Building
 Make sure that you have configured a development environment as outlined in [the development
