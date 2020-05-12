@@ -21,6 +21,9 @@
 #include "../../transaction/transaction.h"
 #include "../../xrp/parse/xrpParse.h"
 
-void displayReviewMenu(parseResult_t *transactionParam, action_t next);
+#define OPTION_SIGN 0
+#define OPTION_REJECT 1
+
+void displayReviewMenu(parseResult_t *transactionParam, resultAction_t callback);
 
 #endif //LEDGER_APP_XRP_REVIEWMENU_H

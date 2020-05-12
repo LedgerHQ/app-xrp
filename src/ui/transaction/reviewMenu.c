@@ -21,25 +21,43 @@
 #include <string.h>
 #include "../../transaction/transaction.h"
 #include "../../xrp/format/format.h"
+#include "../../glyphs.h"
 
 char fieldName[MAX_FIELDNAME_LEN];
 char fieldValue[MAX_FIELD_LEN];
 
 parseResult_t *transaction;
-action_t nextAction;
+resultAction_t approvalMenuCallback;
 
-const ux_flow_step_t* ux_review_flow[MAX_FIELD_COUNT + 1];
+const ux_flow_step_t* ux_review_flow[MAX_FIELD_COUNT + 3];
 
 void updateContent(int stackSlot);
 
-UX_STEP_CB_INIT(
+UX_STEP_NOCB_INIT(
         ux_review_flow_step,
         bnnn_paging,
         updateContent(stack_slot),
-        nextAction(),
         {
             fieldName,
             fieldValue
+        });
+
+UX_STEP_VALID(
+        ux_review_flow_sign,
+        pn,
+        approvalMenuCallback(OPTION_SIGN),
+        {
+            &C_icon_validate_14,
+            "Sign transaction"
+        });
+
+UX_STEP_VALID(
+        ux_review_flow_reject,
+        pn,
+        approvalMenuCallback(OPTION_REJECT),
+        {
+            &C_icon_crossmark,
+            "Reject",
         });
 
 void updateTitle(field_t *field) {
@@ -65,14 +83,17 @@ void updateContent(int stackSlot) {
     updateValue(field);
 }
 
-void displayReviewMenu(parseResult_t *transactionParam, action_t next) {
+void displayReviewMenu(parseResult_t *transactionParam, resultAction_t callback) {
     transaction = transactionParam;
-    nextAction = next;
+    approvalMenuCallback = callback;
 
     for (int i = 0; i < transaction->numFields; ++i) {
         ux_review_flow[i] = &ux_review_flow_step;
     }
-    ux_review_flow[transaction->numFields] = FLOW_END_STEP;
+
+    ux_review_flow[transaction->numFields + 0] = &ux_review_flow_sign;
+    ux_review_flow[transaction->numFields + 1] = &ux_review_flow_reject;
+    ux_review_flow[transaction->numFields + 2] = FLOW_END_STEP;
 
     ux_flow_init(0, ux_review_flow, NULL);
 }
