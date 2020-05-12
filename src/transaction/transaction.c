@@ -17,12 +17,8 @@
 
 #include "transaction.h"
 #include "../ui/transaction/reviewMenu.h"
-#include "../ui/transaction/approvalMenu.h"
 #include "../ui/other/loading.h"
 
-void requestReview();
-
-static parseResult_t *currentTransaction;
 static action_t approvalAction;
 static action_t rejectionAction;
 
@@ -30,9 +26,6 @@ void onApprovalMenuResult(unsigned int result) {
     switch (result) {
         case OPTION_SIGN:
             executeAsync(approvalAction, "Signing...");
-            break;
-        case OPTION_REVIEW:
-            requestReview();
             break;
         case OPTION_REJECT:
             rejectionAction();
@@ -42,18 +35,9 @@ void onApprovalMenuResult(unsigned int result) {
     }
 }
 
-void requestApproval() {
-    displayApprovalMenu(onApprovalMenuResult);
-}
-
-void requestReview() {
-    displayReviewMenu(currentTransaction, requestApproval);
-}
-
 void reviewTransaction(parseResult_t *transaction, action_t onApprove, action_t onReject) {
-    currentTransaction = transaction;
     approvalAction = onApprove;
     rejectionAction = onReject;
 
-    requestReview();
+    displayReviewMenu(transaction, onApprovalMenuResult);
 }
