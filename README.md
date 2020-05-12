@@ -36,8 +36,8 @@ The XRP wallet app comes with the following features:
   - Unified UI across Ledger Nano S and Ledger Nano X
 
 ## User Interface
-The user interface primarily consists of the idle menu, the transaction
-review menu and the approval menu.
+The user interface primarily consists of the idle menu and the transaction
+review menu.
 
 ### Idle Menu
 Upon starting the app on your device you are immediately greeted by
@@ -64,22 +64,11 @@ that path. See example below.
 
 ![Path field in review menu](img/review-path.png)
 
-In order to take action on the transaction, simply press the two buttons
-simultaneously to open the approval menu. Note that you cannot open the
-approval menu if the field you are currently viewing has more content
-on subsequent pages. This is due to a limitation in Flow UI.
-
-### Approval Menu
-With the approval menu open you decide what to do with the transaction. There
-are three available options:
-- Approve and sign the transaction
-- Review the transaction content again, reopening the review menu
-- Reject the transaction and abort the signing process
+In order to take action on the transaction, you must first page through and review all transaction details. The last two items in the review menu are 'Sign transaction' and 'Reject'.
 
 ![Approval menu](img/approval-menu.png)
 
-Page through the alternatives with your left and right buttons, then press them
-both simultaneously to confirm.
+Page to either 'Sign transaction' or 'Reject' and press both buttons simultaneously to confirm your action.
 
 ## Usage
 In order to initiate transactions from NodeJS or a browser client, the library
