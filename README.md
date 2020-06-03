@@ -1,7 +1,7 @@
 # XRP Wallet App for Ledger Nano S and Ledger Nano X
 
 ## Introduction
-This repository contains the source code for the XRP wallet app that makes it possible to store XRP-based asset and securely sign any transaction for the XRP Ledger using Ledger Nano S and Ledger Nano X devices. 
+This repository contains the source code for the XRP wallet app that makes it possible to securely store XRP and assets issued on the XRP Ledger using Ledger Nano S and Ledger Nano X devices. 
 
 To add Ledger Nano S and Ledger Nano X support in your application, please see the
 NPM package [hw-app-xrp](https://www.npmjs.com/package/@ledgerhq/hw-app-xrp)
@@ -36,8 +36,8 @@ The XRP wallet app comes with the following features:
   - Unified UI across Ledger Nano S and Ledger Nano X
 
 ## User Interface
-The user interface primarily consists of the idle menu, the transaction
-review menu and the approval menu.
+The user interface primarily consists of the idle menu and the transaction
+review menu.
 
 ### Idle Menu
 Upon starting the app on your device you are immediately greeted by
@@ -64,22 +64,11 @@ that path. See example below.
 
 ![Path field in review menu](img/review-path.png)
 
-In order to take action on the transaction, simply press the two buttons
-simultaneously to open the approval menu. Note that you cannot open the
-approval menu if the field you are currently viewing has more content
-on subsequent pages. This is due to a limitation in Flow UI.
-
-### Approval Menu
-With the approval menu open you decide what to do with the transaction. There
-are three available options:
-- Approve and sign the transaction
-- Review the transaction content again, reopening the review menu
-- Reject the transaction and abort the signing process
+In order to take action on the transaction, you must first page through and review all transaction details. The last two items in the review menu are 'Sign transaction' and 'Reject'.
 
 ![Approval menu](img/approval-menu.png)
 
-Page through the alternatives with your left and right buttons, then press them
-both simultaneously to confirm.
+Page to either 'Sign transaction' or 'Reject' and press both buttons simultaneously to confirm your action.
 
 ## Usage
 In order to initiate transactions from NodeJS or a browser client, the library
@@ -214,11 +203,11 @@ communicate between the client and the device.
 
 The protocol changes are fully backwards-compatible with previous versions of
 [hw-app-xrp](https://www.npmjs.com/package/@ledgerhq/hw-app-xrp), but in order
-to sign larger transactions you must use version 6.0.0 or above of [hw-app-xrp](https://www.npmjs.com/package/@ledgerhq/hw-app-xrp).
+to sign larger transactions you must use version 5.12.0 or above of [hw-app-xrp](https://www.npmjs.com/package/@ledgerhq/hw-app-xrp).
 
 ### Limitations
 Because of resource constraints the following limits apply for the respective
-hardware devices:
+hardware wallet:
 
 #### Ledger Nano S
 - Maximum fields per transaction: 24 fields
@@ -226,7 +215,6 @@ hardware devices:
 - Maximum transaction size: 800 bytes
 - Maximum number of elements per array field: 8 elements
 - Multi-sign support: Parallel only
-- Address display: Truncated
 
 #### Ledger Nano X
 - Maximum fields per transaction: 60 fields
@@ -234,7 +222,6 @@ hardware devices:
 - Maximum transaction size: 10 000 bytes
 - Maximum number of elements per array field: 8 elements
 - Multi-sign support: Parallel only
-- Address display: Full
 
 ## Building
 Make sure that you have configured a development environment as outlined in [the development
