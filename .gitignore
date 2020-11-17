@@ -4,4 +4,3 @@ dep
 obj
 src/glyphs.c
 src/glyphs.h
-.vscode

@@ -1,19 +1,19 @@
 /*******************************************************************************
-*   XRP Wallet
-*   (c) 2020 Towo Labs
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-********************************************************************************/
+ *   XRP Wallet
+ *   (c) 2020 Towo Labs
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ ********************************************************************************/
 
 #include <assert.h>
 #include "numberHelpers.h"
@@ -25,7 +25,11 @@
 
 void normalize(uint64_t *mantissaParam, int16_t *exponentParam);
 
-void parseDecimalNumber(char* dst, uint16_t maxLen, uint8_t sign, int16_t exponent, uint64_t mantissa) {
+void parseDecimalNumber(char *dst,
+                        uint16_t maxLen,
+                        uint8_t sign,
+                        int16_t exponent,
+                        uint64_t mantissa) {
     assert(maxLen >= 100);
     assert(exponent >= EXP_MIN);
     assert(exponent <= EXP_MAX);
@@ -100,7 +104,7 @@ void print_uint64_t(char *dst, uint16_t len, uint64_t value) {
         THROW(NOT_ENOUGH_SPACE);
     }
     base /= 10;
-    for (i=0; i<numDigits; i++) {
+    for (i = 0; i < numDigits; i++) {
         dst[i] = intToNumberChar((value / base) % 10);
         base /= 10;
     }

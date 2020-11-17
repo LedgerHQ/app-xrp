@@ -1,34 +1,34 @@
 /*******************************************************************************
-*   XRP Wallet
-*   (c) 2020 Towo Labs
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-********************************************************************************/
+ *   XRP Wallet
+ *   (c) 2020 Towo Labs
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ ********************************************************************************/
 
 #include "fields.h"
 #include "string.h"
 #include "flags.h"
 #include "../../common.h"
 
-#define HIDE(t,i) if (field->dataType == (t) && field->id == (i) && field->arrayInfo.type == 0) return true
+#define HIDE(t, i) \
+    if (field->dataType == (t) && field->id == (i) && field->arrayInfo.type == 0) return true
 
 bool isNormalAccountField(field_t *field) {
-    return field->dataType == STI_ACCOUNT &&
-            field->id == XRP_ACCOUNT_ACCOUNT &&
-            field->arrayInfo.type == 0;
+    return field->dataType == STI_ACCOUNT && field->id == XRP_ACCOUNT_ACCOUNT &&
+           field->arrayInfo.type == 0;
 }
 
-void resolveFieldName(field_t *field, char* dst) {
+void resolveFieldName(field_t *field, char *dst) {
     if (field->dataType == STI_UINT16) {
         switch (field->id) {
             CASE(2, "Transaction Type")
@@ -60,9 +60,7 @@ void resolveFieldName(field_t *field, char* dst) {
     }
 
     if (field->dataType == STI_HASH128) {
-        switch (field->id) {
-            CASE(1, "Email Hash")
-        }
+        switch (field->id) { CASE(1, "Email Hash") }
     }
 
     if (field->dataType == STI_HASH256) {
@@ -149,15 +147,11 @@ void resolveFieldName(field_t *field, char* dst) {
     }
 
     if (field->dataType == STI_PATHSET) {
-        switch (field->id) {
-            CASE(1, "Paths")
-        }
+        switch (field->id) { CASE(1, "Paths") }
     }
 
     if (field->dataType == STI_CURRENCY) {
-        switch (field->id) {
-            CASE(1, "Currency")
-        }
+        switch (field->id) { CASE(1, "Currency") }
     }
 
     // Default case
@@ -169,7 +163,8 @@ bool isFieldHidden(field_t *field) {
     HIDE(STI_UINT32, XRP_UINT32_LAST_LEDGER_SEQUENCE);
     HIDE(STI_VL, XRP_VL_SIGNING_PUB_KEY);
 
-    if (field->dataType == STI_ARRAY || field->dataType == STI_OBJECT || field->dataType == STI_PATHSET) {
+    if (field->dataType == STI_ARRAY || field->dataType == STI_OBJECT ||
+        field->dataType == STI_PATHSET) {
         // Field is only used to instruct parsing code how to handle following fields: don't show
         return true;
     }
