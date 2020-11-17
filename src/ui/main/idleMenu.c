@@ -46,12 +46,7 @@ UX_STEP_VALID(
         });
 // clang-format on
 
-const ux_flow_step_t* const ux_idle_flow[] = {
-    &ux_idle_flow_1_step,
-    &ux_idle_flow_2_step,
-    &ux_idle_flow_3_step,
-    FLOW_END_STEP,
-};
+UX_FLOW(ux_idle_flow, &ux_idle_flow_1_step, &ux_idle_flow_2_step, &ux_idle_flow_3_step);
 
 void displayIdleMenu() {
     if (G_ux.stack_count == 0) {

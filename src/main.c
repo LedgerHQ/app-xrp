@@ -53,7 +53,7 @@ unsigned short io_exchange_al(unsigned char channel, unsigned short tx_len) {
     return 0;
 }
 
-void sample_main(void) {
+void app_main(void) {
     volatile unsigned int rx = 0;
     volatile unsigned int tx = 0;
     volatile unsigned int flags = 0;
@@ -161,10 +161,6 @@ unsigned char io_event(unsigned char channel) {
 
     // can't have more than one tag in the reply, not supported yet.
     switch (G_io_seproxyhal_spi_buffer[0]) {
-        case SEPROXYHAL_TAG_FINGER_EVENT:
-            handle_SEPROXYHAL_TAG_FINGER_EVENT();
-            break;
-
         case SEPROXYHAL_TAG_BUTTON_PUSH_EVENT:
             handle_SEPROXYHAL_TAG_BUTTON_PUSH_EVENT();
             break;
@@ -235,7 +231,7 @@ __attribute__((section(".boot"))) int main(void) {
                 BLE_power(1, "Nano X");
 #endif  // HAVE_BLE
 
-                sample_main();
+                app_main();
             }
             CATCH(EXCEPTION_IO_RESET) {
                 // reset IO and UX
