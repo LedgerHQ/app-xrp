@@ -1,20 +1,20 @@
 /*******************************************************************************
-*   XRP Wallet
-*   (c) 2017 Ledger
-*   (c) 2020 Towo Labs
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-********************************************************************************/
+ *   XRP Wallet
+ *   (c) 2017 Ledger
+ *   (c) 2020 Towo Labs
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ ********************************************************************************/
 
 #include "xrpParse.h"
 #include "../xrpHelpers.h"
@@ -42,7 +42,7 @@ bool hasField(parseContext_t *context, uint8_t dataType, uint8_t id) {
     return false;
 }
 
-uint8_t* currentPosition(parseContext_t *context) {
+uint8_t *currentPosition(parseContext_t *context) {
     return context->data + context->offset;
 }
 
@@ -81,7 +81,7 @@ void appendArrayInfo(parseContext_t *context, field_t *field) {
     }
 }
 
-field_t* appendNewField(parseContext_t *context) {
+field_t *appendNewField(parseContext_t *context) {
     if (context->result.numFields >= MAX_FIELD_COUNT) {
         THROW(NOT_ENOUGH_SPACE);
     }
@@ -361,11 +361,12 @@ void postProcessField(parseContext_t *context, field_t *field) {
 
 void postProcessTransaction(parseContext_t *context) {
     // Append "empty" regular key field when clearing it
-    if (context->transactionType == TRANSACTION_SET_REGULAR_KEY && !hasField(context, STI_ACCOUNT, 8)) {
+    if (context->transactionType == TRANSACTION_SET_REGULAR_KEY &&
+        !hasField(context, STI_ACCOUNT, 8)) {
         field_t *field = appendNewField(context);
         field->dataType = STI_ACCOUNT;
         field->id = XRP_ACCOUNT_REGULAR_KEY;
-        field->data = NULL; // Special value to indicate empty regular key
+        field->data = NULL;  // Special value to indicate empty regular key
     }
 }
 

@@ -1,19 +1,19 @@
 /*******************************************************************************
-*   XRP Wallet
-*   (c) 2020 Towo Labs
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-********************************************************************************/
+ *   XRP Wallet
+ *   (c) 2020 Towo Labs
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ ********************************************************************************/
 
 #include "loading.h"
 #include <os.h>
@@ -51,8 +51,8 @@
  */
 
 #define STATE_WAITING 0
-#define STATE_READY 1
-#define STATE_DONE 2
+#define STATE_READY   1
+#define STATE_DONE    2
 
 #define UID_DUMMY 1
 
@@ -60,11 +60,9 @@ static uint8_t loadingState;
 static action_t pendingAction;
 static char loadingMessage[18];
 
-static const bagl_element_t loadingUI[] = {
-        UI_BACKGROUND(),
-        UI_SINGLE_TEXT(loadingMessage),
-        UI_DUMMY(UID_DUMMY)
-};
+static const bagl_element_t loadingUI[] = {UI_BACKGROUND(),
+                                           UI_SINGLE_TEXT(loadingMessage),
+                                           UI_DUMMY(UID_DUMMY)};
 
 static unsigned int loadingUI_button(unsigned int button_mask, unsigned int button_mask_counter) {
     // It is not possible to omit this function
@@ -74,7 +72,7 @@ static unsigned int loadingUI_button(unsigned int button_mask, unsigned int butt
     return 0;
 }
 
-static const bagl_element_t* loadingUI_button_prepro(const bagl_element_t *element) {
+static const bagl_element_t* loadingUI_button_prepro(const bagl_element_t* element) {
     if (element->component.userid == UID_DUMMY) {
         if (loadingState == STATE_WAITING) {
             loadingState = STATE_READY;

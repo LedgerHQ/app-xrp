@@ -1,20 +1,20 @@
 /*******************************************************************************
-*   XRP Wallet
-*   (c) 2017 Ledger
-*   (c) 2020 Towo Labs
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-********************************************************************************/
+ *   XRP Wallet
+ *   (c) 2017 Ledger
+ *   (c) 2020 Towo Labs
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ ********************************************************************************/
 
 #include <os.h>
 #include <string.h>
@@ -62,8 +62,11 @@ void onAddressRejected() {
     displayIdleMenu();
 }
 
-void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer,
-                        uint16_t dataLength, volatile unsigned int *flags,
+void handleGetPublicKey(uint8_t p1,
+                        uint8_t p2,
+                        uint8_t *dataBuffer,
+                        uint16_t dataLength,
+                        volatile unsigned int *flags,
                         volatile unsigned int *tx) {
     UNUSED(dataLength);
     uint8_t privateKeyData[33];
@@ -94,8 +97,8 @@ void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer,
     curve = (((p2 & P2_ED25519) != 0) ? CX_CURVE_Ed25519 : CX_CURVE_256K1);
 
     for (i = 0; i < bip32PathLength; i++) {
-        bip32Path[i] = (dataBuffer[0] << 24u) | (dataBuffer[1] << 16u) |
-                       (dataBuffer[2] << 8u) | (dataBuffer[3]);
+        bip32Path[i] = (dataBuffer[0] << 24u) | (dataBuffer[1] << 16u) | (dataBuffer[2] << 8u) |
+                       (dataBuffer[3]);
         dataBuffer += 4;
     }
     tmpCtx.publicKeyContext.getChaincode = (p2Chain == P2_CHAINCODE);
@@ -103,23 +106,27 @@ void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer,
 
     BEGIN_TRY {
         TRY {
-            os_perso_derive_node_bip32(curve, bip32Path, bip32PathLength,
-                                       privateKeyData,
-                                       (tmpCtx.publicKeyContext.getChaincode
-                                        ? tmpCtx.publicKeyContext.chainCode
-                                        : NULL));
+            os_perso_derive_node_bip32(
+                curve,
+                bip32Path,
+                bip32PathLength,
+                privateKeyData,
+                (tmpCtx.publicKeyContext.getChaincode ? tmpCtx.publicKeyContext.chainCode : NULL));
             cx_ecfp_init_private_key(curve, privateKeyData, 32, &privateKey);
             io_seproxyhal_io_heartbeat();
-            cx_ecfp_generate_pair(curve, &tmpCtx.publicKeyContext.publicKey,
-                                  &privateKey, 1);
+            cx_ecfp_generate_pair(curve, &tmpCtx.publicKeyContext.publicKey, &privateKey, 1);
             explicit_bzero(&privateKey, sizeof(privateKey));
             explicit_bzero(privateKeyData, sizeof(privateKeyData));
             io_seproxyhal_io_heartbeat();
             xrp_compress_public_key(&tmpCtx.publicKeyContext.publicKey, privateKeyData, 33);
             io_seproxyhal_io_heartbeat();
-            addressLength = xrp_public_key_to_encoded_base58(privateKeyData, 33,
-                                                             tmpCtx.publicKeyContext.address,
-                                                             sizeof(tmpCtx.publicKeyContext.address), 0, 0);
+            addressLength =
+                xrp_public_key_to_encoded_base58(privateKeyData,
+                                                 33,
+                                                 tmpCtx.publicKeyContext.address,
+                                                 sizeof(tmpCtx.publicKeyContext.address),
+                                                 0,
+                                                 0);
             tmpCtx.publicKeyContext.address[addressLength] = '\0';
         }
         CATCH_OTHER(e) {
@@ -135,13 +142,10 @@ void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer,
     if (p1 == P1_NON_CONFIRM) {
         *tx = set_result_get_publicKey();
         THROW(0x9000);
-    }
-    else {
-        displayAddressConfirmationUI(
-                tmpCtx.publicKeyContext.address,
-                onAddressConfirmed,
-                onAddressRejected
-        );
+    } else {
+        displayAddressConfirmationUI(tmpCtx.publicKeyContext.address,
+                                     onAddressConfirmed,
+                                     onAddressRejected);
 
         *flags |= IO_ASYNCH_REPLY;
     }

@@ -1,20 +1,20 @@
 /*******************************************************************************
-*   XRP Wallet
-*   (c) 2017 Ledger
-*   (c) 2020 Towo Labs
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-********************************************************************************/
+ *   XRP Wallet
+ *   (c) 2017 Ledger
+ *   (c) 2020 Towo Labs
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ ********************************************************************************/
 
 #include <os.h>
 #include <string.h>
@@ -30,13 +30,16 @@ static const uint8_t prefixLength = 4;
 static const uint8_t pubKeyLength = 33;
 static const uint8_t suffixLength = 20;
 
-static const uint8_t SIGN_PREFIX[] = { 0x53, 0x54, 0x58, 0x00 };
-static const uint8_t SIGN_PREFIX_MULTI[] = { 0x53, 0x4D, 0x54, 0x00 };
+static const uint8_t SIGN_PREFIX[] = {0x53, 0x54, 0x58, 0x00};
+static const uint8_t SIGN_PREFIX_MULTI[] = {0x53, 0x4D, 0x54, 0x00};
 
 parseContext_t parseContext;
 
-void handlePacketContent(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
-                         uint8_t dataLength, volatile unsigned int *flags);
+void handlePacketContent(uint8_t p1,
+                         uint8_t p2,
+                         uint8_t *workBuffer,
+                         uint8_t dataLength,
+                         volatile unsigned int *flags);
 
 void signTransaction() {
     uint8_t privateKeyData[64];
@@ -58,10 +61,15 @@ void signTransaction() {
     BEGIN_TRY {
         TRY {
             io_seproxyhal_io_heartbeat();
-            os_perso_derive_node_bip32(
-                    tmpCtx.transactionContext.curve, tmpCtx.transactionContext.bip32Path,
-                    tmpCtx.transactionContext.pathLength, privateKeyData, NULL);
-            cx_ecfp_init_private_key(tmpCtx.transactionContext.curve, privateKeyData, 32, &privateKey);
+            os_perso_derive_node_bip32(tmpCtx.transactionContext.curve,
+                                       tmpCtx.transactionContext.bip32Path,
+                                       tmpCtx.transactionContext.pathLength,
+                                       privateKeyData,
+                                       NULL);
+            cx_ecfp_init_private_key(tmpCtx.transactionContext.curve,
+                                     privateKeyData,
+                                     32,
+                                     &privateKey);
             explicit_bzero(privateKeyData, sizeof(privateKeyData));
             io_seproxyhal_io_heartbeat();
 
@@ -77,25 +85,41 @@ void signTransaction() {
                 xrp_compress_public_key(&publicKey, publicKeyData, pubKeyLength);
                 xrp_public_key_hash160(publicKeyData, pubKeyLength, suffixData);
 
-                os_memmove(tmpCtx.transactionContext.rawTx + tmpCtx.transactionContext.rawTxLength, suffixData, suffixLength);
+                os_memmove(tmpCtx.transactionContext.rawTx + tmpCtx.transactionContext.rawTxLength,
+                           suffixData,
+                           suffixLength);
                 tmpCtx.transactionContext.rawTxLength += suffixLength;
 
                 explicit_bzero(privateKeyData, sizeof(privateKeyData));
             }
 
             if (tmpCtx.transactionContext.curve == CX_CURVE_256K1) {
-                cx_hash_sha512(tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, privateKeyData, 64);
+                cx_hash_sha512(tmpCtx.transactionContext.rawTx,
+                               tmpCtx.transactionContext.rawTxLength,
+                               privateKeyData,
+                               64);
                 PRINTF("Hash to sign:\n%.*H\n", 32, privateKeyData);
                 io_seproxyhal_io_heartbeat();
-                tx = (uint32_t) cx_ecdsa_sign(&privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256,
+                tx = (uint32_t) cx_ecdsa_sign(&privateKey,
+                                              CX_RND_RFC6979 | CX_LAST,
+                                              CX_SHA256,
                                               privateKeyData,
-                                              32, G_io_apdu_buffer, sizeof(G_io_apdu_buffer), NULL);
+                                              32,
+                                              G_io_apdu_buffer,
+                                              sizeof(G_io_apdu_buffer),
+                                              NULL);
                 G_io_apdu_buffer[0] = 0x30;
-            }
-            else {
-                tx = (uint32_t) cx_eddsa_sign(&privateKey, CX_LAST, CX_SHA512, tmpCtx.transactionContext.rawTx,
-                                              tmpCtx.transactionContext.rawTxLength, NULL, 0, G_io_apdu_buffer,
-                                              sizeof(G_io_apdu_buffer), NULL);
+            } else {
+                tx = (uint32_t) cx_eddsa_sign(&privateKey,
+                                              CX_LAST,
+                                              CX_SHA512,
+                                              tmpCtx.transactionContext.rawTx,
+                                              tmpCtx.transactionContext.rawTxLength,
+                                              NULL,
+                                              0,
+                                              G_io_apdu_buffer,
+                                              sizeof(G_io_apdu_buffer),
+                                              NULL);
             }
         }
         CATCH_OTHER(e) {
@@ -146,8 +170,11 @@ bool hasMore(uint8_t p1) {
     return (p1 & P1_MASK_MORE) != 0;
 }
 
-void handleFirstPacket(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
-                       uint8_t dataLength, volatile unsigned int *flags) {
+void handleFirstPacket(uint8_t p1,
+                       uint8_t p2,
+                       uint8_t *workBuffer,
+                       uint8_t dataLength,
+                       volatile unsigned int *flags) {
     uint32_t i;
 
     if (!isFirst(p1)) {
@@ -167,9 +194,8 @@ void handleFirstPacket(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     workBuffer++;
     dataLength--;
     for (i = 0; i < tmpCtx.transactionContext.pathLength; i++) {
-        tmpCtx.transactionContext.bip32Path[i] =
-                (workBuffer[0] << 24u) | (workBuffer[1] << 16u) |
-                (workBuffer[2] << 8u) | (workBuffer[3]);
+        tmpCtx.transactionContext.bip32Path[i] = (workBuffer[0] << 24u) | (workBuffer[1] << 16u) |
+                                                 (workBuffer[2] << 8u) | (workBuffer[3]);
         workBuffer += 4;
         dataLength -= 4;
     }
@@ -179,13 +205,17 @@ void handleFirstPacket(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     if (((p2 & P2_SECP256K1) != 0) && ((p2 & P2_ED25519) != 0)) {
         THROW(0x6B00);
     }
-    tmpCtx.transactionContext.curve = (((p2 & P2_ED25519) != 0) ? CX_CURVE_Ed25519 : CX_CURVE_256K1);
+    tmpCtx.transactionContext.curve =
+        (((p2 & P2_ED25519) != 0) ? CX_CURVE_Ed25519 : CX_CURVE_256K1);
 
     handlePacketContent(p1, p2, workBuffer, dataLength, flags);
 }
 
-void handleSubsequentPacket(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
-                            uint8_t dataLength, volatile unsigned int *flags) {
+void handleSubsequentPacket(uint8_t p1,
+                            uint8_t p2,
+                            uint8_t *workBuffer,
+                            uint8_t dataLength,
+                            volatile unsigned int *flags) {
     if (isFirst(p1)) {
         THROW(0x6A80);
     }
@@ -193,9 +223,11 @@ void handleSubsequentPacket(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     handlePacketContent(p1, p2, workBuffer, dataLength, flags);
 }
 
-void handlePacketContent(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
-                         uint8_t dataLength, volatile unsigned int *flags) {
-
+void handlePacketContent(uint8_t p1,
+                         uint8_t p2,
+                         uint8_t *workBuffer,
+                         uint8_t dataLength,
+                         volatile unsigned int *flags) {
     uint16_t totalLength = prefixLength + parseContext.length + dataLength;
     if (totalLength > MAX_RAW_TX) {
         // Abort if the user is trying to sign a too large transaction
@@ -238,8 +270,11 @@ void handlePacketContent(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     }
 }
 
-void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
-                uint8_t dataLength, volatile unsigned int *flags) {
+void handleSign(uint8_t p1,
+                uint8_t p2,
+                uint8_t *workBuffer,
+                uint8_t dataLength,
+                volatile unsigned int *flags) {
     switch (signState) {
         case IDLE:
             handleFirstPacket(p1, p2, workBuffer, dataLength, flags);
