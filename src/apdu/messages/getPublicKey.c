@@ -62,42 +62,6 @@ void onAddressRejected() {
     displayIdleMenu();
 }
 
-void getPublicKey(cx_curve_t curve,
-                  uint8_t *bip32Path,
-                  size_t bip32PathLength,
-                  cx_ecfp_public_key_t *pubKey,
-                  uint8_t *chainCode) {
-    uint32_t bip32PathParsed[MAX_BIP32_PATH];
-    uint32_t i;
-
-    if ((bip32PathLength < 0x01) || (bip32PathLength > MAX_BIP32_PATH)) {
-        PRINTF("Invalid path\n");
-        THROW(0x6a80);
-    }
-    for (i = 0; i < bip32PathLength; i++) {
-        bip32PathParsed[i] =
-            (bip32Path[0] << 24u) | (bip32Path[1] << 16u) | (bip32Path[2] << 8u) | (bip32Path[3]);
-        bip32Path += 4;
-    }
-
-    cx_ecfp_private_key_t privateKey;
-    uint8_t privateKeyData[33];
-    os_perso_derive_node_bip32(curve, bip32PathParsed, bip32PathLength, privateKeyData, chainCode);
-    cx_ecfp_init_private_key(curve, privateKeyData, 32, &privateKey);
-
-    io_seproxyhal_io_heartbeat();
-    cx_ecfp_generate_pair(curve, pubKey, &privateKey, 1);
-    explicit_bzero(&privateKey, sizeof(privateKey));
-    explicit_bzero(privateKeyData, sizeof(privateKeyData));
-}
-
-void getAddress(cx_ecfp_public_key_t *pubkey, char *address, size_t maxAddressLength) {
-    uint8_t addr_len;
-    xrp_compress_public_key(pubkey, address, 33);
-    addr_len = xrp_public_key_to_encoded_base58(address, 33, address, maxAddressLength, 0, 0);
-    tmpCtx.publicKeyContext.address[addr_len] = '\0';
-}
-
 void handleGetPublicKey(uint8_t p1,
                         uint8_t p2,
                         uint8_t *dataBuffer,
@@ -127,16 +91,16 @@ void handleGetPublicKey(uint8_t p1,
     tmpCtx.publicKeyContext.getChaincode = (p2Chain == P2_CHAINCODE);
 
     io_seproxyhal_io_heartbeat();
-    getPublicKey(curve,
-                 dataBuffer,
-                 bip32PathLength,
-                 &tmpCtx.publicKeyContext.publicKey,
-                 tmpCtx.publicKeyContext.getChaincode ? &tmpCtx.publicKeyContext.chainCode : NULL);
+    get_publicKey(curve,
+                  dataBuffer,
+                  bip32PathLength,
+                  &tmpCtx.publicKeyContext.publicKey,
+                  tmpCtx.publicKeyContext.getChaincode ? &tmpCtx.publicKeyContext.chainCode : NULL);
 
     io_seproxyhal_io_heartbeat();
-    getAddress(&tmpCtx.publicKeyContext.publicKey,
-               tmpCtx.publicKeyContext.address,
-               sizeof(tmpCtx.publicKeyContext.address));
+    get_address(&tmpCtx.publicKeyContext.publicKey,
+                tmpCtx.publicKeyContext.address,
+                sizeof(tmpCtx.publicKeyContext.address));
 
     if (p1 == P1_NON_CONFIRM) {
         *tx = set_result_get_publicKey();

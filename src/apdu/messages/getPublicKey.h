@@ -28,12 +28,4 @@ void handleGetPublicKey(uint8_t p1,
                         volatile unsigned int *flags,
                         volatile unsigned int *tx);
 
-void getPublicKey(cx_curve_t curve,
-                  uint8_t *bip32Path,
-                  size_t bip32PathLength,
-                  cx_ecfp_public_key_t *pubKey,
-                  uint8_t *chainCode);
-
-void getAddress(cx_ecfp_public_key_t *pubkey, char *address, size_t maxAddressLength);
-
 #endif  // LEDGER_APP_XRP_GETPUBLICKEY_H
