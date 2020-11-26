@@ -22,9 +22,16 @@
 
 tmpCtx_t tmpCtx;
 signState_e signState;
+approvalStrings_t approvalStrings;
+bool called_from_swap;
 
 void resetTransactionContext() {
     explicit_bzero(&parseContext, sizeof(parseContext_t));
     explicit_bzero(&tmpCtx, sizeof(tmpCtx));
+
     signState = IDLE;
+
+    if (!called_from_swap) {
+        explicit_bzero(&approvalStrings, sizeof(approvalStrings));
+    }
 }

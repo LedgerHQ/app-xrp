@@ -19,12 +19,10 @@
 #include <os.h>
 #include <os_io_seproxyhal.h>
 #include <string.h>
+#include "../../apdu/global.h"
 #include "../../transaction/transaction.h"
 #include "../../xrp/format/format.h"
 #include "../../glyphs.h"
-
-char fieldName[MAX_FIELDNAME_LEN];
-char fieldValue[MAX_FIELD_LEN];
 
 parseResult_t *transaction;
 resultAction_t approvalMenuCallback;
@@ -39,8 +37,8 @@ UX_STEP_NOCB_INIT(
         bnnn_paging,
         updateContent(stack_slot),
         {
-            fieldName,
-            fieldValue
+            approvalStrings.review.fieldName,
+            approvalStrings.review.fieldValue
         });
 
 UX_STEP_VALID(
@@ -62,30 +60,30 @@ UX_STEP_VALID(
         });
 // clang-format on
 
-void updateTitle(field_t *field) {
-    memset(fieldName, 0, MAX_FIELDNAME_LEN);
-    resolveFieldName(field, fieldName);
+void updateTitle(field_t *field, char *title) {
+    memset(title, 0, MAX_FIELDNAME_LEN);
+    resolveFieldName(field, title);
 
     if (field->arrayInfo.type == ARRAY_PATHSET) {
-        SNPRINTF(fieldName + strlen(fieldName),
+        SNPRINTF(title + strlen(title),
                  " [P%d: S%d]",
                  field->arrayInfo.index1,
                  field->arrayInfo.index2);
     } else if (field->arrayInfo.type != ARRAY_NONE) {
-        SNPRINTF(fieldName + strlen(fieldName), " [%d]", field->arrayInfo.index1);
+        SNPRINTF(title + strlen(title), " [%d]", field->arrayInfo.index1);
     }
 }
 
-void updateValue(field_t *field) {
-    formatField(field, fieldValue);
+void updateValue(field_t *field, char *value) {
+    formatField(field, value);
 }
 
 void updateContent(int stackSlot) {
     int stepIndex = G_ux.flow_stack[stackSlot].index;
     field_t *field = &transaction->fields[stepIndex];
 
-    updateTitle(field);
-    updateValue(field);
+    updateTitle(field, approvalStrings.review.fieldName);
+    updateValue(field, approvalStrings.review.fieldValue);
 }
 
 void displayReviewMenu(parseResult_t *transactionParam, resultAction_t callback) {

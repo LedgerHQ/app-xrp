@@ -21,6 +21,7 @@
 
 #include <stdbool.h>
 #include "constants.h"
+#include "limitations.h"
 #include "../xrp/parse/xrpParse.h"
 
 typedef enum {
@@ -28,6 +29,27 @@ typedef enum {
     WAITING_FOR_MORE,
     PENDING_REVIEW,
 } signState_e;
+
+typedef struct swapStrings_t {
+    char address[41];
+    char destination_tag[11];  // uint32_t => 10 numbers max
+    uint8_t amount[8];
+    uint8_t fees[8];
+    /* tmp is used when checking swap parameters. As swapStrings_t is present in a union
+     * (approvalStrings_t) with a bigger structure (reviewStrings_t), this element is essentially
+     * costless.*/
+    char tmp[41];
+} swapStrings_t;
+
+typedef struct reviewStrings_t {
+    char fieldName[MAX_FIELDNAME_LEN];
+    char fieldValue[MAX_FIELD_LEN];
+} reviewStrings_t;
+
+typedef union {
+    reviewStrings_t review;
+    swapStrings_t swap;
+} approvalStrings_t;
 
 typedef struct publicKeyContext_t {
     cx_ecfp_public_key_t publicKey;
@@ -51,6 +73,8 @@ typedef union {
 
 extern tmpCtx_t tmpCtx;
 extern signState_e signState;
+extern approvalStrings_t approvalStrings;
+extern bool called_from_swap;
 
 void resetTransactionContext();
 
