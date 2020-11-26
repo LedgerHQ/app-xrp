@@ -57,9 +57,12 @@
 #define XRP_VL_MEMO_DATA                0x0D
 #define XRP_VL_MEMO_FORMAT              0x0E
 #define XRP_ACCOUNT_ACCOUNT             0x01
+#define XRP_ACCOUNT_DESTINATION         0x03
 #define XRP_ACCOUNT_ISSUER              0x04
 #define XRP_ACCOUNT_REGULAR_KEY         0x08
 #define XRP_CURRENCY_CURRENCY           0x01
+#define XRP_UINT64_AMOUNT               0x01
+#define XRP_UINT64_FEE                  0x08
 
 // Array of type one is reserved for end-of-array marker so this
 // constant cannot possibly collide with anything in the future

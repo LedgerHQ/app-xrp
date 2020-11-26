@@ -140,6 +140,11 @@ void signTransaction() {
 
     // Send back the response, do not restart the event loop
     io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
+
+    if (called_from_swap) {
+        return;
+    }
+
     // Display back the original UX
     displayIdleMenu();
 }
@@ -156,6 +161,10 @@ void rejectTransaction() {
 
     // Send back the response, do not restart the event loop
     io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, 2);
+
+    if (called_from_swap) {
+        return;
+    }
 
     // Reset transaction context and display back the original UX
     resetTransactionContext();

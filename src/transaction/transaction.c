@@ -18,6 +18,14 @@
 #include "transaction.h"
 #include "../ui/transaction/reviewMenu.h"
 #include "../ui/other/loading.h"
+#include "../apdu/global.h"
+#include "../xrp/format/transactionTypes.h"
+#include "../xrp/format/fields.h"
+#include "../xrp/format/amount.h"
+#include "../xrp/format/format.h"
+#include "../xrp/format/readers.h"
+#include "../xrp/xrpHelpers.h"
+#include <string.h>
 
 static action_t approvalAction;
 static action_t rejectionAction;
@@ -35,9 +43,97 @@ void onApprovalMenuResult(unsigned int result) {
     }
 }
 
+bool checkSwapConditionsAndSign(parseResult_t *transaction) {
+    if (!called_from_swap) {
+        PRINTF("Not called from swap!\n");
+        return false;
+    }
+    if (transaction->numFields != 6) {
+        PRINTF("Wrong num fields for swap: %d\n", transaction->numFields);
+        return false;
+    }
+    uint8_t stepIndex = 0;
+    field_t *field = &transaction->fields[stepIndex++];
+    // "Transaction Type" field
+    if (field->dataType == STI_UINT16 && field->id == XRP_UINT16_TRANSACTION_TYPE &&
+        readUnsigned16(field->data) == TRANSACTION_PAYMENT) {
+        field = &transaction->fields[stepIndex++];
+        // "Account" field
+        if (field->dataType == STI_ACCOUNT && field->id == XRP_ACCOUNT_ACCOUNT) {
+            field = &transaction->fields[stepIndex++];
+            // "Destination Tag" field
+            if (field->dataType == STI_UINT32 && field->id == XRP_VL_MEMO_FORMAT) {
+                SNPRINTF(approvalStrings.swap.tmp, "%u", readUnsigned32(field->data));
+                if (strncmp(approvalStrings.swap.tmp,
+                            approvalStrings.swap.destination_tag,
+                            sizeof(approvalStrings.swap.destination_tag)) == 0) {
+                    field = &transaction->fields[stepIndex++];
+                    // "Amount" field
+                    if (field->dataType == STI_AMOUNT && field->id == XRP_UINT64_AMOUNT &&
+                        field->length == XRP_AMOUNT_LEN &&
+                        readUnsigned64(field->data) - (uint64_t) 0x4000000000000000 ==
+                            readUnsigned64(approvalStrings.swap.amount)) {
+                        field = &transaction->fields[stepIndex++];
+                        // "Fee" field
+                        if (field->dataType == STI_AMOUNT && field->id == XRP_UINT64_FEE &&
+                            field->length == XRP_AMOUNT_LEN &&
+                            readUnsigned64(field->data) - (uint64_t) 0x4000000000000000 ==
+                                readUnsigned64(approvalStrings.swap.fees)) {
+                            field = &transaction->fields[stepIndex++];
+                            // "Destination" field
+                            char destination[41];
+                            if (field->dataType == STI_ACCOUNT &&
+                                field->id == XRP_ACCOUNT_DESTINATION) {
+                                uint16_t addrLength =
+                                    xrp_public_key_to_encoded_base58(field->data,
+                                                                     field->length,
+                                                                     destination,
+                                                                     sizeof(destination),
+                                                                     0,
+                                                                     1);
+                                if (strncmp(destination,
+                                            approvalStrings.swap.address,
+                                            addrLength) == 0) {
+                                    PRINTF("Swap parameters verified by current tx\n");
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+// {
+//                         "TransactionType" : "Payment",
+//                         "Flags" : 2147483648,
+//                         "Sequence" : 59631267,
+//                         "DestinationTag" : 98765432,
+//                         "LastLedgerSequence" : 59812537,
+//                         "Amount" : "21000000",
+//                         "Fee" : "123",
+//                         "SigningPubKey" :
+//                         "038368B6F1151E0CD559126AE13910B8B8D790652EB5CC0B5019A63D2E60792961",
+//                         "Account" : "ra7Zr8ddy9tB88RaXL8B87YkqhEJG2vkAJ",
+//                         "Destination" : "rhBuYom8agWA4s7DFoM7AvsDA9XGkVCJz4"
+// }
+
 void reviewTransaction(parseResult_t *transaction, action_t onApprove, action_t onReject) {
     approvalAction = onApprove;
     rejectionAction = onReject;
 
-    displayReviewMenu(transaction, onApprovalMenuResult);
+    if (called_from_swap) {
+        if (checkSwapConditionsAndSign(transaction)) {
+            approvalAction();
+        } else {
+            rejectionAction();
+        }
+        called_from_swap = false;
+        os_sched_exit(0);
+    } else {
+        displayReviewMenu(transaction, onApprovalMenuResult);
+    }
 }

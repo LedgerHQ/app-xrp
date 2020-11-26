@@ -26,9 +26,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define XRP_AMOUNT_LEN      8
-#define ISSUED_CURRENCY_LEN 48
-
 void formatXRP(field_t *field, char *dst) {
     uint64_t value = readUnsigned64(field->data);
 

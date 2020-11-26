@@ -27,4 +27,7 @@ void currencyFormatter(field_t* field, char* dst);
 
 bool hasNonStandardCurrency(field_t* field);
 
+#define XRP_AMOUNT_LEN      8
+#define ISSUED_CURRENCY_LEN 48
+
 #endif  // LEDGER_APP_XRP_AMOUNT_H
