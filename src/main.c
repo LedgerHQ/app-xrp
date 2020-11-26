@@ -23,6 +23,11 @@
 #include "ui/address/addressUI.h"
 #include <ux.h>
 
+#include "swap/swap_lib_calls.h"
+#include "swap/handle_swap_sign_transaction.h"
+#include "swap/handle_get_printable_amount.h"
+#include "swap/handle_check_address.h"
+
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
 ux_state_t G_ux;
@@ -102,6 +107,7 @@ void app_main(void) {
                     default:
                         // Internal error
                         sw = 0x6800u | (e & 0x7FFu);
+                        resetTransactionContext();
                         break;
                 }
                 // Unexpected exception => report
@@ -201,17 +207,13 @@ void app_exit(void) {
     END_TRY_L(exit)
 }
 
-__attribute__((section(".boot"))) int main(void) {
-    // exit critical section
-    __asm volatile("cpsie i");
-
-    // ensure exception will work as planned
-    os_boot();
-
+void coin_main() {
     for (;;) {
+        called_from_swap = false;
         resetTransactionContext();
 
-        UX_INIT()
+        UX_INIT();
+
         BEGIN_TRY {
             TRY {
                 io_seproxyhal_init();
@@ -234,18 +236,67 @@ __attribute__((section(".boot"))) int main(void) {
                 app_main();
             }
             CATCH(EXCEPTION_IO_RESET) {
-                // reset IO and UX
+                // reset IO and UX before continuing
+                CLOSE_TRY;
                 continue;
             }
             CATCH_ALL {
+                CLOSE_TRY;
                 break;
             }
             FINALLY {
             }
         }
-        END_TRY
+        END_TRY;
     }
     app_exit();
+}
 
+void library_main(unsigned int command, unsigned int *call_parameters) {
+    BEGIN_TRY {
+        TRY {
+            check_api_level(CX_COMPAT_APILEVEL);
+            PRINTF("Inside a library \n");
+            switch (command) {
+                case CHECK_ADDRESS:
+                    handle_check_address((check_address_parameters_t *) call_parameters);
+                    break;
+                case SIGN_TRANSACTION:
+                    handle_swap_sign_transaction(
+                        (create_transaction_parameters_t *) call_parameters);
+                    break;
+                case GET_PRINTABLE_AMOUNT:
+                    handle_get_printable_amount(
+                        (get_printable_amount_parameters_t *) call_parameters);
+                    break;
+            }
+            os_lib_end();
+        }
+        FINALLY {
+        }
+    }
+    END_TRY;
+}
+
+__attribute__((section(".boot"))) int main(int arg0) {
+    // exit critical section
+    __asm volatile("cpsie i");
+
+    // ensure exception will work as planned
+    os_boot();
+
+    if (!arg0) {
+        // called from dashboard as standalone eth app
+        coin_main();
+        return 0;
+    }
+
+    // Called as library from another app
+    if (((unsigned int *) arg0)[0] != 0x100) {
+        app_exit();
+        return 0;
+    }
+    unsigned int command = ((unsigned int *) arg0)[1];
+    library_main(command, ((unsigned int *) arg0)[3]);
     return 0;
 }
