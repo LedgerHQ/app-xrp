@@ -110,13 +110,28 @@ void get_publicKey(cx_curve_t curve,
 
     cx_ecfp_private_key_t privateKey;
     uint8_t privateKeyData[33];
-    os_perso_derive_node_bip32(curve, bip32PathParsed, bip32PathLength, privateKeyData, chainCode);
-    cx_ecfp_init_private_key(curve, privateKeyData, 32, &privateKey);
 
-    io_seproxyhal_io_heartbeat();
-    cx_ecfp_generate_pair(curve, pubKey, &privateKey, 1);
-    explicit_bzero(&privateKey, sizeof(privateKey));
-    explicit_bzero(privateKeyData, sizeof(privateKeyData));
+    BEGIN_TRY {
+        TRY {
+            os_perso_derive_node_bip32(curve,
+                                       bip32PathParsed,
+                                       bip32PathLength,
+                                       privateKeyData,
+                                       chainCode);
+            cx_ecfp_init_private_key(curve, privateKeyData, 32, &privateKey);
+
+            io_seproxyhal_io_heartbeat();
+            cx_ecfp_generate_pair(curve, pubKey, &privateKey, 1);
+        }
+        CATCH_OTHER(e) {
+            THROW(e);
+        }
+        FINALLY {
+            explicit_bzero(privateKeyData, sizeof(privateKeyData));
+            explicit_bzero(&privateKey, sizeof(privateKey));
+        }
+    }
+    END_TRY
 }
 
 void get_address(cx_ecfp_public_key_t *pubkey, char *address, size_t maxAddressLength) {

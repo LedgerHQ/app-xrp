@@ -43,14 +43,27 @@ void onApprovalMenuResult(unsigned int result) {
     }
 }
 
-bool checkSwapConditionsAndSign(parseResult_t *transaction) {
+/*
+Check that a previously parsed TX has the rigth shape/content for the app to sign it without user
+approval.
+Exemple of such a swappable TX (as it would be displayed with the approval flow):
+{
+    "TransactionType" : "Payment",
+    "Account" : "ra7Zr8ddy9tB88RaXL8B87YkqhEJG2vkAJ",
+    "DestinationTag" : 98765432,
+    "Amount" : "21000000",
+    "Fee" : "123",
+    "Destination" : "rhBuYom8agWA4s7DFoM7AvsDA9XGkVCJz4"
+}
+ */
+uint8_t checkSwapConditionsAndSign(parseResult_t *transaction) {
     if (!called_from_swap) {
         PRINTF("Not called from swap!\n");
-        return false;
+        return BOLOS_FALSE;
     }
     if (transaction->numFields != 6) {
         PRINTF("Wrong num fields for swap: %d\n", transaction->numFields);
-        return false;
+        return BOLOS_FALSE;
     }
     uint8_t stepIndex = 0;
     field_t *field = &transaction->fields[stepIndex++];
@@ -62,7 +75,8 @@ bool checkSwapConditionsAndSign(parseResult_t *transaction) {
         if (field->dataType == STI_ACCOUNT && field->id == XRP_ACCOUNT_ACCOUNT) {
             field = &transaction->fields[stepIndex++];
             // "Destination Tag" field
-            if (field->dataType == STI_UINT32 && field->id == XRP_VL_MEMO_FORMAT) {
+            if (field->dataType == STI_UINT32 && field->id == XRP_VL_MEMO_FORMAT &&
+                readUnsigned32(field->data) != (uint32_t) 0x00000000) {
                 SNPRINTF(approvalStrings.swap.tmp, "%u", readUnsigned32(field->data));
                 if (strncmp(approvalStrings.swap.tmp,
                             approvalStrings.swap.destination_tag,
@@ -95,7 +109,7 @@ bool checkSwapConditionsAndSign(parseResult_t *transaction) {
                                             approvalStrings.swap.address,
                                             addrLength) == 0) {
                                     PRINTF("Swap parameters verified by current tx\n");
-                                    return true;
+                                    return BOLOS_TRUE;
                                 }
                             }
                         }
@@ -104,29 +118,15 @@ bool checkSwapConditionsAndSign(parseResult_t *transaction) {
             }
         }
     }
-    return false;
+    return BOLOS_FALSE;
 }
-
-// {
-//                         "TransactionType" : "Payment",
-//                         "Flags" : 2147483648,
-//                         "Sequence" : 59631267,
-//                         "DestinationTag" : 98765432,
-//                         "LastLedgerSequence" : 59812537,
-//                         "Amount" : "21000000",
-//                         "Fee" : "123",
-//                         "SigningPubKey" :
-//                         "038368B6F1151E0CD559126AE13910B8B8D790652EB5CC0B5019A63D2E60792961",
-//                         "Account" : "ra7Zr8ddy9tB88RaXL8B87YkqhEJG2vkAJ",
-//                         "Destination" : "rhBuYom8agWA4s7DFoM7AvsDA9XGkVCJz4"
-// }
 
 void reviewTransaction(parseResult_t *transaction, action_t onApprove, action_t onReject) {
     approvalAction = onApprove;
     rejectionAction = onReject;
 
     if (called_from_swap) {
-        if (checkSwapConditionsAndSign(transaction)) {
+        if (checkSwapConditionsAndSign(transaction) == BOLOS_TRUE) {
             approvalAction();
         } else {
             rejectionAction();
