@@ -3,8 +3,6 @@
 #include "string.h"
 #include "../xrp/xrpHelpers.h"
 
-#define ZERO(x) os_memset(x, 0, sizeof(x))
-
 void handle_check_address(check_address_parameters_t* params) {
     cx_ecfp_public_key_t public_key;
     PRINTF("Params on the address %d\n", (unsigned int) params);
