@@ -90,17 +90,18 @@ void xrp_compress_public_key(cx_ecfp_public_key_t *publicKey, uint8_t *out, uint
     }
 }
 
-void get_publicKey(cx_curve_t curve,
-                   uint8_t *bip32Path,
-                   size_t bip32PathLength,
-                   cx_ecfp_public_key_t *pubKey,
-                   uint8_t *chainCode) {
+/* return 0 on success */
+int get_publicKey(cx_curve_t curve,
+                  uint8_t *bip32Path,
+                  size_t bip32PathLength,
+                  cx_ecfp_public_key_t *pubKey,
+                  uint8_t *chainCode) {
     uint32_t bip32PathParsed[MAX_BIP32_PATH];
     uint32_t i;
 
     if ((bip32PathLength < 0x01) || (bip32PathLength > MAX_BIP32_PATH)) {
         PRINTF("Invalid path\n");
-        THROW(0x6a80);
+        return 0x6a80;
     }
     for (i = 0; i < bip32PathLength; i++) {
         bip32PathParsed[i] =
@@ -134,9 +135,7 @@ void get_publicKey(cx_curve_t curve,
     }
     END_TRY;
 
-    if (error) {
-        THROW(error);
-    }
+    return error;
 }
 
 void get_address(cx_ecfp_public_key_t *pubkey, char *address, size_t maxAddressLength) {

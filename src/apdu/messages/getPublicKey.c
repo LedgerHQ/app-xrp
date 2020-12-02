@@ -89,13 +89,19 @@ void handleGetPublicKey(uint8_t p1,
 
     curve = (((p2 & P2_ED25519) != 0) ? CX_CURVE_Ed25519 : CX_CURVE_256K1);
     tmpCtx.publicKeyContext.getChaincode = (p2Chain == P2_CHAINCODE);
+    uint8_t *chainCode =
+        tmpCtx.publicKeyContext.getChaincode ? tmpCtx.publicKeyContext.chainCode : NULL;
 
     io_seproxyhal_io_heartbeat();
-    get_publicKey(curve,
-                  dataBuffer,
-                  bip32PathLength,
-                  &tmpCtx.publicKeyContext.publicKey,
-                  tmpCtx.publicKeyContext.getChaincode ? &tmpCtx.publicKeyContext.chainCode : NULL);
+    int error;
+    error = get_publicKey(curve,
+                          dataBuffer,
+                          bip32PathLength,
+                          &tmpCtx.publicKeyContext.publicKey,
+                          chainCode);
+    if (error != 0) {
+        THROW(error);
+    }
 
     io_seproxyhal_io_heartbeat();
     get_address(&tmpCtx.publicKeyContext.publicKey,
