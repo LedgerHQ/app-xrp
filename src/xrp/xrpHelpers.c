@@ -90,6 +90,22 @@ void xrp_compress_public_key(cx_ecfp_public_key_t *publicKey, uint8_t *out, uint
     }
 }
 
+bool parse_bip32_path(uint8_t *path,
+                      size_t pathLength,
+                      uint32_t *pathParsed,
+                      size_t pathParsedLength) {
+    if ((pathLength < 0x01) || (pathLength > pathParsedLength)) {
+        return false;
+    }
+
+    for (size_t i = 0; i < pathLength; i++) {
+        pathParsed[i] = (path[0] << 24u) | (path[1] << 16u) | (path[2] << 8u) | (path[3]);
+        path += 4;
+    }
+
+    return true;
+}
+
 /* return 0 on success */
 int get_publicKey(cx_curve_t curve,
                   uint8_t *bip32Path,
@@ -97,16 +113,9 @@ int get_publicKey(cx_curve_t curve,
                   cx_ecfp_public_key_t *pubKey,
                   uint8_t *chainCode) {
     uint32_t bip32PathParsed[MAX_BIP32_PATH];
-    uint32_t i;
-
-    if ((bip32PathLength < 0x01) || (bip32PathLength > MAX_BIP32_PATH)) {
+    if (!parse_bip32_path(bip32Path, bip32PathLength, bip32PathParsed, MAX_BIP32_PATH)) {
         PRINTF("Invalid path\n");
         return 0x6a80;
-    }
-    for (i = 0; i < bip32PathLength; i++) {
-        bip32PathParsed[i] =
-            (bip32Path[0] << 24u) | (bip32Path[1] << 16u) | (bip32Path[2] << 8u) | (bip32Path[3]);
-        bip32Path += 4;
     }
 
     cx_ecfp_private_key_t privateKey;

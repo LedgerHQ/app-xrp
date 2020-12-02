@@ -199,20 +199,20 @@ void handleFirstPacket(uint8_t p1,
     resetTransactionContext();
     parseContext.data = tmpCtx.transactionContext.rawTx + prefixLength;
 
-    tmpCtx.transactionContext.pathLength = workBuffer[0];
-    if ((tmpCtx.transactionContext.pathLength < 0x01) ||
-        (tmpCtx.transactionContext.pathLength > MAX_BIP32_PATH)) {
+    size_t pathLength = workBuffer[0];
+    uint32_t *pathParsed = tmpCtx.transactionContext.bip32Path;
+
+    workBuffer++;
+    dataLength--;
+    if (!parse_bip32_path(workBuffer, pathLength, pathParsed, MAX_BIP32_PATH)) {
         PRINTF("Invalid path\n");
         THROW(0x6a81);
     }
-    workBuffer++;
-    dataLength--;
-    for (i = 0; i < tmpCtx.transactionContext.pathLength; i++) {
-        tmpCtx.transactionContext.bip32Path[i] = (workBuffer[0] << 24u) | (workBuffer[1] << 16u) |
-                                                 (workBuffer[2] << 8u) | (workBuffer[3]);
-        workBuffer += 4;
-        dataLength -= 4;
-    }
+
+    tmpCtx.transactionContext.pathLength = pathLength;
+    workBuffer += sizeof(uint32_t) * tmpCtx.transactionContext.pathLength;
+    dataLength -= sizeof(uint32_t) * tmpCtx.transactionContext.pathLength;
+
     if (((p2 & P2_SECP256K1) == 0) && ((p2 & P2_ED25519) == 0)) {
         THROW(0x6B00);
     }
