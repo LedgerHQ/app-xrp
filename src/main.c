@@ -252,22 +252,31 @@ void coin_main() {
     app_exit();
 }
 
-void library_main(unsigned int command, unsigned int *call_parameters) {
+struct libargs_s {
+    unsigned int id;
+    unsigned int command;
+    unsigned int unused;
+    union {
+        check_address_parameters_t *check_address;
+        create_transaction_parameters_t *create_transaction;
+        get_printable_amount_parameters_t *get_printable_amount;
+    };
+};
+
+void library_main(struct libargs_s *args) {
     BEGIN_TRY {
         TRY {
             check_api_level(CX_COMPAT_APILEVEL);
             PRINTF("Inside a library \n");
-            switch (command) {
+            switch (args->command) {
                 case CHECK_ADDRESS:
-                    handle_check_address((check_address_parameters_t *) call_parameters);
+                    handle_check_address(args->check_address);
                     break;
                 case SIGN_TRANSACTION:
-                    handle_swap_sign_transaction(
-                        (create_transaction_parameters_t *) call_parameters);
+                    handle_swap_sign_transaction(args->create_transaction);
                     break;
                 case GET_PRINTABLE_AMOUNT:
-                    handle_get_printable_amount(
-                        (get_printable_amount_parameters_t *) call_parameters);
+                    handle_get_printable_amount(args->get_printable_amount);
                     break;
             }
             os_lib_end();
@@ -285,18 +294,18 @@ __attribute__((section(".boot"))) int main(int arg0) {
     // ensure exception will work as planned
     os_boot();
 
-    if (!arg0) {
+    if (arg0 == 0) {
         // called from dashboard as standalone eth app
         coin_main();
-        return 0;
+    } else {
+        // Called as library from another app
+        struct libargs_s *args = (struct libargs_s *) arg0;
+        if (args->id == 0x100) {
+            library_main(args);
+        } else {
+            app_exit();
+        }
     }
 
-    // Called as library from another app
-    if (((unsigned int *) arg0)[0] != 0x100) {
-        app_exit();
-        return 0;
-    }
-    unsigned int command = ((unsigned int *) arg0)[1];
-    library_main(command, ((unsigned int *) arg0)[3]);
     return 0;
 }
