@@ -110,6 +110,7 @@ void get_publicKey(cx_curve_t curve,
 
     cx_ecfp_private_key_t privateKey;
     uint8_t privateKeyData[33];
+    int error = 0;
 
     BEGIN_TRY {
         TRY {
@@ -124,14 +125,18 @@ void get_publicKey(cx_curve_t curve,
             cx_ecfp_generate_pair(curve, pubKey, &privateKey, 1);
         }
         CATCH_OTHER(e) {
-            THROW(e);
+            error = e;
         }
         FINALLY {
             explicit_bzero(privateKeyData, sizeof(privateKeyData));
             explicit_bzero(&privateKey, sizeof(privateKey));
         }
     }
-    END_TRY
+    END_TRY;
+
+    if (error) {
+        THROW(error);
+    }
 }
 
 void get_address(cx_ecfp_public_key_t *pubkey, char *address, size_t maxAddressLength) {

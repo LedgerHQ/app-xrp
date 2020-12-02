@@ -58,6 +58,7 @@ void signTransaction() {
         return;
     }
 
+    int error = 0;
     BEGIN_TRY {
         TRY {
             io_seproxyhal_io_heartbeat();
@@ -123,7 +124,7 @@ void signTransaction() {
             }
         }
         CATCH_OTHER(e) {
-            THROW(e);
+            error = e;
         }
         FINALLY {
             explicit_bzero(privateKeyData, sizeof(privateKeyData));
@@ -133,7 +134,11 @@ void signTransaction() {
             resetTransactionContext();
         }
     }
-    END_TRY
+    END_TRY;
+
+    if (error) {
+        THROW(error);
+    }
 
     G_io_apdu_buffer[tx++] = 0x90;
     G_io_apdu_buffer[tx++] = 0x00;
