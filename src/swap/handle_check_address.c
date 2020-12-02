@@ -3,6 +3,11 @@
 #include "string.h"
 #include "../xrp/xrpHelpers.h"
 
+static int os_strcmp(const char* s1, const char* s2) {
+    size_t size = strlen(s1) + 1;
+    return os_memcmp(s1, s2, size);
+}
+
 void handle_check_address(check_address_parameters_t* params) {
     cx_ecfp_public_key_t public_key;
     PRINTF("Params on the address %d\n", (unsigned int) params);
@@ -21,10 +26,9 @@ void handle_check_address(check_address_parameters_t* params) {
     char address[41];
     get_address(&public_key, address, sizeof(address));
 
-    if ((strlen(address) != strlen(params->address_to_check)) ||
-        os_memcmp(address, params->address_to_check, strlen(address)) != 0) {
+    if (os_strcmp(address, params->address_to_check) != 0) {
         // os_memcpy(params->address_to_check, address, strlen(address));
-        PRINTF("Addresses doesn't match\n");
+        PRINTF("Addresses don't match\n");
         return;
     }
     PRINTF("Addresses  match\n");
