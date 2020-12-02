@@ -210,7 +210,8 @@ bool adjustDecimals(const char *src,
     return true;
 }
 
-void xrp_print_amount(uint64_t amount, char *out, uint32_t outlen) {
+/* return -1 on error, 0 otherwise */
+int xrp_print_amount(uint64_t amount, char *out, uint32_t outlen) {
     char tmp[20];
     char tmp2[25];
     uint32_t numDigits = 0, i;
@@ -220,7 +221,7 @@ void xrp_print_amount(uint64_t amount, char *out, uint32_t outlen) {
         numDigits++;
     }
     if (numDigits > sizeof(tmp) - 1) {
-        THROW(EXCEPTION);
+        return -1;
     }
     base /= 10;
     for (i = 0; i < numDigits; i++) {
@@ -235,4 +236,6 @@ void xrp_print_amount(uint64_t amount, char *out, uint32_t outlen) {
     } else {
         out[0] = '\0';
     }
+
+    return 0;
 }
