@@ -39,7 +39,7 @@ int get_publicKey(cx_curve_t curve,
 
 void get_address(cx_ecfp_public_key_t *pubkey, char *address, size_t maxAddressLength);
 
-int xrp_print_amount(uint64_t amount, char *out, uint32_t outlen);
+int xrp_print_amount(uint64_t amount, char *out, size_t outlen);
 
 bool parse_bip32_path(uint8_t *path,
                       size_t pathLength,

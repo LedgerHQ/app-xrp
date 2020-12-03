@@ -223,32 +223,40 @@ bool adjustDecimals(const char *src,
     return true;
 }
 
+#define CURRENCY      "XRP "
+#define CURRENCY_SIZE (sizeof(CURRENCY) - 1)
+
 /* return -1 on error, 0 otherwise */
-int xrp_print_amount(uint64_t amount, char *out, uint32_t outlen) {
+int xrp_print_amount(uint64_t amount, char *out, size_t outlen) {
     char tmp[20];
-    char tmp2[25];
     uint32_t numDigits = 0, i;
-    uint64_t base = 1;
-    while (base <= amount) {
-        base *= 10;
+    uint64_t base;
+
+    for (base = 1; base <= amount; base *= 10) {
         numDigits++;
+        if (numDigits > sizeof(tmp) - 1) {
+            return -1;
+        }
     }
-    if (numDigits > sizeof(tmp) - 1) {
-        return -1;
-    }
+
     base /= 10;
     for (i = 0; i < numDigits; i++) {
         tmp[i] = intToNumberChar((amount / base) % 10);
         base /= 10;
     }
     tmp[i] = '\0';
-    strcpy(tmp2, "XRP ");
-    adjustDecimals(tmp, i, tmp2 + 4, 25, 6);
-    if (strlen(tmp2) < outlen - 1) {
-        strcpy(out, tmp2);
-    } else {
-        out[0] = '\0';
+
+    char tmp2[25];
+    strncpy(tmp2, CURRENCY, sizeof(tmp2));
+    if (!adjustDecimals(tmp, i, tmp2 + CURRENCY_SIZE, sizeof(tmp2) - CURRENCY_SIZE, 6)) {
+        return -1;
     }
+
+    if (strlen(tmp2) >= outlen - 1) {
+        out[0] = '\0';
+        return -1;
+    }
+    strncpy(out, tmp2, outlen);
 
     return 0;
 }
