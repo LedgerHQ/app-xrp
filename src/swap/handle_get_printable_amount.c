@@ -4,12 +4,12 @@
 #include "string.h"
 #include <stdint.h>
 
-void handle_get_printable_amount(get_printable_amount_parameters_t* params) {
-    params->result = 0;
+/* return 0 on error, 1 otherwise */
+int handle_get_printable_amount(get_printable_amount_parameters_t* params) {
     params->printable_amount[0] = 0;
     if (params->amount_length > 8) {
         PRINTF("Amount is too big");
-        return;
+        return 0;
     }
 
     unsigned char buffer[8];
@@ -21,8 +21,8 @@ void handle_get_printable_amount(get_printable_amount_parameters_t* params) {
     uint64_t amount = readUnsigned64(buffer);
     if (xrp_print_amount(amount, params->printable_amount, sizeof(params->printable_amount)) != 0) {
         PRINTF("xrp_print_amount failed");
-        return;
+        return 0;
     }
 
-    params->result = 1;
+    return 1;
 }

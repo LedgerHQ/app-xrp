@@ -270,13 +270,21 @@ void library_main(struct libargs_s *args) {
             PRINTF("Inside a library \n");
             switch (args->command) {
                 case CHECK_ADDRESS:
-                    handle_check_address(args->check_address);
+                    // ensure result is zero if an exception is throw
+                    args->check_address->result = 0;
+                    args->check_address->result = handle_check_address(args->check_address);
                     break;
                 case SIGN_TRANSACTION:
-                    handle_swap_sign_transaction(args->create_transaction);
+                    if (copy_transaction_parameters(args->create_transaction)) {
+                        // never returns
+                        handle_swap_sign_transaction();
+                    }
                     break;
                 case GET_PRINTABLE_AMOUNT:
-                    handle_get_printable_amount(args->get_printable_amount);
+                    // ensure result is zero if an exception is throw
+                    args->get_printable_amount->result = 0;
+                    args->get_printable_amount->result =
+                        handle_get_printable_amount(args->get_printable_amount);
                     break;
             }
             os_lib_end();

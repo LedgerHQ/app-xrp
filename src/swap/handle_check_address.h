@@ -3,6 +3,6 @@
 
 #include "swap_lib_calls.h"
 
-void handle_check_address(check_address_parameters_t* check_address_params);
+int handle_check_address(check_address_parameters_t* params);
 
 #endif  // _HANDLE_CHECK_ADDRESS_H_

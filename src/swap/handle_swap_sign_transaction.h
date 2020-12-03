@@ -3,6 +3,7 @@
 
 #include "swap_lib_calls.h"
 
-void handle_swap_sign_transaction(create_transaction_parameters_t* get_printable_amount_params);
+bool copy_transaction_parameters(create_transaction_parameters_t* sign_transaction_params);
+void handle_swap_sign_transaction(void);
 
 #endif  // _HANDLE_SWAP_SIGN_TRANSACTION_H_

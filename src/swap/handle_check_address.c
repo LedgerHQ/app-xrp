@@ -8,14 +8,14 @@ static int os_strcmp(const char* s1, const char* s2) {
     return os_memcmp(s1, s2, size);
 }
 
-void handle_check_address(check_address_parameters_t* params) {
+int handle_check_address(check_address_parameters_t* params) {
     PRINTF("Params on the address %d\n", (unsigned int) params);
     PRINTF("Address to check %s\n", params->address_to_check);
     PRINTF("Inside handle_check_address\n");
-    params->result = 0;
+
     if (params->address_to_check == 0) {
         PRINTF("Address to check == 0\n");
-        return;
+        return 0;
     }
 
     uint8_t* bip32_path_ptr = params->address_parameters;
@@ -24,7 +24,7 @@ void handle_check_address(check_address_parameters_t* params) {
     int error = get_publicKey(CX_CURVE_256K1, bip32_path_ptr, bip32PathLength, &public_key, NULL);
     if (error) {
         PRINTF("get_publicKey failed\n");
-        return;
+        return 0;
     }
 
     char address[41];
@@ -32,9 +32,9 @@ void handle_check_address(check_address_parameters_t* params) {
 
     if (os_strcmp(address, params->address_to_check) != 0) {
         PRINTF("Addresses don't match\n");
-        return;
+        return 0;
     }
 
     PRINTF("Addresses match\n");
-    params->result = 1;
+    return 1;
 }
