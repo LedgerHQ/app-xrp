@@ -42,7 +42,7 @@ int formatXRP(field_t *field, char *dst) {
 }
 
 bool isAllZeros(const uint8_t *data, uint8_t length) {
-    for (uint8_t i = 0; i < length; ++i) {
+    for (size_t i = 0; i < length; ++i) {
         if (data[i] != 0) {
             return false;
         }
