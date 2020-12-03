@@ -29,10 +29,15 @@
 int formatXRP(field_t *field, char *dst) {
     uint64_t value = readUnsigned64(field->data);
 
-    value -= (uint64_t) 0x4000000000000000;
+    if (!(value & 0x4000000000000000)) {
+        return -1;
+    }
+
+    value ^= 0x4000000000000000;
     if (xrp_print_amount(value, dst, MAX_FIELD_LEN) != 0) {
         return -1;
     }
+
     return 0;
 }
 

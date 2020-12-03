@@ -128,7 +128,10 @@ bool checkSwapConditionsAndSign(parseResult_t *transaction) {
     // "Amount" field
     field = &transaction->fields[stepIndex++];
     uint64_t amount = readUnsigned64(approvalStrings.swap.amount);
-    amount += 0x4000000000000000;
+    if (amount & 0x4000000000000000) {
+        return false;
+    }
+    amount |= 0x4000000000000000;
     if (!check_field(field, STI_AMOUNT, XRP_UINT64_AMOUNT, true, amount)) {
         return false;
     }
@@ -136,7 +139,10 @@ bool checkSwapConditionsAndSign(parseResult_t *transaction) {
     field = &transaction->fields[stepIndex++];
     // "Fee" field
     uint64_t fee = readUnsigned64(approvalStrings.swap.fees);
-    fee += 0x4000000000000000;
+    if (fee & 0x4000000000000000) {
+        return false;
+    }
+    fee |= 0x4000000000000000;
     if (!check_field(field, STI_AMOUNT, XRP_UINT64_FEE, true, fee)) {
         return false;
     }
