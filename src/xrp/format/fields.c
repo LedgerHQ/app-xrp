@@ -15,8 +15,9 @@
  *  limitations under the License.
  ********************************************************************************/
 
+#include <string.h>
+
 #include "fields.h"
-#include "string.h"
 #include "flags.h"
 #include "../../common.h"
 

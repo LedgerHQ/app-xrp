@@ -16,9 +16,10 @@
  *  limitations under the License.
  ********************************************************************************/
 
+#include <string.h>
+
 #include "xrpParse.h"
 #include "../xrpHelpers.h"
-#include "string.h"
 #include "../format/amount.h"
 #include "../format/array.h"
 #include "../format/fields.h"

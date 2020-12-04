@@ -1,11 +1,12 @@
+#include <string.h>
+
 #include "handle_check_address.h"
 #include "os.h"
-#include "string.h"
 #include "../xrp/xrpHelpers.h"
 
 static int os_strcmp(const char* s1, const char* s2) {
     size_t size = strlen(s1) + 1;
-    return os_memcmp(s1, s2, size);
+    return memcmp(s1, s2, size);
 }
 
 int handle_check_address(check_address_parameters_t* params) {

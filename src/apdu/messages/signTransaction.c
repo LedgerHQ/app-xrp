@@ -189,8 +189,6 @@ void handleFirstPacket(uint8_t p1,
                        uint8_t *workBuffer,
                        uint8_t dataLength,
                        volatile unsigned int *flags) {
-    uint32_t i;
-
     if (!isFirst(p1)) {
         THROW(0x6A80);
     }

@@ -16,9 +16,10 @@
  ********************************************************************************/
 
 #include <assert.h>
+#include <string.h>
+
 #include "numberHelpers.h"
 #include "os.h"
-#include "string.h"
 
 // Needed to make app compile with Nano X SDK
 #define __assert_fail os_sched_exit(1);
@@ -64,7 +65,7 @@ void parseDecimalNumber(char *dst,
 
     if (exponent >= 0) {
         // Exponent is positive, "multiply" the mantissa (decimalPos not needed)
-        os_memset(dst + len, '0', exponent);
+        memset(dst + len, '0', exponent);
     } else if (decimalPos > 0) {
         // Decimal position is within our bounds, make room for it and add it
         os_memmove(dst + decimalPos + 1, dst + decimalPos, len);
@@ -73,7 +74,7 @@ void parseDecimalNumber(char *dst,
         // Decimal position is outside our bounds, move the mantissa to make
         // sure that the decimal point can fit within the new bounds
         os_memmove(dst - decimalPos + 2, dst, len);
-        os_memset(dst, '0', -decimalPos + 2);
+        memset(dst, '0', -decimalPos + 2);
         dst[1] = '.';
     }
 }
