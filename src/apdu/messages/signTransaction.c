@@ -264,7 +264,10 @@ void handlePacketContent(uint8_t p1,
 
         // Try to parse the transaction. If the parsing fails an exception is thrown,
         // causing the processing to abort and the transaction context to be reset.
-        parseTx(&parseContext);
+        int exception = parseTx(&parseContext);
+        if (exception) {
+            THROW(exception);
+        }
 
         // Set transaction prefix (space has been reserved earlier)
         if (parseContext.hasEmptyPubKey) {
