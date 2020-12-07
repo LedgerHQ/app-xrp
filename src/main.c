@@ -263,36 +263,50 @@ struct libargs_s {
     };
 };
 
-void library_main(struct libargs_s *args) {
-    BEGIN_TRY {
-        TRY {
-            check_api_level(CX_COMPAT_APILEVEL);
-            PRINTF("Inside a library \n");
-            switch (args->command) {
-                case CHECK_ADDRESS:
-                    // ensure result is zero if an exception is throw
-                    args->check_address->result = 0;
-                    args->check_address->result = handle_check_address(args->check_address);
-                    break;
-                case SIGN_TRANSACTION:
-                    if (copy_transaction_parameters(args->create_transaction)) {
-                        // never returns
-                        handle_swap_sign_transaction();
-                    }
-                    break;
-                case GET_PRINTABLE_AMOUNT:
-                    // ensure result is zero if an exception is throw
-                    args->get_printable_amount->result = 0;
-                    args->get_printable_amount->result =
-                        handle_get_printable_amount(args->get_printable_amount);
-                    break;
+static void library_main_helper(struct libargs_s *args) {
+    check_api_level(CX_COMPAT_APILEVEL);
+    PRINTF("Inside a library \n");
+    switch (args->command) {
+        case CHECK_ADDRESS:
+            // ensure result is zero if an exception is throw
+            args->check_address->result = 0;
+            args->check_address->result = handle_check_address(args->check_address);
+            break;
+        case SIGN_TRANSACTION:
+            if (copy_transaction_parameters(args->create_transaction)) {
+                // never returns
+                handle_swap_sign_transaction();
             }
-            os_lib_end();
-        }
-        FINALLY {
-        }
+            break;
+        case GET_PRINTABLE_AMOUNT:
+            // ensure result is zero if an exception is throw
+            args->get_printable_amount->result = 0;
+            args->get_printable_amount->result =
+                handle_get_printable_amount(args->get_printable_amount);
+            break;
+        default:
+            break;
     }
-    END_TRY;
+}
+
+void library_main(struct libargs_s *args) {
+    bool end = false;
+    /* This loop ensures that library_main_helper and os_lib_end are called
+     * within a try context, even if an exception is thrown */
+    while (1) {
+        BEGIN_TRY {
+            TRY {
+                if (!end) {
+                    library_main_helper(args);
+                }
+                os_lib_end();
+            }
+            FINALLY {
+                end = true;
+            }
+        }
+        END_TRY;
+    }
 }
 
 __attribute__((section(".boot"))) int main(int arg0) {
@@ -303,7 +317,7 @@ __attribute__((section(".boot"))) int main(int arg0) {
     os_boot();
 
     if (arg0 == 0) {
-        // called from dashboard as standalone eth app
+        // called from dashboard as standalone xrp app
         coin_main();
     } else {
         // Called as library from another app
