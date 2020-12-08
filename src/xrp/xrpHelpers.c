@@ -130,8 +130,6 @@ int get_publicKey(cx_curve_t curve,
                                        privateKeyData,
                                        chainCode);
             cx_ecfp_init_private_key(curve, privateKeyData, 32, &privateKey);
-
-            io_seproxyhal_io_heartbeat();
             cx_ecfp_generate_pair(curve, pubKey, &privateKey, 1);
         }
         CATCH_OTHER(e) {
