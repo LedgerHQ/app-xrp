@@ -268,7 +268,7 @@ static void library_main_helper(struct libargs_s *args) {
     PRINTF("Inside a library \n");
     switch (args->command) {
         case CHECK_ADDRESS:
-            // ensure result is zero if an exception is throw
+            // ensure result is zero if an exception is thrown
             args->check_address->result = 0;
             args->check_address->result = handle_check_address(args->check_address);
             break;
@@ -279,7 +279,7 @@ static void library_main_helper(struct libargs_s *args) {
             }
             break;
         case GET_PRINTABLE_AMOUNT:
-            // ensure result is zero if an exception is throw
+            // ensure result is zero if an exception is thrown
             args->get_printable_amount->result = 0;
             args->get_printable_amount->result =
                 handle_get_printable_amount(args->get_printable_amount);
