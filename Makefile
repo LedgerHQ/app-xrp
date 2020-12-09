@@ -34,9 +34,9 @@ COIN = xrp
 
 #prepare hsm generation
 ifeq ($(TARGET_NAME),TARGET_NANOX)
-ICONNAME=nanox_app_$(COIN).gif
+ICONNAME=img/nanox_app_$(COIN).gif
 else
-ICONNAME=nanos_app_$(COIN).gif
+ICONNAME=img/nanos_app_$(COIN).gif
 endif
 
 

@@ -1,0 +1,13 @@
+Transaction Type; Payment
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Amount; XRP 1
+Fee; XRP 0.000015
+Destination;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Memo Data [1]; Developed by Towo Labs
+Memo Type [2]; https://www.xrptoolkit.com
+Memo Data [2]; Ledger makes the best hardware wallets, don't tell Trezor!
+Memo Type [3]; https://www.xrptoolkit.com
+Memo Data [3]; Towo Labs <3 The XRP Ledger & Interledger Protocol
+Memo Fmt [3]; text/plain
+Memo Data [4]; 1f8b0808493dcc5d0003696e6465782e68746d6c00358eb11282400c447bbe225e2dd25a846bc45a0a1bcae0458f99e3c21c711cfe5ef0b0dadd49decee2...
+Memo Fmt [4]; application/gzip

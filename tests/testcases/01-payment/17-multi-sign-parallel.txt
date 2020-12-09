@@ -1,0 +1,5 @@
+Transaction Type; Payment
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Amount; XRP 1
+Fee; XRP 0.0001
+Destination;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   

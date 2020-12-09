@@ -1,0 +1,43 @@
+{
+  "TransactionType": "Payment",
+  "Account": "OWN_ADDR",
+  "Destination": "OWN_ADDR",
+  "Amount": "100000000",
+  "SendMax": {
+		"value": "50",
+		"currency": "USD",
+    "issuer": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B"
+  },
+  "Paths": [
+    [
+      {
+        "currency": "USD",
+        "issuer": "rhub8VRN55s94qWKDv6jmDy1pUykJzF3wq",
+        "type": 48,
+        "type_hex": "0000000000000030"
+      },
+      {
+        "currency": "USD",
+        "issuer": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
+        "type": 48,
+        "type_hex": "0000000000000030"
+      }
+    ],
+    [
+      {
+        "account": "r9vbV3EHvXWjSkeQ6CAcYVPGeq7TuiXY2X",
+        "type": 1,
+        "type_hex": "0000000000000001"
+      },
+      {
+        "account": "rLQrHSoJnzHzmdFDHYoW85Cze8Teu97JN2",
+        "type": 1,
+        "type_hex": "0000000000000001"
+      }
+    ]
+  ],
+  "Fee": "15",
+  "Flags": 2147483648,
+  "Sequence": 7,
+  "SigningPubKey": "OWN_PUBKEY"
+}

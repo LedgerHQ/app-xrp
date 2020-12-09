@@ -1,0 +1,7 @@
+Transaction Type; Channel Claim
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Flags; Close
+Channel; c1ae6dddeec05cf2978c0bad6fe302948e9533691dc749dcdd3b9e5992ca6198
+Amount; XRP 100
+Balance; XRP 100
+Fee; XRP 0.00001

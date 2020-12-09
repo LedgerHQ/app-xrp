@@ -18,11 +18,11 @@
 #ifndef LEDGER_APP_XRP_TRANSACTION_H
 #define LEDGER_APP_XRP_TRANSACTION_H
 
-#include "../xrp/parse/xrpParse.h"
+#include "../xrp/xrp_parse.h"
 #include "../common.h"
 
 typedef void (*resultAction_t)(unsigned int result);
 
-void reviewTransaction(parseResult_t *transaction, action_t onApprove, action_t onReject);
+void review_transaction(parseResult_t *transaction, action_t on_approve, action_t on_reject);
 
 #endif  // LEDGER_APP_XRP_TRANSACTION_H

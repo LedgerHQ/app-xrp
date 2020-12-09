@@ -18,12 +18,6 @@
 #ifndef LEDGER_APP_XRP_COMMON_H
 #define LEDGER_APP_XRP_COMMON_H
 
-// Simple macro for building more readable switch statements
-#define CASE(v, n)      \
-    case v:             \
-        strcpy(dst, n); \
-        return;
-
 typedef void (*action_t)();
 
 #endif  // LEDGER_APP_XRP_COMMON_H

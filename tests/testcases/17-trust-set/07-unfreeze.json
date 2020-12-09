@@ -1,0 +1,12 @@
+{
+  "TransactionType": "TrustSet",
+  "Account": "OWN_ADDR",
+  "Fee": "10",
+  "Flags": 2149580800,
+  "Sequence": 25,
+  "LimitAmount": {
+    "currency": "[!]",
+    "issuer": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+    "value": "9999999999999999e80"
+  }
+}

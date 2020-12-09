@@ -1,0 +1,4 @@
+Transaction Type; Set Signer List
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Signer Quorum; 0
+Fee; XRP 0.00001

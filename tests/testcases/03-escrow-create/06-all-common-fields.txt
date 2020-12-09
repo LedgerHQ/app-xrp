@@ -1,0 +1,17 @@
+Transaction Type; Create Escrow
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Source Tag; 888
+Destination Tag; 1338
+Cancel After; 2016-11-23 23:12:38 UTC
+Finish After; 2016-11-22 23:12:38 UTC
+Account Txn ID; f02eb74cb4f5d2e6ac8be70cea41cca872e680f9efd2027605f0b42666037aa8
+Amount; XRP 0.01
+Fee; XRP 0.00002
+Condition; a0258020e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855810100
+Destination;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Memo Data [1]; Developed by Towo Labs
+Memo Type [2]; https://www.xrptoolkit.com
+Memo Data [2]; Towo Labs <3 Hardware wallet
+Memo Type [3]; https://www.xrptoolkit.com
+Memo Data [3]; Towo Labs <3 The XRP Ledger & Interledger Protocol
+Memo Fmt [3]; text/plain

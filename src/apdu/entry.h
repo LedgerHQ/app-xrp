@@ -19,6 +19,6 @@
 #ifndef LEDGER_APP_XRP_ENTRY_H
 #define LEDGER_APP_XRP_ENTRY_H
 
-void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx);
+void handle_apdu(volatile unsigned int *flags, volatile unsigned int *tx);
 
 #endif  // LEDGER_APP_XRP_ENTRY_H

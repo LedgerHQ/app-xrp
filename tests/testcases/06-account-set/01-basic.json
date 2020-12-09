@@ -1,0 +1,13 @@
+{
+    "TransactionType": "AccountSet",
+    "Account": "OWN_ADDR",
+    "Fee": "10",
+    "Sequence": 23,
+    "Domain": "6578616D706C652E636F6D",
+    "SetFlag": 5,
+    "EmailHash" : "505350263FB896C545C901343E8EE2DA",
+    "MessageKey": "6014A17F454E72494CEC232E05B0D881B61807D1CA19F32B8125E390FF14E66D",
+    "WalletLocator": "EA8FBF830B802CF8E0976DFD66BE512C892BDEA79BAECDB7669DB3AC7B6311E2",
+    "TransferRate": 1000000001,
+    "TickSize": 4
+}

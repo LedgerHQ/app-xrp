@@ -1,0 +1,7 @@
+Transaction Type; Create Check
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Expiration; 2018-01-24 12:52:01 UTC
+Invoice ID; 6f1dfd1d0fe8a32e40e1f2c05cf1c15545bab56b617f9c6c2d63a6b704bef59b
+Fee; XRP 0.00001
+Send Max; XRP 184.674407
+Destination;   rBKz5MC2iXdo    S3XgnNSYmF6     9K1Yo4NS3Ws   

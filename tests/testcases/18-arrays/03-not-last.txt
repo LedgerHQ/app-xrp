@@ -1,0 +1,9 @@
+Transaction Type; Payment
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Amount; XRP 0.01
+Fee; XRP 0.000015
+Destination;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Memo Data [1]; Lorem
+Memo Fmt [1]; Lorem
+Currency [P1: S1]; ETH
+Issuer [P1: S1];   rKiCet8SdvWx    PXnAgYarFUX     Mh1zCPz432Y   

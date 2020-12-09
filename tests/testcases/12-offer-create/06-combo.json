@@ -1,0 +1,20 @@
+{
+    "TransactionType": "OfferCreate",
+    "Account": "OWN_ADDR",
+    "Fee": "10",
+    "Flags": 2148335616,
+    "LastLedgerSequence": 7108682,
+    "Sequence": 25,
+    "TakerPays": {
+	    "currency": "8@8",
+	    "issuer": "ruazs5h1qEsqpke88pcqnaseXdm6od2xc",
+	    "value": "12123"
+    },
+    "TakerGets": {
+        "currency": ">.<",
+        "issuer": "ruazs5h1qEsqpke88pcqnaseXdm6od2xc",
+        "value": "234567"
+    },
+    "Expiration": 534171558,
+    "OfferSequence": 4321
+}

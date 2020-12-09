@@ -20,13 +20,13 @@
 #include "constants.h"
 #include "global.h"
 #include "entry.h"
-#include "messages/getPublicKey.h"
-#include "messages/signTransaction.h"
-#include "messages/getAppConfiguration.h"
+#include "messages/get_public_key.h"
+#include "messages/sign_transaction.h"
+#include "messages/get_app_configuration.h"
 
-static unsigned char lastINS = 0;
+static unsigned char last_ins = 0;
 
-void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx) {
+void handle_apdu(volatile unsigned int *flags, volatile unsigned int *tx) {
     unsigned short sw = 0;
 
     BEGIN_TRY {
@@ -37,32 +37,32 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx) {
 
             // Reset transaction context before starting to parse a new APDU message type.
             // This helps protect against "Instruction Change" attacks
-            if (G_io_apdu_buffer[OFFSET_INS] != lastINS) {
-                resetTransactionContext();
+            if (G_io_apdu_buffer[OFFSET_INS] != last_ins) {
+                reset_transaction_context();
             }
 
-            lastINS = G_io_apdu_buffer[OFFSET_INS];
+            last_ins = G_io_apdu_buffer[OFFSET_INS];
 
             switch (G_io_apdu_buffer[OFFSET_INS]) {
                 case INS_GET_PUBLIC_KEY:
-                    handleGetPublicKey(G_io_apdu_buffer[OFFSET_P1],
-                                       G_io_apdu_buffer[OFFSET_P2],
-                                       G_io_apdu_buffer + OFFSET_CDATA,
-                                       G_io_apdu_buffer[OFFSET_LC],
-                                       flags,
-                                       tx);
+                    handle_get_public_key(G_io_apdu_buffer[OFFSET_P1],
+                                          G_io_apdu_buffer[OFFSET_P2],
+                                          G_io_apdu_buffer + OFFSET_CDATA,
+                                          G_io_apdu_buffer[OFFSET_LC],
+                                          flags,
+                                          tx);
                     break;
 
                 case INS_SIGN:
-                    handleSign(G_io_apdu_buffer[OFFSET_P1],
-                               G_io_apdu_buffer[OFFSET_P2],
-                               G_io_apdu_buffer + OFFSET_CDATA,
-                               G_io_apdu_buffer[OFFSET_LC],
-                               flags);
+                    handle_sign(G_io_apdu_buffer[OFFSET_P1],
+                                G_io_apdu_buffer[OFFSET_P2],
+                                G_io_apdu_buffer + OFFSET_CDATA,
+                                G_io_apdu_buffer[OFFSET_LC],
+                                flags);
                     break;
 
                 case INS_GET_APP_CONFIGURATION:
-                    handleGetAppConfiguration(tx);
+                    handle_get_app_configuration(tx);
                     break;
 
                 default:
@@ -75,7 +75,7 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx) {
                 case 0x6000:
                     // Wipe the transaction context and report the exception
                     sw = e;
-                    resetTransactionContext();
+                    reset_transaction_context();
                     break;
                 case 0x9000:
                     // All is well
@@ -84,7 +84,7 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx) {
                 default:
                     // Internal error, wipe the transaction context and report the exception
                     sw = 0x6800u | (e & 0x7FFu);
-                    resetTransactionContext();
+                    reset_transaction_context();
                     break;
             }
             // Unexpected exception => report

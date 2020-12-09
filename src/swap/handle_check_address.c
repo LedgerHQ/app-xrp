@@ -2,7 +2,8 @@
 
 #include "handle_check_address.h"
 #include "os.h"
-#include "../xrp/xrpHelpers.h"
+#include "../xrp/xrp_helpers.h"
+#include "../xrp/xrp_pub_key.h"
 
 static int os_strcmp(const char* s1, const char* s2) {
     size_t size = strlen(s1) + 1;
@@ -20,18 +21,19 @@ int handle_check_address(check_address_parameters_t* params) {
     }
 
     uint8_t* bip32_path_ptr = params->address_parameters;
-    uint8_t bip32PathLength = *(bip32_path_ptr++);
+    uint8_t bip32_path_length = *(bip32_path_ptr++);
     cx_ecfp_public_key_t public_key;
-    int error = get_publicKey(CX_CURVE_256K1, bip32_path_ptr, bip32PathLength, &public_key, NULL);
+    int error =
+        get_public_key(CX_CURVE_256K1, bip32_path_ptr, bip32_path_length, &public_key, NULL);
     if (error) {
-        PRINTF("get_publicKey failed\n");
+        PRINTF("get_public_key failed\n");
         return 0;
     }
 
-    char address[41];
-    get_address(&public_key, address, sizeof(address));
+    xrp_address_t address;
+    get_address(&public_key, &address);
 
-    if (os_strcmp(address, params->address_to_check) != 0) {
+    if (os_strcmp(address.buf, params->address_to_check) != 0) {
         PRINTF("Addresses don't match\n");
         return 0;
     }

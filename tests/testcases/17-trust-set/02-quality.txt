@@ -1,0 +1,7 @@
+Transaction Type; Set Trust Line
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Quality In; 429.4 %
+Quality Out; 98 %
+Limit Amount; L4p 1230000000
+Issuer;   rsP3mgGb2tcY    UrxiLFiHJiQ     XhsziegtwBc   
+Fee; XRP 0.00001

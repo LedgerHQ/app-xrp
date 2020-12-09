@@ -1,0 +1,15 @@
+{
+  "TransactionType": "Payment",
+  "Account": "OWN_ADDR",
+  "Destination": "rTooLkitCksh5mQa67eaa2JaWHDBnHkpy",
+  "Amount": "200000000",
+  "DeliverMin": {
+		"value": "123.45",
+		"currency": "USD",
+    "issuer": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B"
+  },
+  "Fee": "15",
+  "Flags": 2147614720,
+  "Sequence": 7,
+  "SigningPubKey": "OWN_PUBKEY"
+}

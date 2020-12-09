@@ -29,7 +29,7 @@
  * In essence, the loading screen implementation consists of three steps after
  * its appearance has been requested:
  *
- * 1. Request the display of loadingUI. This UI has a dummy last element that
+ * 1. Request the display of loading_ui. This UI has a dummy last element that
  *    will never be displayed. The reason for this is that interrupts to the
  *    rendering of the UI (such as calling a time-consuming function) will
  *    cause the element that is currently rendering to either disappear or
@@ -56,15 +56,15 @@
 
 #define UID_DUMMY 1
 
-static uint8_t loadingState;
-static action_t pendingAction;
-static char loadingMessage[18];
+static uint8_t loading_state;
+static action_t pending_action;
+static char loading_message[18];
 
-static const bagl_element_t loadingUI[] = {UI_BACKGROUND(),
-                                           UI_SINGLE_TEXT(loadingMessage),
-                                           UI_DUMMY(UID_DUMMY)};
+static const bagl_element_t loading_ui[] = {UI_BACKGROUND(),
+                                            UI_SINGLE_TEXT(loading_message),
+                                            UI_DUMMY(UID_DUMMY)};
 
-static unsigned int loadingUI_button(unsigned int button_mask, unsigned int button_mask_counter) {
+static unsigned int loading_ui_button(unsigned int button_mask, unsigned int button_mask_counter) {
     // It is not possible to omit this function
     UNUSED(button_mask);
     UNUSED(button_mask_counter);
@@ -72,16 +72,16 @@ static unsigned int loadingUI_button(unsigned int button_mask, unsigned int butt
     return 0;
 }
 
-static const bagl_element_t* loadingUI_button_prepro(const bagl_element_t* element) {
+static const bagl_element_t* loading_ui_button_prepro(const bagl_element_t* element) {
     if (element->component.userid == UID_DUMMY) {
-        if (loadingState == STATE_WAITING) {
-            loadingState = STATE_READY;
+        if (loading_state == STATE_WAITING) {
+            loading_state = STATE_READY;
             UX_CALLBACK_SET_INTERVAL(1)
-        } else if (loadingState == STATE_READY) {
-            loadingState = STATE_DONE;
+        } else if (loading_state == STATE_READY) {
+            loading_state = STATE_DONE;
 
-            pendingAction();
-            pendingAction = NULL;
+            pending_action();
+            pending_action = NULL;
         }
 
         return NULL;
@@ -90,12 +90,12 @@ static const bagl_element_t* loadingUI_button_prepro(const bagl_element_t* eleme
     }
 }
 
-void executeAsync(action_t actionToLoad, char* message) {
-    loadingState = STATE_WAITING;
-    pendingAction = actionToLoad;
+void execute_async(action_t action_to_load, char* message) {
+    loading_state = STATE_WAITING;
+    pending_action = action_to_load;
 
-    memset(loadingMessage, 0, sizeof(loadingMessage));
-    os_memmove(loadingMessage, message, MIN(sizeof(loadingMessage) - 1, strlen(message)));
+    memset(loading_message, 0, sizeof(loading_message));
+    os_memmove(loading_message, message, MIN(sizeof(loading_message) - 1, strlen(message)));
 
-    UX_DISPLAY(loadingUI, loadingUI_button_prepro)
+    UX_DISPLAY(loading_ui, loading_ui_button_prepro)
 }

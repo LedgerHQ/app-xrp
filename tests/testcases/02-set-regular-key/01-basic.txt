@@ -1,0 +1,4 @@
+Transaction Type; Set Regular Key
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Fee; XRP 0.000018
+Regular Key;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   

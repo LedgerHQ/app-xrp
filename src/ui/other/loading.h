@@ -20,6 +20,6 @@
 
 #include "../../transaction/transaction.h"
 
-void executeAsync(action_t actionToLoad, char* message);
+void execute_async(action_t action_to_load, char* message);
 
 #endif  // LEDGER_APP_XRP_LOADING_H

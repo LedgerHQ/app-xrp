@@ -1,0 +1,21 @@
+{
+    "version": 1,
+    "rules": [
+        {
+            "regexp": "Account$|Amount|Balance|Clear Flag|Currency.*|Deliver Min|Destination|Domain|Expiration|Flags|Fulfillment|Invoice|Issuer|Limit Amount|Memo Fmt|Quality In|Quality Out|Regular Key|Send Max|Signer Quorum|Transfer Rate|Tick Size|Set Flag|Settle Delay|Signer Weight.*|Source Tag|Taker Gets|Taker Pays|Transaction Type|Offer Sequence|Fee|Txn Sig|Owner|Memo Data|.*\\(\\d/\\d\\)",
+            "actions": [
+                [ "button", 2, true ],
+                [ "button", 2, false ]
+            ]
+        },
+        {
+            "text": "Sign transaction",
+            "actions": [
+                [ "button", 1, true ],
+                [ "button", 2, true ],
+                [ "button", 2, false ],
+                [ "button", 1, false ]
+            ]
+        }
+    ]
+}
