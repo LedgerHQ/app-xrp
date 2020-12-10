@@ -68,7 +68,7 @@ void displayAddressConfirmationUI(char* address, action_t onApprove, action_t on
     approvalAction = onApprove;
     rejectionAction = onReject;
 
-    os_memset(fullAddress, 0, sizeof(fullAddress));
+    memset(fullAddress, 0, sizeof(fullAddress));
     strcpy(fullAddress, address);
 
     ux_flow_init(0, ux_display_address_flow, NULL);

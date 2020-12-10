@@ -26,18 +26,23 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define XRP_AMOUNT_LEN      8
-#define ISSUED_CURRENCY_LEN 48
-
-void formatXRP(field_t *field, char *dst) {
+int formatXRP(field_t *field, char *dst) {
     uint64_t value = readUnsigned64(field->data);
 
-    value -= (uint64_t) 0x4000000000000000;
-    xrp_print_amount(value, dst, MAX_FIELD_LEN);
+    if (!(value & 0x4000000000000000)) {
+        return -1;
+    }
+
+    value ^= 0x4000000000000000;
+    if (xrp_print_amount(value, dst, MAX_FIELD_LEN) != 0) {
+        return -1;
+    }
+
+    return 0;
 }
 
 bool isAllZeros(const uint8_t *data, uint8_t length) {
-    for (uint8_t i = 0; i < length; ++i) {
+    for (size_t i = 0; i < length; ++i) {
         if (data[i] != 0) {
             return false;
         }
@@ -111,15 +116,23 @@ void formatIssuedCurrency(field_t *field, char *dst) {
 }
 
 void amountFormatter(field_t *field, char *dst) {
+    int error = 0;
+
     switch (field->length) {
         case XRP_AMOUNT_LEN:
-            formatXRP(field, dst);
+            error = formatXRP(field, dst);
             break;
         case ISSUED_CURRENCY_LEN:
             formatIssuedCurrency(field, dst);
+            error = 0;
             break;
         default:
-            SNPRINTF(dst, "Invalid amount!");
+            error = 1;
+            break;
+    }
+
+    if (error) {
+        SNPRINTF(dst, "Invalid amount!");
     }
 }
 

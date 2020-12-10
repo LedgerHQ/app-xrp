@@ -15,6 +15,8 @@
  *  limitations under the License.
  ********************************************************************************/
 
+#include <stdbool.h>
+
 #include "os.h"
 #include "cx.h"
 
@@ -29,4 +31,17 @@ unsigned short xrp_public_key_to_encoded_base58(unsigned char WIDE *in,
 
 void xrp_compress_public_key(cx_ecfp_public_key_t *publicKey, uint8_t *out, uint32_t outlen);
 
-void xrp_print_amount(uint64_t amount, char *out, uint32_t outlen);
+int get_publicKey(cx_curve_t curve,
+                  uint8_t *bip32Path,
+                  size_t bip32PathLength,
+                  cx_ecfp_public_key_t *pubKey,
+                  uint8_t *chainCode);
+
+void get_address(cx_ecfp_public_key_t *pubkey, char *address, size_t maxAddressLength);
+
+int xrp_print_amount(uint64_t amount, char *out, size_t outlen);
+
+bool parse_bip32_path(uint8_t *path,
+                      size_t pathLength,
+                      uint32_t *pathParsed,
+                      size_t pathParsedLength);

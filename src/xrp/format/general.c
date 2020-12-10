@@ -113,7 +113,7 @@ void accountFormatter(field_t* field, char* dst) {
 
             // 3. Fill all three pages with spaces and copy the every segment
             //    to their corresponding position
-            os_memset(dst, ' ', PAGE_W * 3);
+            memset(dst, ' ', PAGE_W * 3);
             os_memmove(dst + PAGE_W * 0 + longPadding, dst + ADDR_DST_OFFSET, longSegmentLen);
             os_memmove(dst + PAGE_W * 1 + basePadding,
                        dst + ADDR_DST_OFFSET + longSegmentLen,

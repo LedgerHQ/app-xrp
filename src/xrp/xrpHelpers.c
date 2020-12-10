@@ -16,8 +16,10 @@
  ********************************************************************************/
 
 #include "xrpHelpers.h"
+#include "os_io_seproxyhal.h"
 #include "xrpBase58.h"
 #include "parse/numberHelpers.h"
+#include "limitations.h"
 #include <stdbool.h>
 #include <string.h>
 
@@ -88,6 +90,69 @@ void xrp_compress_public_key(cx_ecfp_public_key_t *publicKey, uint8_t *out, uint
     }
 }
 
+bool parse_bip32_path(uint8_t *path,
+                      size_t pathLength,
+                      uint32_t *pathParsed,
+                      size_t pathParsedLength) {
+    if ((pathLength < 0x01) || (pathLength > pathParsedLength)) {
+        return false;
+    }
+
+    for (size_t i = 0; i < pathLength; i++) {
+        pathParsed[i] = (path[0] << 24u) | (path[1] << 16u) | (path[2] << 8u) | (path[3]);
+        path += 4;
+    }
+
+    return true;
+}
+
+/* return 0 on success */
+int get_publicKey(cx_curve_t curve,
+                  uint8_t *bip32Path,
+                  size_t bip32PathLength,
+                  cx_ecfp_public_key_t *pubKey,
+                  uint8_t *chainCode) {
+    uint32_t bip32PathParsed[MAX_BIP32_PATH];
+    if (!parse_bip32_path(bip32Path, bip32PathLength, bip32PathParsed, MAX_BIP32_PATH)) {
+        PRINTF("Invalid path\n");
+        return 0x6a80;
+    }
+
+    cx_ecfp_private_key_t privateKey;
+    uint8_t privateKeyData[33];
+    int error = 0;
+
+    BEGIN_TRY {
+        TRY {
+            os_perso_derive_node_bip32(curve,
+                                       bip32PathParsed,
+                                       bip32PathLength,
+                                       privateKeyData,
+                                       chainCode);
+            cx_ecfp_init_private_key(curve, privateKeyData, 32, &privateKey);
+            cx_ecfp_generate_pair(curve, pubKey, &privateKey, 1);
+        }
+        CATCH_OTHER(e) {
+            error = e;
+        }
+        FINALLY {
+            explicit_bzero(privateKeyData, sizeof(privateKeyData));
+            explicit_bzero(&privateKey, sizeof(privateKey));
+        }
+    }
+    END_TRY;
+
+    return error;
+}
+
+void get_address(cx_ecfp_public_key_t *pubkey, char *address, size_t maxAddressLength) {
+    uint8_t addr_len;
+    xrp_compress_public_key(pubkey, (uint8_t *) address, 33);
+    addr_len =
+        xrp_public_key_to_encoded_base58((uint8_t *) address, 33, address, maxAddressLength, 0, 0);
+    address[addr_len] = '\0';
+}
+
 bool adjustDecimals(const char *src,
                     uint32_t srcLength,
                     char *target,
@@ -156,29 +221,40 @@ bool adjustDecimals(const char *src,
     return true;
 }
 
-void xrp_print_amount(uint64_t amount, char *out, uint32_t outlen) {
+#define CURRENCY      "XRP "
+#define CURRENCY_SIZE (sizeof(CURRENCY) - 1)
+
+/* return -1 on error, 0 otherwise */
+int xrp_print_amount(uint64_t amount, char *out, size_t outlen) {
     char tmp[20];
-    char tmp2[25];
     uint32_t numDigits = 0, i;
-    uint64_t base = 1;
-    while (base <= amount) {
-        base *= 10;
+    uint64_t base;
+
+    for (base = 1; base <= amount; base *= 10) {
         numDigits++;
+        if (numDigits > sizeof(tmp) - 1) {
+            return -1;
+        }
     }
-    if (numDigits > sizeof(tmp) - 1) {
-        THROW(EXCEPTION);
-    }
+
     base /= 10;
     for (i = 0; i < numDigits; i++) {
         tmp[i] = intToNumberChar((amount / base) % 10);
         base /= 10;
     }
     tmp[i] = '\0';
-    strcpy(tmp2, "XRP ");
-    adjustDecimals(tmp, i, tmp2 + 4, 25, 6);
-    if (strlen(tmp2) < outlen - 1) {
-        strcpy(out, tmp2);
-    } else {
-        out[0] = '\0';
+
+    char tmp2[25];
+    strncpy(tmp2, CURRENCY, sizeof(tmp2));
+    if (!adjustDecimals(tmp, i, tmp2 + CURRENCY_SIZE, sizeof(tmp2) - CURRENCY_SIZE, 6)) {
+        return -1;
     }
+
+    if (strlen(tmp2) >= outlen - 1) {
+        out[0] = '\0';
+        return -1;
+    }
+    strncpy(out, tmp2, outlen);
+
+    return 0;
 }

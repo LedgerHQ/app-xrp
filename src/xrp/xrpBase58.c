@@ -15,6 +15,8 @@
  *  limitations under the License.
  ********************************************************************************/
 
+#include <string.h>
+
 #include "xrpBase58.h"
 #include "../limitations.h"
 
@@ -68,7 +70,7 @@ unsigned short xrp_encode_base58(const unsigned char WIDE *in,
         THROW(EXCEPTION_OVERFLOW);
     }
 
-    os_memset(out, BASE58ALPHABET[0], zeroCount);
+    memset(out, BASE58ALPHABET[0], zeroCount);
 
     i = zeroCount;
     while (j < outputSize) {

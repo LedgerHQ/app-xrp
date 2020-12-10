@@ -15,6 +15,8 @@
  *  limitations under the License.
  ********************************************************************************/
 
+#include <string.h>
+
 #include "fieldSort.h"
 #include "format/transactionTypes.h"
 
@@ -36,9 +38,9 @@ bool isPreceding(field_t *field, field_t *otherField) {
 
 void swapFields(parseResult_t *result, uint8_t idx1, uint8_t idx2) {
     field_t bufferField;
-    os_memcpy(&bufferField, &result->fields[idx1], sizeof(field_t));
-    os_memcpy(&result->fields[idx1], &result->fields[idx2], sizeof(field_t));
-    os_memcpy(&result->fields[idx2], &bufferField, sizeof(field_t));
+    memcpy(&bufferField, &result->fields[idx1], sizeof(field_t));
+    memcpy(&result->fields[idx1], &result->fields[idx2], sizeof(field_t));
+    memcpy(&result->fields[idx2], &bufferField, sizeof(field_t));
 }
 
 void sortFields(parseResult_t *result) {

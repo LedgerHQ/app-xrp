@@ -42,6 +42,6 @@ typedef struct {
     uint8_t arrayIndex2;
 } parseContext_t;
 
-void parseTx(parseContext_t *parseContext);
+int parseTx(parseContext_t *parseContext);
 
 #endif  // LEDGER_APP_XRP_XRPPARSE_H
