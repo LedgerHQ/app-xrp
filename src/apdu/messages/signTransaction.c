@@ -44,7 +44,7 @@ void handlePacketContent(uint8_t p1,
 void signTransaction() {
     uint8_t privateKeyData[64];
     cx_ecfp_private_key_t privateKey;
-    uint32_t tx = 0;
+    uint32_t info, tx = 0;
 
     if (signState != PENDING_REVIEW) {
         resetTransactionContext();
@@ -108,7 +108,7 @@ void signTransaction() {
                                               32,
                                               G_io_apdu_buffer,
                                               sizeof(G_io_apdu_buffer),
-                                              NULL);
+                                              &info);
                 G_io_apdu_buffer[0] = 0x30;
             } else {
                 tx = (uint32_t) cx_eddsa_sign(&privateKey,
@@ -120,7 +120,7 @@ void signTransaction() {
                                               0,
                                               G_io_apdu_buffer,
                                               sizeof(G_io_apdu_buffer),
-                                              NULL);
+                                              &info);
             }
         }
         CATCH_OTHER(e) {
