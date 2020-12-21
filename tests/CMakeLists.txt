@@ -36,7 +36,6 @@ add_library(xrp
   ../src/xrp/strings.h
   ../src/xrp/time.c
   ../src/xrp/time.h
-  ../src/xrp/transaction_types.c
   ../src/xrp/transaction_types.h
   ../src/xrp/xrp_helpers.c
   ../src/xrp/xrp_helpers.h
@@ -51,6 +50,17 @@ add_executable(test_printers
   include/cx.h
   include/os.h
 )
+
+add_executable(test_swap
+  src/test_swap.c
+  src/cx.c
+  ../src/swap/handle_check_address.h
+  ../src/swap/swap_lib_calls.c
+  ../src/swap/swap_lib_calls.h
+  include/bolos_target.h
+  include/cx.h
+  include/os.h
+  )
 
 add_executable(test_tx
   src/test_tx.c
@@ -71,7 +81,9 @@ add_executable(fuzz_tx
 target_compile_options(fuzz_tx PRIVATE -Wall -fsanitize=fuzzer,address -g -ggdb2)
 target_link_libraries(fuzz_tx PRIVATE cmocka crypto ssl xrp -fsanitize=fuzzer,address)
 target_link_libraries(test_printers PRIVATE cmocka crypto ssl xrp)
+target_link_libraries(test_swap PRIVATE cmocka crypto ssl xrp)
 target_link_libraries(test_tx PRIVATE cmocka crypto ssl xrp)
 
 add_test(test_printers test_printers)
+add_test(test_swap test_swap)
 add_test(test_tx test_tx)

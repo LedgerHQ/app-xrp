@@ -161,7 +161,7 @@ static void generate_expected_result(const char *filename, parseResult_t *transa
 }
 
 static void check_transaction_results(const char *filename, parseResult_t *transaction) {
-    //printf("[*] %s\n", filename);
+    // printf("[*] %s\n", filename);
     char path[1024];
     get_result_filename(filename, path, sizeof(path));
 

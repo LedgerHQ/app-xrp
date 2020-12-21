@@ -15,8 +15,8 @@ int handle_check_address(check_address_parameters_t* params) {
     PRINTF("Address to check %s\n", params->address_to_check);
     PRINTF("Inside handle_check_address\n");
 
-    if (params->address_to_check == 0) {
-        PRINTF("Address to check == 0\n");
+    if (params->address_to_check == NULL) {
+        PRINTF("Address to check == NULL\n");
         return 0;
     }
 
