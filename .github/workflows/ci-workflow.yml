@@ -23,3 +23,65 @@ jobs:
         with:
           name: xrp-app-debug
           path: bin
+
+  job_unit_test:
+    name: Unit tests
+    needs: job_build_debug
+    runs-on: ubuntu-latest
+
+    container:
+      image: docker://ledgerhq/ledger-app-builder:1.6.1-2
+
+    steps:
+      - name: Clone
+        uses: actions/checkout@v2
+
+      - name: Install dependancies
+        run: |
+          apt-get install libssl-dev
+
+      - name: Build unit tests
+        run: |
+          cmake -Btests/build -Htests/ && make -C tests/build/ && make -C tests/build test ARGS='-V -R test_tx'
+
+  job_test:
+    name: Functional tests
+    needs: job_build_debug
+    runs-on: ubuntu-latest
+
+    container:
+      image: docker://ledgerhq/speculos:latest
+      ports:
+        - 1234:1234
+        - 9999:9999
+        - 40000:40000
+        - 41000:41000
+        - 42000:42000
+        - 43000:43000
+      options: --entrypoint /bin/bash
+
+    steps:
+      - name: Clone
+        uses: actions/checkout@v2
+
+      - name: Install dependancies
+        run: |
+          apt-get update && apt-get install build-essential -y libudev-dev libusb-1.0-0-dev libfox-1.6-dev
+
+      - name: Download app binary
+        uses: actions/download-artifact@v2
+        with:
+          name: xrp-app-debug
+          path: bin
+
+      - name: Run test
+        run: |
+          nohup bash -c "python /speculos/speculos.py bin/app.elf --sdk 1.6  --log-level automation:DEBUG --automation file:tests/automation.json --display headless" > speculos.log 2<&1 &
+          sleep 4
+          cd tests && pip install -r requirements.txt && LEDGER_PROXY_ADDRESS=127.0.0.1 LEDGER_PROXY_PORT=9999 pytest -v -s
+
+      - name: Upload Speculos log
+        uses: actions/upload-artifact@v2
+        with:
+          name: speculos-log
+          path: speculos.log
