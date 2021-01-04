@@ -40,7 +40,7 @@ UX_STEP_NOCB(
             "Address",
             full_address,
         });
-UX_STEP_VALID(
+UX_STEP_CB(
         ux_display_address_flow_3_step,
         pb,
         approval_action(),
@@ -48,7 +48,7 @@ UX_STEP_VALID(
             &C_icon_validate_14,
             "Approve",
         });
-UX_STEP_VALID(
+UX_STEP_CB(
         ux_display_address_flow_4_step,
         pb,
         rejection_action(),

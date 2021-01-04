@@ -36,7 +36,7 @@ UX_STEP_NOCB(
             "Version",
             APPVERSION,
         });
-UX_STEP_VALID(
+UX_STEP_CB(
         ux_idle_flow_3_step,
         pb,
         os_sched_exit(-1),

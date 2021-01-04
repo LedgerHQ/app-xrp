@@ -41,7 +41,7 @@ UX_STEP_NOCB_INIT(
             approval_strings.review.field_value.buf
         });
 
-UX_STEP_VALID(
+UX_STEP_CB(
         ux_review_flow_sign,
         pn,
         approval_menu_callback(OPTION_SIGN),
@@ -50,7 +50,7 @@ UX_STEP_VALID(
             "Sign transaction"
         });
 
-UX_STEP_VALID(
+UX_STEP_CB(
         ux_review_flow_reject,
         pn,
         approval_menu_callback(OPTION_REJECT),
