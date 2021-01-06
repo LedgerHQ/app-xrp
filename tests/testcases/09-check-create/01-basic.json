@@ -1,0 +1,11 @@
+{
+    "TransactionType": "CheckCreate",
+    "Account": "OWN_ADDR",
+    "Fee": "10",
+    "Flags": 2147483648,
+    "Sequence": 25,
+    "SendMax": "184674407",
+    "Destination": "rBKz5MC2iXdoS3XgnNSYmF69K1Yo4NS3Ws",
+    "Expiration": 570113521,
+    "InvoiceID": "6F1DFD1D0FE8A32E40E1F2C05CF1C15545BAB56B617F9C6C2D63A6B704BEF59B"
+}

@@ -1,0 +1,22 @@
+Transaction Type; Payment
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Flags; No Direct Ripple
+Amount; USD 123.45
+Issuer;   rvYAfWj5gh6     7oV6fW32ZzP     3Aw4Eubs59B   
+Fee; XRP 0.000015
+Send Max; XRP 0.0001
+Destination;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Currency [P1: S1]; CNY
+Issuer [P1: S1];   rKiCet8SdvWx    PXnAgYarFUX     Mh1zCPz432Y   
+Currency [P1: S2]; USD
+Issuer [P1: S2];   rvYAfWj5gh6     7oV6fW32ZzP     3Aw4Eubs59B   
+Currency [P2: S1]; USD
+Issuer [P2: S1];   rvYAfWj5gh6     7oV6fW32ZzP     3Aw4Eubs59B   
+Currency [P3: S1]; USD
+Issuer [P3: S1];   rhub8VRN55s9    4qWKDv6jmDy     1pUykJzF3wq   
+Currency [P3: S2]; USD
+Issuer [P3: S2];   rvYAfWj5gh6     7oV6fW32ZzP     3Aw4Eubs59B   
+Account [P4: S1];   r9vbV3EHvXWj    SkeQ6CAcYVP     Geq7TuiXY2X   
+Account [P4: S2];   rLQrHSoJnzHz    mdFDHYoW85C     ze8Teu97JN2   
+Account [P5: S1];   r9vbV3EHvXWj    SkeQ6CAcYVP     Geq7TuiXY2X   
+Account [P5: S2];   r9JS9fLbtLzg    BCdFCnS3LpV     PUBJAmg7PnM   

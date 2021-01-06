@@ -1,0 +1,10 @@
+Transaction Type; Account Setting
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Transfer Rate; 0.0000001 %
+Set Flag; Track Txn ID
+Email Hash; 505350263fb896c545c901343e8ee2da
+Wallet Locator; ea8fbf830b802cf8e0976dfd66be512c892bdea79baecdb7669db3ac7b6311e2
+Fee; XRP 0.00001
+Message Key; 6014a17f454e72494cec232e05b0d881b61807d1ca19f32b8125e390ff14e66d
+Domain; example.com
+Tick Size; 4

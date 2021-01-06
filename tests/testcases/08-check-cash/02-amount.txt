@@ -1,0 +1,5 @@
+Transaction Type; Cash Check
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Check ID; 838766ba2b995c00744175f69a1b11e32c3dbc40e64801a4056fcbd657f57334
+Amount; XRP 184.674407
+Fee; XRP 0.00001

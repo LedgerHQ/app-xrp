@@ -1,0 +1,6 @@
+Transaction Type; Fund Channel
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Expiration; 2017-03-18 16:59:18 UTC
+Channel; c1ae6dddeec05cf2978c0bad6fe302948e9533691dc749dcdd3b9e5992ca6198
+Amount; XRP 0.01
+Fee; XRP 0.00001

@@ -1,0 +1,9 @@
+{
+  "TransactionType": "SetRegularKey",
+  "Account": "OWN_ADDR",
+  "Fee": "18",
+  "Sequence": 31,
+  "RegularKey": "rTooLkitCksh5mQa67eaa2JaWHDBnHkpy",
+  "Flags": 2147483648,
+  "SigningPubKey": "OWN_PUBKEY"
+}

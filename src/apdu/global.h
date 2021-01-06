@@ -21,8 +21,8 @@
 
 #include <stdbool.h>
 #include "constants.h"
-#include "limitations.h"
-#include "../xrp/parse/xrpParse.h"
+#include "../xrp/xrp_parse.h"
+#include "../xrp/xrp_helpers.h"
 
 typedef enum {
     IDLE,
@@ -33,8 +33,8 @@ typedef enum {
 typedef struct swapStrings_t {
     char address[41];
     char destination_tag[11];  // uint32_t => 10 numbers max
-    uint8_t amount[8];
-    uint8_t fees[8];
+    uint64_t amount;
+    uint64_t fee;
     /* tmp is used when checking swap parameters. As swapStrings_t is present in a union
      * (approvalStrings_t) with a bigger structure (reviewStrings_t), this element is essentially
      * costless.*/
@@ -42,8 +42,8 @@ typedef struct swapStrings_t {
 } swapStrings_t;
 
 typedef struct reviewStrings_t {
-    char fieldName[MAX_FIELDNAME_LEN];
-    char fieldValue[MAX_FIELD_LEN];
+    field_name_t field_name;
+    field_value_t field_value;
 } reviewStrings_t;
 
 typedef union {
@@ -52,30 +52,30 @@ typedef union {
 } approvalStrings_t;
 
 typedef struct publicKeyContext_t {
-    cx_ecfp_public_key_t publicKey;
-    char address[41];
-    uint8_t chainCode[32];
-    bool getChaincode;
+    cx_ecfp_public_key_t public_key;
+    xrp_address_t address;
+    uint8_t chain_code[32];
+    bool get_chaincode;
 } publicKeyContext_t;
 
 typedef struct transactionContext_t {
     cx_curve_t curve;
-    uint8_t pathLength;
-    uint32_t bip32Path[MAX_BIP32_PATH];
-    uint8_t rawTx[MAX_RAW_TX];
-    uint32_t rawTxLength;
+    uint8_t path_length;
+    uint32_t bip32_path[MAX_BIP32_PATH];
+    uint8_t raw_tx[MAX_RAW_TX];
+    uint32_t raw_tx_length;
 } transactionContext_t;
 
 typedef union {
-    publicKeyContext_t publicKeyContext;
-    transactionContext_t transactionContext;
+    publicKeyContext_t public_key_context;
+    transactionContext_t transaction_context;
 } tmpCtx_t;
 
-extern tmpCtx_t tmpCtx;
-extern signState_e signState;
-extern approvalStrings_t approvalStrings;
+extern tmpCtx_t tmp_ctx;
+extern signState_e sign_state;
+extern approvalStrings_t approval_strings;
 extern bool called_from_swap;
 
-void resetTransactionContext();
+void reset_transaction_context();
 
 #endif  // LEDGER_APP_XRP_GLOBAL_H

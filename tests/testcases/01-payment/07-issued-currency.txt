@@ -1,0 +1,6 @@
+Transaction Type; Payment
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Amount; USD 123.45
+Issuer;   rvYAfWj5gh6     7oV6fW32ZzP     3Aw4Eubs59B   
+Fee; XRP 0.000015
+Destination;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   

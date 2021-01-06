@@ -1,0 +1,29 @@
+{
+  "TransactionType": "Payment",
+  "Account": "OWN_ADDR",
+  "Destination": "rTooLkitCksh5mQa67eaa2JaWHDBnHkpy",
+  "Amount": "10000",
+  "Paths": [
+    [
+      {
+        "currency": "ETH",
+        "issuer": "rKiCet8SdvWxPXnAgYarFUXMh1zCPz432Y",
+        "type": 48,
+        "type_hex": "0000000000000030"
+      }
+    ]
+  ],
+  "Memos": [
+    {
+      "Memo": {
+          "MemoData": "4C6F72656D",
+	  "MemoFormat": "4C6F72656D"
+      }
+    }
+  ],
+  "Fee": "15",
+  "Flags": 2147483648,
+  "Sequence": 131429307,
+  "LastLedgerSequence": 87108682,
+  "SigningPubKey": "OWN_PUBKEY"
+}

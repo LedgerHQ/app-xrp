@@ -1,0 +1,9 @@
+{
+    "TransactionType": "DepositPreauth",
+    "Account": "OWN_ADDR",
+    "Fee": "10",
+    "Flags": 2147483648,
+    "Sequence": 25,
+    "Authorize": "rEhxGqkqPPSxQ3P25J66ft5TwpzV14k2de"
+}
+

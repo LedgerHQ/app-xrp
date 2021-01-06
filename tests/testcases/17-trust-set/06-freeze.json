@@ -1,0 +1,12 @@
+{
+  "TransactionType": "TrustSet",
+  "Account": "OWN_ADDR",
+  "Fee": "10",
+  "Flags": 2148532224,
+  "Sequence": 25,
+  "LimitAmount": {
+    "currency": "RMB",
+    "issuer": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+    "value": "1000000000000000e-96"
+  }
+}

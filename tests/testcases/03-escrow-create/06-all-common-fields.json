@@ -1,0 +1,36 @@
+{
+  "TransactionType" : "EscrowCreate",
+  "Account" : "OWN_ADDR",
+  "Destination" : "rTooLkitCksh5mQa67eaa2JaWHDBnHkpy",
+  "SourceTag": 888,
+  "DestinationTag": 1338,
+  "AccountTxnID": "F02EB74CB4F5D2E6AC8BE70CEA41CCA872E680F9EFD2027605F0B42666037AA8",
+  "Memos": [
+    {
+      "Memo": {
+          "MemoData": "446576656C6F70656420627920546F776F204C616273"
+      }
+    },
+    {
+      "Memo": {
+          "MemoType": "68747470733A2F2F7777772E787270746F6F6C6B69742E636F6D",
+          "MemoData": "546F776F204C616273203C332048617264776172652077616C6C6574"
+      }
+    },
+    {
+      "Memo": {
+          "MemoType": "68747470733A2F2F7777772E787270746F6F6C6B69742E636F6D",
+          "MemoFormat": "746578742F706C61696E",
+          "MemoData": "546F776F204C616273203C332054686520585250204C6564676572202620496E7465726C65646765722050726F746F636F6C"
+      }
+    }
+  ],
+  "Amount" : "10000",
+  "CancelAfter": 533257958,
+  "FinishAfter": 533171558,
+  "Condition": "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
+  "Fee": "20",
+  "Flags": 2147483648,
+  "Sequence": 3,
+  "SigningPubKey": "OWN_PUBKEY"
+}

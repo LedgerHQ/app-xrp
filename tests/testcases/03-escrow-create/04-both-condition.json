@@ -1,0 +1,13 @@
+{
+  "TransactionType" : "EscrowCreate",
+  "Account" : "OWN_ADDR",
+  "Destination" : "rTooLkitCksh5mQa67eaa2JaWHDBnHkpy",
+  "Amount" : "10000",
+  "CancelAfter": 533257958,
+  "FinishAfter": 533171558,
+  "Condition": "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
+  "Fee": "20",
+  "Flags": 2147483648,
+  "Sequence": 3,
+  "SigningPubKey": "OWN_PUBKEY"
+}

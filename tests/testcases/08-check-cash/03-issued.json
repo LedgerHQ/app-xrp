@@ -1,0 +1,14 @@
+{
+    "TransactionType": "CheckCash",
+    "Account": "OWN_ADDR",
+    "Fee": "10",
+    "Flags": 2147483648,
+    "Sequence": 25,
+    "Amount": {
+        "value": "98218",
+        "currency": "USD",
+        "issuer": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59"
+    },
+    "CheckID": "838766BA2B995C00744175F69A1B11E32C3DBC40E64801A4056FCBD657F57334"
+}
+

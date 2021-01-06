@@ -1,0 +1,4 @@
+Transaction Type; Account Setting
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Set Flag; Deposit Auth
+Fee; XRP 0.00001

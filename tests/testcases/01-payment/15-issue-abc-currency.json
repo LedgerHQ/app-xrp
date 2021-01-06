@@ -1,0 +1,14 @@
+{
+  "TransactionType": "Payment",
+  "Account": "OWN_ADDR",
+  "Destination": "rTooLkitCksh5mQa67eaa2JaWHDBnHkpy",
+  "Amount": {
+    "currency": "ABC",
+    "value": "123000000",
+    "issuer": "OWN_ADDR"
+  },
+  "Fee": "15",
+  "Flags": 2147483648,
+  "Sequence": 7,
+  "SigningPubKey": "OWN_PUBKEY"
+}

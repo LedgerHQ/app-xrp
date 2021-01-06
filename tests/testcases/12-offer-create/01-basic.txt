@@ -1,0 +1,8 @@
+Transaction Type; Create Offer
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Expiration; 2016-12-04 12:59:18 UTC
+Offer Sequence; 4321
+Taker Pays; GKO 2
+Issuer;   ruazs5h1qEs     qpke88pcqna     seXdm6od2xc   
+Taker Gets; XRP 6
+Fee; XRP 0.00001

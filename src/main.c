@@ -19,8 +19,8 @@
 #include "os_io_seproxyhal.h"
 #include "apdu/entry.h"
 #include "apdu/global.h"
-#include "ui/main/idleMenu.h"
-#include "ui/address/addressUI.h"
+#include "ui/main/idle_menu.h"
+#include "ui/address/address_ui.h"
 #include <ux.h>
 
 #include "swap/swap_lib_calls.h"
@@ -88,7 +88,7 @@ void app_main(void) {
 
                 PRINTF("New APDU received:\n%.*H\n", rx, G_io_apdu_buffer);
 
-                handleApdu(&flags, &tx);
+                handle_apdu(&flags, &tx);
             }
             CATCH(EXCEPTION_IO_RESET) {
                 THROW(EXCEPTION_IO_RESET);
@@ -98,7 +98,7 @@ void app_main(void) {
                     case 0x6000:
                         // Wipe the transaction context and report the exception
                         sw = e;
-                        resetTransactionContext();
+                        reset_transaction_context();
                         break;
                     case 0x9000:
                         // All is well
@@ -107,7 +107,7 @@ void app_main(void) {
                     default:
                         // Internal error
                         sw = 0x6800u | (e & 0x7FFu);
-                        resetTransactionContext();
+                        reset_transaction_context();
                         break;
                 }
                 // Unexpected exception => report
@@ -127,15 +127,15 @@ void io_seproxyhal_display(const bagl_element_t *element) {
     io_seproxyhal_display_default((bagl_element_t *) element);
 }
 
-void handle_SEPROXYHAL_TAG_FINGER_EVENT() {
+void handle_seproxyhal_tag_finger_event() {
     UX_FINGER_EVENT(G_io_seproxyhal_spi_buffer);
 }
 
-void handle_SEPROXYHAL_TAG_BUTTON_PUSH_EVENT() {
+void handle_seproxyhal_tag_button_push_event() {
     UX_BUTTON_PUSH_EVENT(G_io_seproxyhal_spi_buffer);
 }
 
-void handle_SEPROXYHAL_TAG_STATUS_EVENT() {
+void handle_seproxyhal_tag_status_event() {
     if (G_io_apdu_media == IO_APDU_MEDIA_USB_HID &&
         !(U4BE(G_io_seproxyhal_spi_buffer, 3) & SEPROXYHAL_TAG_STATUS_EVENT_FLAG_USB_POWERED)) {
         THROW(EXCEPTION_IO_RESET);
@@ -146,11 +146,11 @@ void handle_default() {
     UX_DEFAULT_EVENT();
 }
 
-void handle_SEPROXYHAL_TAG_DISPLAY_PROCESSED_EVENT() {
+void handle_seproxyhal_tag_display_processed_event() {
     UX_DISPLAYED_EVENT({});
 }
 
-void handle_SEPROXYHAL_TAG_TICKER_EVENT() {
+void handle_seproxyhal_tag_ticker_event() {
     UX_TICKER_EVENT(G_io_seproxyhal_spi_buffer, {
         if (UX_ALLOWED) {
             // redisplay screen
@@ -168,22 +168,22 @@ unsigned char io_event(unsigned char channel) {
     // can't have more than one tag in the reply, not supported yet.
     switch (G_io_seproxyhal_spi_buffer[0]) {
         case SEPROXYHAL_TAG_BUTTON_PUSH_EVENT:
-            handle_SEPROXYHAL_TAG_BUTTON_PUSH_EVENT();
+            handle_seproxyhal_tag_button_push_event();
             break;
 
         case SEPROXYHAL_TAG_STATUS_EVENT:
-            handle_SEPROXYHAL_TAG_STATUS_EVENT();
+            handle_seproxyhal_tag_status_event();
         // no break is intentional
         default:
             handle_default();
             break;
 
         case SEPROXYHAL_TAG_DISPLAY_PROCESSED_EVENT:
-            handle_SEPROXYHAL_TAG_DISPLAY_PROCESSED_EVENT();
+            handle_seproxyhal_tag_display_processed_event();
             break;
 
         case SEPROXYHAL_TAG_TICKER_EVENT:
-            handle_SEPROXYHAL_TAG_TICKER_EVENT();
+            handle_seproxyhal_tag_ticker_event();
             break;
     }
 
@@ -210,7 +210,7 @@ void app_exit(void) {
 void coin_main() {
     for (;;) {
         called_from_swap = false;
-        resetTransactionContext();
+        reset_transaction_context();
 
         UX_INIT();
 
@@ -226,7 +226,7 @@ void coin_main() {
                 USB_power(0);
                 USB_power(1);
 
-                displayIdleMenu();
+                display_idle_menu();
 
 #ifdef HAVE_BLE
                 BLE_power(0, NULL);
@@ -279,10 +279,11 @@ static void library_main_helper(struct libargs_s *args) {
             }
             break;
         case GET_PRINTABLE_AMOUNT:
-            // ensure result is zero if an exception is thrown
-            args->get_printable_amount->result = 0;
-            args->get_printable_amount->result =
-                handle_get_printable_amount(args->get_printable_amount);
+            // ensure result is zero if an exception is thrown (compatibility breaking, disabled
+            // until LL is ready)
+            // args->get_printable_amount->result = 0;
+            // args->get_printable_amount->result =
+            handle_get_printable_amount(args->get_printable_amount);
             break;
         default:
             break;

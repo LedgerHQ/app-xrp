@@ -1,0 +1,6 @@
+Transaction Type; Set Trust Line
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Limit Amount; 0
+Currency; d60261d8f32194fe844f1cc60de01165e630f788
+Issuer;   rsP3mgGb2tcY    UrxiLFiHJiQ     XhsziegtwBc   
+Fee; XRP 0.00001

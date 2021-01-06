@@ -1,0 +1,9 @@
+Transaction Type; Create Channel
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Destination Tag; 23480
+Cancel After; 2016-11-22 23:12:38 UTC
+Settle Delay; 86400 s
+Amount; XRP 0.01
+Fee; XRP 0.00001
+Public Key; 023693f15967ae357d0327974ad46fe3c127113b1110d6044fd41e723689f81cc6
+Destination;   rf1BiGeXwwQo    i8Z2ueFYTEX     SwuJYfV2Jpn   

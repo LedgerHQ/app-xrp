@@ -1,0 +1,9 @@
+{
+    "TransactionType": "SignerListSet",
+    "Account": "OWN_ADDR",
+    "Fee": "10",
+    "Flags": 2147483648,
+    "Sequence": 25,
+    "SignerQuorum": 0
+}
+

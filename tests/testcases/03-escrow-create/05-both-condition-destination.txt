@@ -1,0 +1,9 @@
+Transaction Type; Create Escrow
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Destination Tag; 1337
+Cancel After; 2016-11-23 23:12:38 UTC
+Finish After; 2016-11-22 23:12:38 UTC
+Amount; XRP 0.01
+Fee; XRP 0.00002
+Condition; a0258020e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855810100
+Destination;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   

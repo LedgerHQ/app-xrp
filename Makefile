@@ -24,7 +24,7 @@ APPNAME = XRP
 APP_LOAD_PARAMS=--appFlags 0xa40 --path "44'/144'" --curve secp256k1 --curve ed25519 $(COMMON_LOAD_PARAMS)
 
 APPVERSION_M=2
-APPVERSION_N=1
+APPVERSION_N=2
 APPVERSION_P=0
 APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 DEFINES   += UNUSED\(x\)=\(void\)x
@@ -34,9 +34,9 @@ COIN = xrp
 
 #prepare hsm generation
 ifeq ($(TARGET_NAME),TARGET_NANOX)
-ICONNAME=nanox_app_$(COIN).gif
+ICONNAME=img/nanox_app_$(COIN).gif
 else
-ICONNAME=nanos_app_$(COIN).gif
+ICONNAME=img/nanos_app_$(COIN).gif
 endif
 
 

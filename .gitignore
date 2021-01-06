@@ -4,3 +4,6 @@ dep
 obj
 src/glyphs.c
 src/glyphs.h
+__pycache__/
+.cache/
+tests/build/

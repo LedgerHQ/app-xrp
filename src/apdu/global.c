@@ -18,20 +18,20 @@
 
 #include <string.h>
 #include "global.h"
-#include "messages/signTransaction.h"
+#include "messages/sign_transaction.h"
 
-tmpCtx_t tmpCtx;
-signState_e signState;
-approvalStrings_t approvalStrings;
+tmpCtx_t tmp_ctx;
+signState_e sign_state;
+approvalStrings_t approval_strings;
 bool called_from_swap;
 
-void resetTransactionContext() {
-    explicit_bzero(&parseContext, sizeof(parseContext_t));
-    explicit_bzero(&tmpCtx, sizeof(tmpCtx));
+void reset_transaction_context() {
+    explicit_bzero(&parse_context, sizeof(parseContext_t));
+    explicit_bzero(&tmp_ctx, sizeof(tmp_ctx));
 
-    signState = IDLE;
+    sign_state = IDLE;
 
     if (!called_from_swap) {
-        explicit_bzero(&approvalStrings, sizeof(approvalStrings));
+        explicit_bzero(&approval_strings, sizeof(approval_strings));
     }
 }

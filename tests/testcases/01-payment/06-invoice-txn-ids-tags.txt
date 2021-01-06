@@ -1,0 +1,9 @@
+Transaction Type; Payment
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Source Tag; 1338
+Destination Tag; 1337
+Account Txn ID; f02eb74cb4f5d2e6ac8be70cea41cca872e680f9efd2027605f0b42666037aa8
+Invoice ID; f86d43fbcfc24b31ad5f035083b34722c71871412a60429d4d79daa833031ea6
+Amount; XRP 1
+Fee; XRP 0.000015
+Destination;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   

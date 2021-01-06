@@ -16,39 +16,39 @@
  ********************************************************************************/
 
 #include "transaction.h"
-#include "../ui/transaction/reviewMenu.h"
+#include "../ui/transaction/review_menu.h"
 #include "../ui/other/loading.h"
 #include "../apdu/global.h"
-#include "../xrp/format/transactionTypes.h"
-#include "../xrp/format/fields.h"
-#include "../xrp/format/amount.h"
-#include "../xrp/format/format.h"
-#include "../xrp/format/readers.h"
-#include "../xrp/xrpHelpers.h"
+#include "../xrp/transaction_types.h"
+#include "../xrp/fields.h"
+#include "../xrp/amount.h"
+#include "../xrp/format.h"
+#include "../xrp/readers.h"
+#include "../xrp/xrp_helpers.h"
 #include <string.h>
 
-static action_t approvalAction;
-static action_t rejectionAction;
+static action_t approval_action;
+static action_t rejection_action;
 
-void onApprovalMenuResult(unsigned int result) {
+void on_approval_menu_result(unsigned int result) {
     switch (result) {
         case OPTION_SIGN:
-            executeAsync(approvalAction, "Signing...");
+            execute_async(approval_action, "Signing...");
             break;
         case OPTION_REJECT:
-            rejectionAction();
+            rejection_action();
             break;
         default:
-            rejectionAction();
+            rejection_action();
     }
 }
 
 static bool check_field(const field_t *field,
-                        uint8_t dataType,
+                        field_type_t data_type,
                         uint8_t id,
                         bool compare_value,
                         uint64_t value) {
-    if (field->dataType != dataType || field->id != id) {
+    if (field->data_type != data_type || field->id != id) {
         return false;
     }
 
@@ -57,15 +57,15 @@ static bool check_field(const field_t *field,
     }
 
     bool ret;
-    switch (dataType) {
+    switch (data_type) {
         case STI_UINT16:
-            ret = (readUnsigned16(field->data) == (uint16_t) value);
+            ret = (field->data.u16 == (uint16_t) value);
             break;
         case STI_UINT32:
-            ret = (readUnsigned32(field->data) == (uint32_t) value);
+            ret = (field->data.u32 == (uint32_t) value);
             break;
         case STI_AMOUNT:
-            ret = (field->length == XRP_AMOUNT_LEN && readUnsigned64(field->data) == value);
+            ret = (field->length == XRP_AMOUNT_LEN && read_unsigned64(field->data.ptr) == value);
             break;
         default:
             ret = false;
@@ -88,46 +88,46 @@ Exemple of such a swappable TX (as it would be displayed with the approval flow)
     "Destination" : "rhBuYom8agWA4s7DFoM7AvsDA9XGkVCJz4"
 }
  */
-bool checkSwapConditionsAndSign(parseResult_t *transaction) {
+bool check_swap_conditions_and_sign(parseResult_t *transaction) {
     if (!called_from_swap) {
         PRINTF("Not called from swap!\n");
         return false;
     }
 
-    if (transaction->numFields != 6) {
-        PRINTF("Wrong num fields for swap: %d\n", transaction->numFields);
+    if (transaction->num_fields != 6) {
+        PRINTF("Wrong num fields for swap: %d\n", transaction->num_fields);
         return false;
     }
 
-    size_t stepIndex = 0;
-    field_t *field = &transaction->fields[stepIndex++];
+    size_t step_index = 0;
+    field_t *field = &transaction->fields[step_index++];
     // "Transaction Type" field
     if (!check_field(field, STI_UINT16, XRP_UINT16_TRANSACTION_TYPE, true, TRANSACTION_PAYMENT)) {
         return false;
     }
 
     // "Account" field
-    field = &transaction->fields[stepIndex++];
+    field = &transaction->fields[step_index++];
     if (!check_field(field, STI_ACCOUNT, XRP_ACCOUNT_ACCOUNT, false, 0)) {
         return false;
     }
 
     // "Destination Tag" field
-    field = &transaction->fields[stepIndex++];
+    field = &transaction->fields[step_index++];
     if (!check_field(field, STI_UINT32, XRP_VL_MEMO_FORMAT, false, 0)) {
         return false;
     }
 
-    SNPRINTF(approvalStrings.swap.tmp, "%u", readUnsigned32(field->data));
-    if (strncmp(approvalStrings.swap.tmp,
-                approvalStrings.swap.destination_tag,
-                sizeof(approvalStrings.swap.destination_tag)) != 0) {
+    snprintf(approval_strings.swap.tmp, sizeof(approval_strings.swap.tmp), "%u", field->data.u32);
+    if (strncmp(approval_strings.swap.tmp,
+                approval_strings.swap.destination_tag,
+                sizeof(approval_strings.swap.destination_tag)) != 0) {
         return false;
     }
 
     // "Amount" field
-    field = &transaction->fields[stepIndex++];
-    uint64_t amount = readUnsigned64(approvalStrings.swap.amount);
+    field = &transaction->fields[step_index++];
+    uint64_t amount = approval_strings.swap.amount;
     if (amount & 0x4000000000000000) {
         return false;
     }
@@ -136,9 +136,9 @@ bool checkSwapConditionsAndSign(parseResult_t *transaction) {
         return false;
     }
 
-    field = &transaction->fields[stepIndex++];
+    field = &transaction->fields[step_index++];
     // "Fee" field
-    uint64_t fee = readUnsigned64(approvalStrings.swap.fees);
+    uint64_t fee = approval_strings.swap.fee;
     if (fee & 0x4000000000000000) {
         return false;
     }
@@ -147,20 +147,16 @@ bool checkSwapConditionsAndSign(parseResult_t *transaction) {
         return false;
     }
 
-    field = &transaction->fields[stepIndex++];
+    field = &transaction->fields[step_index++];
     if (!check_field(field, STI_ACCOUNT, XRP_ACCOUNT_DESTINATION, false, 0)) {
         return false;
     }
 
     // "Destination" field
-    char destination[41];
-    size_t addrLength = xrp_public_key_to_encoded_base58(field->data,
-                                                         field->length,
-                                                         destination,
-                                                         sizeof(destination),
-                                                         0,
-                                                         1);
-    if (strncmp(destination, approvalStrings.swap.address, addrLength) != 0) {
+    xrp_address_t destination;
+    xrp_account_t *account = (xrp_account_t *) field->data.account;
+    size_t addr_length = xrp_public_key_to_encoded_base58(NULL, account, &destination, 0);
+    if (strncmp(destination.buf, approval_strings.swap.address, addr_length) != 0) {
         return false;
     }
 
@@ -169,19 +165,19 @@ bool checkSwapConditionsAndSign(parseResult_t *transaction) {
     return true;
 }
 
-void reviewTransaction(parseResult_t *transaction, action_t onApprove, action_t onReject) {
-    approvalAction = onApprove;
-    rejectionAction = onReject;
+void review_transaction(parseResult_t *transaction, action_t on_approve, action_t on_reject) {
+    approval_action = on_approve;
+    rejection_action = on_reject;
 
     if (called_from_swap) {
-        if (checkSwapConditionsAndSign(transaction)) {
-            approvalAction();
+        if (check_swap_conditions_and_sign(transaction)) {
+            approval_action();
         } else {
-            rejectionAction();
+            rejection_action();
         }
         called_from_swap = false;
         os_sched_exit(0);
     } else {
-        displayReviewMenu(transaction, onApprovalMenuResult);
+        display_review_menu(transaction, on_approval_menu_result);
     }
 }

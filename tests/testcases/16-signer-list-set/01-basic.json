@@ -1,0 +1,59 @@
+{
+    "TransactionType": "SignerListSet",
+    "Account": "OWN_ADDR",
+    "Fee": "10",
+    "Flags": 2147483648,
+    "Sequence": 98,
+    "SignerQuorum": 11,
+    "SignerEntries": [
+        {
+            "SignerEntry": {
+                "Account": "rMRFD5eRj78pDR2LT261iVKUPXGNHYC9zK",
+                "SignerWeight": 1
+            }
+        },
+        {
+            "SignerEntry": {
+                "Account": "rgQxSyLzRwfktHpozmt4o3U3gcGDXPp13",
+                "SignerWeight": 3
+            }
+        },
+        {
+            "SignerEntry": {
+                "Account": "rn2i8bgJ798Qp4Ynv6xhyu9K2cneVaRw8g",
+                "SignerWeight": 5
+            }
+        },
+        {
+            "SignerEntry": {
+                "Account": "rn3s1S6Lz9tpEB7MAGqRKc2z7hYnHGY7SX",
+                "SignerWeight": 1
+            }
+        },
+        {
+            "SignerEntry": {
+                "Account": "rwT6kYyAkuAn1YxEeDVCDxbh3bUi87AbpU",
+                "SignerWeight": 6
+            }
+        },
+        {
+            "SignerEntry": {
+                "Account": "rJCQqXWAyfUMuCjXgZcuBGqCDkDhhQN4jV",
+                "SignerWeight": 2
+            }
+        },
+        {
+            "SignerEntry": {
+                "Account": "ra9hSnoYV1ckycXZyrJo8BWdXvtaajqVbk",
+                "SignerWeight": 3
+            }
+        },
+        {
+            "SignerEntry": {
+                "Account": "rhXNJ4hYYcN22A4tMvySDoPhHzVesYFzXx",
+                "SignerWeight": 4
+            }
+        }
+    ]
+}
+

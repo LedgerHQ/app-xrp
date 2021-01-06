@@ -1,0 +1,8 @@
+Transaction Type; Payment
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Amount; 0.0000123
+Currency; 015841551a748ad2c1f76ff6ecb0cccd00000000
+Issuer;   rvYAfWj5gh6     7oV6fW32ZzP     3Aw4Eubs59B   
+Fee; XRP 0.000015
+Send Max; XRP 10
+Destination;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   

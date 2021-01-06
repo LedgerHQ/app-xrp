@@ -1,0 +1,5 @@
+Transaction Type; Set Trust Line
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Limit Amount; SEK 18937964132
+Issuer;   rsP3mgGb2tcY    UrxiLFiHJiQ     XhsziegtwBc   
+Fee; XRP 0.00001
