@@ -18,6 +18,7 @@
 #include "loading.h"
 #include <os.h>
 #include <os_io_seproxyhal.h>
+#include <ux.h>
 #include "../ux.h"
 #include <string.h>
 
