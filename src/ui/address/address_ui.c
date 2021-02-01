@@ -17,7 +17,7 @@
 
 #include <os_io_seproxyhal.h>
 #include <string.h>
-#include "../../glyphs.h"
+#include <ux.h>
 #include "address_ui.h"
 
 static char full_address[43];

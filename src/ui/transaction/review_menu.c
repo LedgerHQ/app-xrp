@@ -19,10 +19,10 @@
 #include <os.h>
 #include <os_io_seproxyhal.h>
 #include <string.h>
+#include <ux.h>
 #include "../../apdu/global.h"
 #include "../../transaction/transaction.h"
 #include "../../xrp/format.h"
-#include "../../glyphs.h"
 
 parseResult_t *transaction;
 resultAction_t approval_menu_callback;
