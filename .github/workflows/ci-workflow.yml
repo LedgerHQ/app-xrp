@@ -42,7 +42,7 @@ jobs:
 
       - name: Build unit tests
         run: |
-          cmake -Btests/build -Htests/ && make -C tests/build/ && make -C tests/build test ARGS='-V -R test_tx'
+          cmake -Btests/build -Htests/ && make -C tests/build/ && make -C tests/build test
 
   job_test:
     name: Functional tests
