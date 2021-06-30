@@ -1,5 +1,6 @@
 #include "handle_swap_sign_transaction.h"
 #include "ux.h"
+#include "os_io_seproxyhal.h"
 #include "../apdu/global.h"
 #include "swap_lib_calls.h"
 
