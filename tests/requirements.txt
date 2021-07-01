@@ -1,2 +1,7 @@
 pytest>=6.1.1,<7.0.0
 ledgerwallet>=0.1.2
+
+# This is a temporary fix for this issue: https://github.com/LedgerHQ/ledgerctl/issues/17
+# (fixed in https://github.com/LedgerHQ/ledgerctl/commit/cd30a2e8cefa7bb9b417b7c5f370fb26e8505f01).
+# This line could be removed once a new release of ledgerwallet > 0.1.2 includes this fix.
+construct==2.10.61
