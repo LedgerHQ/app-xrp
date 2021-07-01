@@ -36,9 +36,10 @@ jobs:
       - name: Clone
         uses: actions/checkout@v2
 
-      - name: Install dependancies
+      - name: Install dependencies
         run: |
-          apt-get install libssl-dev
+          apt-get update -q
+          apt-get install -qy libssl-dev
 
       - name: Build unit tests
         run: |
@@ -64,9 +65,10 @@ jobs:
       - name: Clone
         uses: actions/checkout@v2
 
-      - name: Install dependancies
+      - name: Install dependencies
         run: |
-          apt-get update && apt-get install build-essential -y libudev-dev libusb-1.0-0-dev libfox-1.6-dev
+          apt-get update -q
+          apt-get install -qy build-essential libudev-dev libusb-1.0-0-dev libfox-1.6-dev
 
       - name: Download app binary
         uses: actions/download-artifact@v2
