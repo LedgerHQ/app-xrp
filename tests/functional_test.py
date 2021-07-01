@@ -90,14 +90,14 @@ class TestSign:
         payload = path + b"a" * (max_size - 4)
         with pytest.raises(CommException) as e:
             self._send_payload(client, payload)
-        assert e.value.sw == 0x6700
+        assert e.value.sw in [0x6700, 0x6813]
 
     def test_sign_invalid_tx(self, client):
         path = Bip32Path.build(DEFAULT_PATH)
         payload = path + b"a" * (40)
         with pytest.raises(CommException) as e:
             self._send_payload(client, payload)
-        assert e.value.sw == 0x6803
+        assert e.value.sw in [0x6803, 0x6807]
 
     def test_sign_valid_tx(self, client, raw_tx_path):
         if raw_tx_path.endswith("19-really-stupid-tx.raw"):
