@@ -109,7 +109,8 @@ size_t xrp_public_key_to_encoded_base58(xrp_pubkey_t *pubkey,
 
     if (pubkey != NULL) {
         xrp_public_key_hash160(pubkey, tmp.buf + version_size);
-    } else {
+    }
+    if (account != NULL) {
         memmove(tmp.buf + version_size, account->buf, sizeof(account->buf));
     }
 

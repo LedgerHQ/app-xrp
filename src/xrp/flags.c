@@ -100,7 +100,7 @@ static void format_account_set_transaction_flags(uint32_t value, field_value_t *
     }
 
     if (HAS_FLAG(value, TF_ALLOW_XRP)) {
-        offset = append_item(dst, offset, "Allow XRP");
+        append_item(dst, offset, "Allow XRP");
     }
 }
 
@@ -175,7 +175,7 @@ static void format_offer_create_flags(uint32_t value, field_value_t *dst) {
     }
 
     if (HAS_FLAG(value, TF_SELL)) {
-        offset = append_item(dst, offset, "Sell");
+        append_item(dst, offset, "Sell");
     }
 }
 
@@ -195,7 +195,7 @@ static void format_payment_flags(uint32_t value, field_value_t *dst) {
     }
 
     if (HAS_FLAG(value, TF_LIMIT_QUALITY)) {
-        offset = append_item(dst, offset, "Limit Quality");
+        append_item(dst, offset, "Limit Quality");
     }
 }
 
@@ -225,7 +225,7 @@ static void format_trust_set_flags(uint32_t value, field_value_t *dst) {
     }
 
     if (HAS_FLAG(value, TF_CLEAR_FREEZE)) {
-        offset = append_item(dst, offset, "Clear Freeze");
+        append_item(dst, offset, "Clear Freeze");
     }
 }
 
@@ -240,7 +240,7 @@ static void format_payment_channel_claim_flags(uint32_t value, field_value_t *ds
     }
 
     if (HAS_FLAG(value, TF_CLOSE)) {
-        offset = append_item(dst, offset, "Close");
+        append_item(dst, offset, "Close");
     }
 }
 
