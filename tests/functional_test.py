@@ -7,38 +7,38 @@ export LEDGER_PROXY_ADDRESS=127.0.0.1 LEDGER_PROXY_PORT=9999
 pytest-3 -v -s
 """
 
-import binascii
-import json
 import pytest
 import sys
-import time
 from enum import IntEnum
 
 from ledgerwallet.client import LedgerClient, CommException
-from ledgerwallet.crypto.ecc import PrivateKey
 from ledgerwallet.params import Bip32Path
 from ledgerwallet.transport import enumerate_devices
 
 DEFAULT_PATH = "44'/144'/0'/0'/0"
 CLA = 0xE0
 
+
 class Ins(IntEnum):
     GET_PUBLIC_KEY = 0x02
-    SIGN           = 0x04
+    SIGN = 0x04
+
 
 class P1(IntEnum):
     NON_CONFIRM = 0x00
-    CONFIRM     = 0x01
-    FIRST       = 0x00
-    NEXT        = 0x01
-    LAST        = 0x00
-    MORE        = 0x80
+    CONFIRM = 0x01
+    FIRST = 0x00
+    NEXT = 0x01
+    LAST = 0x00
+    MORE = 0x80
+
 
 class P2(IntEnum):
-    NO_CHAIN_CODE   = 0x00
-    CHAIN_CODE      = 0x01
+    NO_CHAIN_CODE = 0x00
+    CHAIN_CODE = 0x01
     CURVE_SECP256K1 = 0x40
-    CURVE_ED25519   = 0x80
+    CURVE_ED25519 = 0x80
+
 
 @pytest.fixture(scope="module")
 def client():
@@ -48,6 +48,7 @@ def client():
         sys.exit(0)
 
     return LedgerClient(devices[0], cla=CLA)
+
 
 class TestGetPublicKey:
     INS = Ins.GET_PUBLIC_KEY
@@ -61,6 +62,7 @@ class TestGetPublicKey:
         with pytest.raises(CommException) as e:
             client.apdu_exchange(self.INS, path, P1.NON_CONFIRM, P2.CURVE_SECP256K1)
         assert e.value.sw == 0x6a80
+
 
 class TestSign:
     INS = Ins.SIGN
@@ -90,14 +92,14 @@ class TestSign:
         payload = path + b"a" * (max_size - 4)
         with pytest.raises(CommException) as e:
             self._send_payload(client, payload)
-        assert e.value.sw == 0x6700
+        assert e.value.sw in [0x6700, 0x6813]
 
     def test_sign_invalid_tx(self, client):
         path = Bip32Path.build(DEFAULT_PATH)
         payload = path + b"a" * (40)
         with pytest.raises(CommException) as e:
             self._send_payload(client, payload)
-        assert e.value.sw == 0x6803
+        assert e.value.sw in [0x6803, 0x6807]
 
     def test_sign_valid_tx(self, client, raw_tx_path):
         if raw_tx_path.endswith("19-really-stupid-tx.raw"):

@@ -96,7 +96,7 @@ void execute_async(action_t action_to_load, char* message) {
     pending_action = action_to_load;
 
     memset(loading_message, 0, sizeof(loading_message));
-    os_memmove(loading_message, message, MIN(sizeof(loading_message) - 1, strlen(message)));
+    memmove(loading_message, message, MIN(sizeof(loading_message) - 1, strlen(message)));
 
     UX_DISPLAY(loading_ui, loading_ui_button_prepro)
 }

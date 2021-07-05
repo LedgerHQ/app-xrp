@@ -243,6 +243,8 @@ void handle_packet_content(uint8_t p1,
                            uint8_t *work_buffer,
                            uint8_t data_length,
                            volatile unsigned int *flags) {
+    UNUSED(p2);
+
     uint16_t total_length = prefix_length + parse_context.length + data_length;
     if (total_length > MAX_RAW_TX) {
         // Abort if the user is trying to sign a too large transaction

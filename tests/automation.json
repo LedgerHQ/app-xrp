@@ -2,7 +2,7 @@
     "version": 1,
     "rules": [
         {
-            "regexp": "Account$|Amount|Balance|Clear Flag|Currency.*|Deliver Min|Destination|Domain|Expiration|Flags|Fulfillment|Invoice|Issuer|Limit Amount|Memo Fmt|Quality In|Quality Out|Regular Key|Send Max|Signer Quorum|Transfer Rate|Tick Size|Set Flag|Settle Delay|Signer Weight.*|Source Tag|Taker Gets|Taker Pays|Transaction Type|Offer Sequence|Fee|Txn Sig|Owner|Memo Data|.*\\(\\d/\\d\\)",
+            "regexp": "Account$|Account\n|Amount|Authorize|Balance|Cancel After|Clear Flag|Currency.*|Deliver Min|Destination|Domain|Email Hash|Expiration|Flags|Finish After|Fulfillment|Invoice|[I|l]ssuer|Limit Amount|Memo Fmt|Quality [Il]n|Quality Out|Regular Key|Send Max|Signer Quorum|Transfer Rate|Tick Size|Unauthorize|Set Flag|Settle Delay|Signer Weight.*|Source Tag|Taker Gets|Taker Pays|Transaction Type|Offer Sequence|Fee|Txn Sig|Owner|Memo Data|.*\\(\\d/\\d\\)|.*\\[\\d\\]|.*\\[P\\d\\:\\s*S\\d\\]",
             "actions": [
                 [ "button", 2, true ],
                 [ "button", 2, false ]
