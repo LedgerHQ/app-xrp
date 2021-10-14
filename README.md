@@ -225,7 +225,7 @@ hardware wallet:
 
 ## Building
 Make sure that you have configured a development environment as outlined in [the development
-documentation](https://ledger.readthedocs.io/en/latest/userspace/getting_started.html)
+documentation](https://developers.ledger.com/docs/nano-app/build/)
 for Ledger devices. Then run make from the repository root to build the app: 
 ```sh
 make
