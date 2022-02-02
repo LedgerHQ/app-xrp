@@ -18,7 +18,7 @@
 #ifndef LEDGER_APP_XRP_UX_H
 #define LEDGER_APP_XRP_UX_H
 
-#if defined(TARGET_NANOX)
+#if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
 #define DEV_SCREEN_H 64
 #elif defined(TARGET_NANOS)
 #define DEV_SCREEN_H 32
