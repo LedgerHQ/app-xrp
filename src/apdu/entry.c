@@ -95,5 +95,5 @@ void handle_apdu(volatile unsigned int *flags, volatile unsigned int *tx) {
         FINALLY {
         }
     }
-    END_TRY
+    END_TRY;
 }

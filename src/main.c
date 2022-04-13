@@ -118,7 +118,7 @@ void app_main(void) {
             FINALLY {
             }
         }
-        END_TRY
+        END_TRY;
     }
 }
 
@@ -204,7 +204,7 @@ void app_exit(void) {
         FINALLY_L(exit) {
         }
     }
-    END_TRY_L(exit)
+    END_TRY_L(exit);
 }
 
 void coin_main() {
