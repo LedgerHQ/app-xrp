@@ -1,5 +1,8 @@
 pytest>=6.1.1,<7.0.0
 ledgerwallet>=0.1.2
+ecdsa>=0.16.1,<0.17.0
+pysha3>=1.0.0,<2.0.0
+ledgercomm>=1.1.0,<1.2.0
 
 # This is a temporary fix for this issue: https://github.com/LedgerHQ/ledgerctl/issues/17
 # (fixed in https://github.com/LedgerHQ/ledgerctl/commit/cd30a2e8cefa7bb9b417b7c5f370fb26e8505f01).
