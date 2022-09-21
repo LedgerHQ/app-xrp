@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  ********************************************************************************/
-
+#ifdef HAVE_BAGL
 #include "review_menu.h"
 #include <os.h>
 #include <os_io_seproxyhal.h>
@@ -103,3 +103,4 @@ void display_review_menu(parseResult_t *transaction_param, resultAction_t callba
 
     ux_flow_init(0, ux_review_flow, NULL);
 }
+#endif  // HAVE_BAGL

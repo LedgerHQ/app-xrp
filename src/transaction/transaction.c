@@ -17,7 +17,9 @@
 
 #include "transaction.h"
 #include "../ui/transaction/review_menu.h"
+#ifdef HAVE_BAGL
 #include "../ui/other/loading.h"
+#endif  // HAVE_BAGL
 #include "../apdu/global.h"
 #include "../xrp/transaction_types.h"
 #include "../xrp/fields.h"
@@ -33,7 +35,13 @@ static action_t rejection_action;
 void on_approval_menu_result(unsigned int result) {
     switch (result) {
         case OPTION_SIGN:
+#ifdef HAVE_BAGL
             execute_async(approval_action, "Signing...");
+#endif  // HAVE_BAGL
+
+#ifdef HAVE_NBGL  // HAVE_BAGL
+            approval_action();
+#endif  // HAVE_NBGL
             break;
         case OPTION_REJECT:
             rejection_action();

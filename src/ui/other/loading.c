@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  ********************************************************************************/
-
+#ifdef HAVE_BAGL
 #include "loading.h"
 #include <os.h>
 #include <os_io_seproxyhal.h>
@@ -56,7 +56,6 @@
 #define STATE_DONE    2
 
 #define UID_DUMMY 1
-
 static uint8_t loading_state;
 static action_t pending_action;
 static char loading_message[18];
@@ -97,6 +96,6 @@ void execute_async(action_t action_to_load, char* message) {
 
     memset(loading_message, 0, sizeof(loading_message));
     memmove(loading_message, message, MIN(sizeof(loading_message) - 1, strlen(message)));
-
     UX_DISPLAY(loading_ui, loading_ui_button_prepro)
 }
+#endif  // HAVE_BAGL
