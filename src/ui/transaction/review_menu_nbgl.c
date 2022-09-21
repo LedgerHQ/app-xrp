@@ -30,8 +30,6 @@
 #define MAX_FIELDS_PER_PAGE 5
 
 // Globals
-extern const nbgl_icon_details_t C_icon_XRP_32px;
-extern const nbgl_icon_details_t C_round_warning_64px;
 static field_value_t txFieldValueStrings[MAX_FIELDS_PER_PAGE];
 static nbgl_layoutTagValue_t pair;
 static nbgl_layoutTagValueList_t pairList;
