@@ -24,6 +24,7 @@ static char full_address[43];
 static action_t approval_action;
 static action_t rejection_action;
 
+#ifdef HAVE_BAGL
 // clang-format off
 UX_STEP_NOCB(
         ux_display_address_flow_1_step,
@@ -63,6 +64,7 @@ UX_FLOW(ux_display_address_flow,
         &ux_display_address_flow_2_step,
         &ux_display_address_flow_3_step,
         &ux_display_address_flow_4_step);
+#endif //HAVE_BAGL
 
 void display_address_confirmation_ui(char* address, action_t on_approve, action_t on_reject) {
     approval_action = on_approve;
@@ -70,6 +72,7 @@ void display_address_confirmation_ui(char* address, action_t on_approve, action_
 
     memset(full_address, 0, sizeof(full_address));
     strncpy(full_address, address, sizeof(full_address));
-
+#ifdef HAVE_BAGL
     ux_flow_init(0, ux_display_address_flow, NULL);
+#endif //HAVE_BAGL
 }

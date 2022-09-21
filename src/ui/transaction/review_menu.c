@@ -27,9 +27,10 @@
 parseResult_t *transaction;
 resultAction_t approval_menu_callback;
 
-const ux_flow_step_t *ux_review_flow[MAX_FIELD_COUNT + 3];
+#ifdef HAVE_BAGL
 
 static void update_content(int stack_slot);
+const ux_flow_step_t *ux_review_flow[MAX_FIELD_COUNT + 3];
 
 // clang-format off
 UX_STEP_NOCB_INIT(
@@ -88,11 +89,13 @@ static void update_content(int stack_slot) {
     update_title(field, &approval_strings.review.field_name);
     update_value(field, &approval_strings.review.field_value);
 }
+#endif //HAVE_BAGL
 
 void display_review_menu(parseResult_t *transaction_param, resultAction_t callback) {
     transaction = transaction_param;
     approval_menu_callback = callback;
 
+#ifdef HAVE_BAGL
     for (int i = 0; i < transaction->num_fields; ++i) {
         ux_review_flow[i] = &ux_review_flow_step;
     }
@@ -102,4 +105,5 @@ void display_review_menu(parseResult_t *transaction_param, resultAction_t callba
     ux_review_flow[transaction->num_fields + 2] = FLOW_END_STEP;
 
     ux_flow_init(0, ux_review_flow, NULL);
+#endif //HAVE_BAGL
 }
