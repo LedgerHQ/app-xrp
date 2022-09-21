@@ -1,6 +1,12 @@
 name: Compilation & tests
 
-on: [push, pull_request]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
 
 jobs:
   scan-build:
@@ -64,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder-lite:latest
+      image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder-legacy:latest
 
     steps:
       - name: Clone
@@ -72,10 +78,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apk add openssl3-dev
+          apt-get install -y libssl-dev libcmocka-dev
 
       - name: Build unit tests
         run: |
+          clang --version
           cmake -Btests/build -Htests/ && make -C tests/build/
 
       - name: Run unit tests

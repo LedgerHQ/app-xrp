@@ -17,9 +17,6 @@
 
 #include "../../common.h"
 
-#ifndef LEDGER_APP_XRP_ADDRESSUI_H
-#define LEDGER_APP_XRP_ADDRESSUI_H
+#pragma once
 
 void display_address_confirmation_ui(char* address, action_t on_approve, action_t on_reject);
-
-#endif  // LEDGER_APP_XRP_ADDRESSUI_H

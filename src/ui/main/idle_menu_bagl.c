@@ -15,6 +15,7 @@
  *  limitations under the License.
  ********************************************************************************/
 
+#ifdef HAVE_BAGL
 #include <os_io_seproxyhal.h>
 #include "idle_menu.h"
 #include "glyphs.h"
@@ -54,3 +55,4 @@ void display_idle_menu() {
     }
     ux_flow_init(0, ux_idle_flow, NULL);
 }
+#endif  // HAVE_BAGL

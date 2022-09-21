@@ -32,7 +32,7 @@
 // Hardware dependent limits
 //   Ledger Nano X has 30K RAM
 //   Ledger Nano S has 4K RAM
-#if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
+#if defined(TARGET_NANOX) || defined(TARGET_NANOS2) || defined(TARGET_STAX)
 
 #define MAX_FIELD_COUNT        60
 #define MAX_FIELD_LEN          1024

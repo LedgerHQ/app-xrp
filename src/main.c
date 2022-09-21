@@ -122,18 +122,22 @@ void app_main(void) {
     }
 }
 
+#ifdef HAVE_BAGL
 // override point, but nothing more to do
 void io_seproxyhal_display(const bagl_element_t *element) {
     io_seproxyhal_display_default((bagl_element_t *) element);
 }
+#endif  // HAVE_BAGL
 
 void handle_seproxyhal_tag_finger_event() {
     UX_FINGER_EVENT(G_io_seproxyhal_spi_buffer);
 }
 
+#ifdef HAVE_BAGL
 void handle_seproxyhal_tag_button_push_event() {
     UX_BUTTON_PUSH_EVENT(G_io_seproxyhal_spi_buffer);
 }
+#endif  // HAVE_BAGL
 
 void handle_seproxyhal_tag_status_event() {
     if (G_io_apdu_media == IO_APDU_MEDIA_USB_HID &&
@@ -146,9 +150,11 @@ void handle_default() {
     UX_DEFAULT_EVENT();
 }
 
+#ifdef HAVE_BAGL
 void handle_seproxyhal_tag_display_processed_event() {
     UX_DISPLAYED_EVENT({});
 }
+#endif  // HAVE_BAGL
 
 void handle_seproxyhal_tag_ticker_event() {
     UX_TICKER_EVENT(G_io_seproxyhal_spi_buffer, {
@@ -168,7 +174,9 @@ unsigned char io_event(unsigned char channel) {
     // can't have more than one tag in the reply, not supported yet.
     switch (G_io_seproxyhal_spi_buffer[0]) {
         case SEPROXYHAL_TAG_BUTTON_PUSH_EVENT:
+#ifdef HAVE_BAGL
             handle_seproxyhal_tag_button_push_event();
+#endif  // HAVE_BAGL
             break;
 
         case SEPROXYHAL_TAG_STATUS_EVENT:
@@ -179,9 +187,15 @@ unsigned char io_event(unsigned char channel) {
             break;
 
         case SEPROXYHAL_TAG_DISPLAY_PROCESSED_EVENT:
+#ifdef HAVE_BAGL
             handle_seproxyhal_tag_display_processed_event();
+#endif  // HAVE_BAGL
             break;
-
+#ifdef HAVE_NBGL
+        case SEPROXYHAL_TAG_FINGER_EVENT:
+            UX_FINGER_EVENT(G_io_seproxyhal_spi_buffer);
+            break;
+#endif  // HAVE_NBGL
         case SEPROXYHAL_TAG_TICKER_EVENT:
             handle_seproxyhal_tag_ticker_event();
             break;
@@ -212,7 +226,12 @@ void coin_main() {
         called_from_swap = false;
         reset_transaction_context();
 
+#ifdef HAVE_BAGL
         UX_INIT();
+#endif  // HAVE_BAGL
+#ifdef HAVE_NBGL
+        nbgl_objInit();
+#endif  // HAVE_NBGL
 
         BEGIN_TRY {
             TRY {
