@@ -7,3 +7,5 @@ src/glyphs.h
 __pycache__/
 .cache/
 tests/build/
+build/
+tests/snapshots-tmp
