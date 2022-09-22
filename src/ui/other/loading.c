@@ -56,16 +56,16 @@
 #define STATE_DONE    2
 
 #define UID_DUMMY 1
-
+#ifdef HAVE_BAGL
 static uint8_t loading_state;
 static action_t pending_action;
 static char loading_message[18];
 
-#ifdef HAVE_BAGL
+
 static const bagl_element_t loading_ui[] = {UI_BACKGROUND(),
                                             UI_SINGLE_TEXT(loading_message),
                                             UI_DUMMY(UID_DUMMY)};
-#endif //HAVE_BAGL
+
 static unsigned int loading_ui_button(unsigned int button_mask, unsigned int button_mask_counter) {
     // It is not possible to omit this function
     UNUSED(button_mask);
@@ -73,7 +73,7 @@ static unsigned int loading_ui_button(unsigned int button_mask, unsigned int but
 
     return 0;
 }
-#ifdef HAVE_BAGL
+
 static const bagl_element_t* loading_ui_button_prepro(const bagl_element_t* element) {
     if (element->component.userid == UID_DUMMY) {
         if (loading_state == STATE_WAITING) {
@@ -91,7 +91,6 @@ static const bagl_element_t* loading_ui_button_prepro(const bagl_element_t* elem
         return element;
     }
 }
-#endif //HAVE_BAGL
 
 void execute_async(action_t action_to_load, char* message) {
     loading_state = STATE_WAITING;
@@ -99,7 +98,6 @@ void execute_async(action_t action_to_load, char* message) {
 
     memset(loading_message, 0, sizeof(loading_message));
     memmove(loading_message, message, MIN(sizeof(loading_message) - 1, strlen(message)));
-#ifdef HAVE_BAGL
     UX_DISPLAY(loading_ui, loading_ui_button_prepro)
-#endif //HAVE_BAGL
 }
+#endif //HAVE_BAGL

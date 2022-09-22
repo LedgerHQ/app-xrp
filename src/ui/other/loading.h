@@ -19,7 +19,8 @@
 #define LEDGER_APP_XRP_LOADING_H
 
 #include "../../transaction/transaction.h"
-
+#ifdef HAVE_BAGL
 void execute_async(action_t action_to_load, char* message);
+#endif //HAVE_BAGL
 
 #endif  // LEDGER_APP_XRP_LOADING_H
