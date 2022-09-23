@@ -24,8 +24,8 @@
 #include "xrp_helpers.h"
 #include "readers.h"
 #include "number_helpers.h"
+#include "string_helpers.h"
 #include "../limitations.h"
-#include "strings.h"
 
 #define EXP_MIN      -96
 #define EXP_MAX      80
@@ -188,8 +188,8 @@ static void format_non_standard_currency(xrp_currency_t *currency, field_value_t
 }
 
 static int format_issued_currency(uint64_t value, char *buf, size_t size) {
-    uint8_t sign = (uint8_t)((value >> 62u) & 0x01u);
-    int16_t exponent = (int16_t)(((value >> 54u) & 0xFFu) - 97);
+    uint8_t sign = (uint8_t) ((value >> 62u) & 0x01u);
+    int16_t exponent = (int16_t) (((value >> 54u) & 0xFFu) - 97);
     uint64_t mantissa = value & 0x3FFFFFFFFFFFFFu;
     size_t len = strlen(buf);
     char *p;

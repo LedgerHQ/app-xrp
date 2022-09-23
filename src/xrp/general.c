@@ -24,7 +24,7 @@
 #include "flags.h"
 #include "xrp_helpers.h"
 #include "time.h"
-#include "strings.h"
+#include "string_helpers.h"
 #include "../limitations.h"
 #include "transaction_types.h"
 #include "percentage.h"

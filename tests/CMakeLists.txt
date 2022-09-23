@@ -32,8 +32,8 @@ add_library(xrp
   ../src/xrp/percentage.h
   ../src/xrp/readers.c
   ../src/xrp/readers.h
-  ../src/xrp/strings.c
-  ../src/xrp/strings.h
+  ../src/xrp/string_helpers.c
+  ../src/xrp/string_helpers.h
   ../src/xrp/time.c
   ../src/xrp/time.h
   ../src/xrp/transaction_types.h
@@ -60,7 +60,7 @@ add_executable(test_swap
   include/bolos_target.h
   include/cx.h
   include/os.h
-  )
+)
 
 add_executable(test_tx
   src/test_tx.c
