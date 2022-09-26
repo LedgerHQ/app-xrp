@@ -11,14 +11,14 @@ jobs:
       image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Build with Clang Static Analyzer
         run: |
           make clean
           scan-build --use-cc=clang -analyze-headers -enable-checker security -enable-checker unix -enable-checker valist -o scan-build --status-bugs make default
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: scan-build
@@ -33,14 +33,14 @@ jobs:
 
     steps:
       - name: Clone
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Build Nano S app
         run: |
           make DEBUG=1
 
       - name: Upload app binary
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: app-debug-nanos
           path: bin
@@ -54,7 +54,7 @@ jobs:
           make DEBUG=1 BOLOS_SDK=$NANOX_SDK
 
       - name: Upload app binary
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: app-debug-nanox
           path: bin
@@ -68,7 +68,7 @@ jobs:
 
     steps:
       - name: Clone
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install dependencies
         run: |
@@ -94,7 +94,7 @@ jobs:
 
     steps:
       - name: Clone
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install dependencies
         run: |
@@ -103,13 +103,13 @@ jobs:
           apt-get install -qy netcat
 
       - name: Download Nano S app binary
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: app-debug-nanos
           path: bin-nanos
 
       - name: Download Nano X app binary
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: app-debug-nanox
           path: bin-nanox
@@ -128,7 +128,7 @@ jobs:
           pytest tests/
 
       - name: Upload speculos log
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: speculos-nanos-log
@@ -152,7 +152,7 @@ jobs:
           pytest tests/
 
       - name: Upload speculos log
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: speculos-nanox-log
