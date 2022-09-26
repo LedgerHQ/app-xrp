@@ -37,6 +37,7 @@ jobs:
 
       - name: Build Nano S app
         run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           make DEBUG=1
 
       - name: Upload app binary
