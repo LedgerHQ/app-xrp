@@ -17,7 +17,7 @@
 
 #include <os_io_seproxyhal.h>
 #include "idle_menu.h"
-#include "../../glyphs.h"
+#include "glyphs.h"
 #include <ux.h>
 
 // clang-format off
