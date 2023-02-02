@@ -9,11 +9,11 @@ jobs:
 
     steps:
       - name: Clone
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Lint
-        uses: DoozyX/clang-format-lint-action@v0.11
+        uses: DoozyX/clang-format-lint-action@v0.15
         with:
           source: './src'
           extensions: 'h,c'
-          clangFormatVersion: 11
+          clangFormatVersion: 12.0.1
