@@ -47,6 +47,7 @@ jobs:
 
       - name: Cleanup the repository
         run: |
+          git config --global --add safe.directory /__w/app-xrp/app-xrp
           git clean -dxf
 
       - name: Build Nano X app
