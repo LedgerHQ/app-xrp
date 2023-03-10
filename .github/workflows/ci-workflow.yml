@@ -72,7 +72,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt install -y libssl-dev
+          apt install -y libssl-dev libcmocka-dev
 
       - name: Build unit tests
         run: |
