@@ -83,7 +83,8 @@ static void xrp_hash_ripemd160(cx_ripemd160_t *hash,
                                size_t in_len,
                                uint8_t *out,
                                size_t out_len) {
-    cx_ripemd160_init_no_throw(hash);
+    (void) out_len;
+    cx_ripemd160_init(hash);
     cx_ripemd160_update(hash, in, in_len);
     cx_ripemd160_final(hash, out);
 }
