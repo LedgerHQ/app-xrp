@@ -3,6 +3,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <openssl/ripemd.h>
+
 typedef unsigned int cx_curve_t;
 
 #define CX_CURVE_256K1     0x1234
@@ -60,6 +62,9 @@ struct cx_sha256_s {
 typedef struct cx_sha256_s cx_sha256_t;
 
 struct cx_ripemd160_s {
+
+  RIPEMD160_CTX ctx;
+
     /** See #cx_hash_header_s */
     struct cx_hash_header_s header;
     /** @internal
@@ -99,3 +104,10 @@ struct cx_ecfp_256_public_key_s {
     unsigned char W[65];
 };
 typedef struct cx_ecfp_256_public_key_s cx_ecfp_public_key_t;
+
+void cx_ripemd160_update(cx_ripemd160_t *hash,
+                         const uint8_t *in,
+                         size_t len);
+
+void cx_ripemd160_final(cx_ripemd160_t *hash,
+                        uint8_t *out);
