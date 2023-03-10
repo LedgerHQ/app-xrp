@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder-lite:latest
+      image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder-legacy:latest
 
     steps:
       - name: Clone
@@ -72,7 +72,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apk add openssl3-dev
+          apt install -y libssl-dev
 
       - name: Build unit tests
         run: |
