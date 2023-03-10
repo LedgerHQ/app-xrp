@@ -1,6 +1,12 @@
 name: Compilation & tests
 
-on: [push, pull_request]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - master
+    - develop
+  pull_request:
 
 jobs:
   scan-build:
