@@ -21,7 +21,10 @@ endif
 include $(BOLOS_SDK)/Makefile.defines
 
 APPNAME = XRP
-APP_LOAD_PARAMS=--appFlags 0xa40 --path "44'/144'" --curve secp256k1 --curve ed25519 $(COMMON_LOAD_PARAMS)
+APP_LOAD_PARAMS  = --curve secp256k1 --curve ed25519
+APP_LOAD_PARAMS += --appFlags 0xa40 # APPLICATION_FLAG_BOLOS_SETTINGS | APPLICATION_FLAG_LIBRARY | APPLICATION_FLAG_GLOBAL_PIN
+APP_LOAD_PARAMS += --path "44'/144'"
+APP_LOAD_PARAMS += $(COMMON_LOAD_PARAMS)
 
 APPVERSION_M=2
 APPVERSION_N=2
@@ -35,6 +38,8 @@ COIN = xrp
 #prepare hsm generation
 ifeq ($(TARGET_NAME),TARGET_NANOS)
 ICONNAME=img/nanos_app_$(COIN).gif
+else ifeq ($(TARGET_NAME),TARGET_STAX)
+ICONNAME=img/stax_app_$(COIN).gif
 else
 ICONNAME=img/nanox_app_$(COIN).gif
 endif
@@ -56,7 +61,10 @@ all: default
 ############
 
 DEFINES   += OS_IO_SEPROXYHAL
-DEFINES   += HAVE_BAGL HAVE_SPRINTF HAVE_SNPRINTF_FORMAT_U HAVE_UX_FLOW
+ifneq ($(TARGET_NAME),TARGET_STAX)
+DEFINES   += HAVE_BAGL HAVE_UX_FLOW
+endif
+DEFINES   += HAVE_SPRINTF HAVE_SNPRINTF_FORMAT_U
 
 DEFINES   += HAVE_IO_USB HAVE_L4_USBLIB IO_USB_MAX_ENDPOINTS=4 IO_HID_EP_LENGTH=64 HAVE_USB_APDU
 DEFINES   +=  LEDGER_MAJOR_VERSION=$(APPVERSION_M) LEDGER_MINOR_VERSION=$(APPVERSION_N) LEDGER_PATCH_VERSION=$(APPVERSION_P)
@@ -72,12 +80,16 @@ DEFINES   += U2F_PROXY_MAGIC=\"XRP\"
 DEFINES   += HAVE_WEBUSB WEBUSB_URL_SIZE_B=0 WEBUSB_URL=""
 
 ifeq ($(TARGET_NAME),TARGET_NANOX)
-DEFINES       += HAVE_BLE BLE_COMMAND_TIMEOUT_MS=2000
-DEFINES       += HAVE_BLE_APDU # basic ledger apdu transport over BLE
+DEFINES   += HAVE_BLE BLE_COMMAND_TIMEOUT_MS=2000 HAVE_BLE_APDU
+else ifeq ($(TARGET_NAME),TARGET_STAX)
+DEFINES   += HAVE_BLE BLE_COMMAND_TIMEOUT_MS=2000 HAVE_BLE_APDU
 endif
 
 ifeq ($(TARGET_NAME),TARGET_NANOS)
 DEFINES       += IO_SEPROXYHAL_BUFFER_SIZE_B=128
+else ifeq ($(TARGET_NAME),TARGET_STAX)
+DEFINES       += IO_SEPROXYHAL_BUFFER_SIZE_B=300
+DEFINES       += NBGL_QRCODE
 else
 DEFINES       += IO_SEPROXYHAL_BUFFER_SIZE_B=300
 DEFINES       += HAVE_GLO096
@@ -118,25 +130,25 @@ ifeq ($(GCCPATH),)
 $(info GCCPATH is not set: arm-none-eabi-* will be used from PATH)
 endif
 
-CC       := $(CLANGPATH)clang
-
-#CFLAGS   += -O0
-CFLAGS   += -O3 -Os
-
-AS     := $(GCCPATH)arm-none-eabi-gcc
-
-LD       := $(GCCPATH)arm-none-eabi-gcc
-LDFLAGS  += -O3 -Os
-LDLIBS   += -lm -lgcc -lc
+CC      := $(CLANGPATH)clang
+AS      := $(GCCPATH)arm-none-eabi-gcc
+LD      := $(GCCPATH)arm-none-eabi-gcc
+LDLIBS  += -lm -lgcc -lc
 
 # import rules to compile glyphs(/pone)
 include $(BOLOS_SDK)/Makefile.glyphs
 
 ### computed variables
 APP_SOURCE_PATH  += src
-SDK_SOURCE_PATH  += lib_stusb lib_stusb_impl lib_u2f lib_ux
+SDK_SOURCE_PATH  += lib_stusb lib_stusb_impl lib_u2f
+
+ifneq ($(TARGET_NAME),TARGET_STAX)
+SDK_SOURCE_PATH += lib_ux
+endif
 
 ifeq ($(TARGET_NAME),TARGET_NANOX)
+SDK_SOURCE_PATH  += lib_blewbxx lib_blewbxx_impl
+else ifeq ($(TARGET_NAME),TARGET_STAX)
 SDK_SOURCE_PATH  += lib_blewbxx lib_blewbxx_impl
 endif
 

@@ -52,9 +52,9 @@ jobs:
         run: |
           make -C tests/build test
 
-  # rule_enforcer:
-  #   name: Run Ledger rule enforcer
-  #   uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_guidelines_enforcer.yml@v1
+  rule_enforcer:
+    name: Run Ledger rule enforcer
+    uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_guidelines_enforcer.yml@v1
 
   build_application:
     name: Build application
