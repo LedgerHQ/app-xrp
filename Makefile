@@ -21,7 +21,10 @@ endif
 include $(BOLOS_SDK)/Makefile.defines
 
 APPNAME = XRP
-APP_LOAD_PARAMS=--appFlags 0xa40 --path "44'/144'" --curve secp256k1 --curve ed25519 $(COMMON_LOAD_PARAMS)
+APP_LOAD_PARAMS  = --curve secp256k1 --curve ed25519
+APP_LOAD_PARAMS += --appFlags 0xa40 # APPLICATION_FLAG_BOLOS_SETTINGS | APPLICATION_FLAG_LIBRARY | APPLICATION_FLAG_GLOBAL_PIN
+APP_LOAD_PARAMS += --path "44'/144'"
+APP_LOAD_PARAMS += $(COMMON_LOAD_PARAMS)
 
 APPVERSION_M=2
 APPVERSION_N=2
@@ -86,7 +89,6 @@ ifeq ($(TARGET_NAME),TARGET_NANOS)
 DEFINES       += IO_SEPROXYHAL_BUFFER_SIZE_B=128
 else ifeq ($(TARGET_NAME),TARGET_STAX)
 DEFINES       += IO_SEPROXYHAL_BUFFER_SIZE_B=300
-DEFINES       += HAVE_NBGL
 DEFINES       += NBGL_QRCODE
 else
 DEFINES       += IO_SEPROXYHAL_BUFFER_SIZE_B=300
@@ -128,16 +130,10 @@ ifeq ($(GCCPATH),)
 $(info GCCPATH is not set: arm-none-eabi-* will be used from PATH)
 endif
 
-CC       := $(CLANGPATH)clang
-
-#CFLAGS   += -O0
-CFLAGS   += -O3 -Os
-
-AS     := $(GCCPATH)arm-none-eabi-gcc
-
-LD       := $(GCCPATH)arm-none-eabi-gcc
-LDFLAGS  += -O3 -Os
-LDLIBS   += -lm -lgcc -lc
+CC      := $(CLANGPATH)clang
+AS      := $(GCCPATH)arm-none-eabi-gcc
+LD      := $(GCCPATH)arm-none-eabi-gcc
+LDLIBS  += -lm -lgcc -lc
 
 # import rules to compile glyphs(/pone)
 include $(BOLOS_SDK)/Makefile.glyphs

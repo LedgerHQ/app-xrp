@@ -20,11 +20,10 @@
 #include "glyphs.h"
 #include "idle_menu.h"
 #include "nbgl_use_case.h"
-#include "nbgl_page.h"
 
 #define NB_INFO_FIELDS 2
 static const char* const infoTypes[] = {"Version", "XRP App"};
-static const char* const infoContents[] = {APPVERSION, "(c) 2022 Ledger"};
+static const char* const infoContents[] = {APPVERSION, "(c) 2023 Ledger"};
 
 static void display_about_menu();
 static bool about_nav_clbk(uint8_t page, nbgl_pageContent_t* content);

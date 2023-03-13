@@ -16,7 +16,6 @@
  ********************************************************************************/
 #ifdef HAVE_NBGL
 #include <os.h>
-#include <os_io_seproxyhal.h>
 #include <string.h>
 #include <ux.h>
 #include "global.h"
@@ -24,7 +23,6 @@
 #include "format.h"
 #include "idle_menu.h"
 #include "review_menu.h"
-#include "nbgl_page.h"
 #include "nbgl_use_case.h"
 
 #define MAX_FIELDS_PER_PAGE 5
