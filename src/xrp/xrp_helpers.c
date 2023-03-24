@@ -78,17 +78,6 @@ static size_t xrp_encode_base58_address(const base58_buf_t *in, xrp_address_t *o
     return outlen;
 }
 
-static void xrp_hash_ripemd160(cx_ripemd160_t *hash,
-                               const uint8_t *in,
-                               size_t in_len,
-                               uint8_t *out,
-                               size_t out_len) {
-    (void) out_len;
-    cx_ripemd160_init(hash);
-    cx_ripemd160_update(hash, in, in_len);
-    cx_ripemd160_final(hash, out);
-}
-
 void xrp_public_key_hash160(xrp_pubkey_t *pubkey, uint8_t *out) {
     union {
         cx_sha256_t shasha;
@@ -98,7 +87,8 @@ void xrp_public_key_hash160(xrp_pubkey_t *pubkey, uint8_t *out) {
 
     cx_sha256_init(&u.shasha);
     cx_hash(&u.shasha.header, CX_LAST, pubkey->buf, sizeof(pubkey->buf), buffer, 32);
-    xrp_hash_ripemd160(&u.riprip, buffer, 32, out, 20);
+    cx_ripemd160_init(&u.riprip);
+    cx_hash(&u.riprip.header, CX_LAST, buffer, 32, out, 20);
 }
 
 size_t xrp_public_key_to_encoded_base58(xrp_pubkey_t *pubkey,
