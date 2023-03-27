@@ -44,12 +44,6 @@ else
 ICONNAME=img/nanox_app_$(COIN).gif
 endif
 
-# RIPEMD160 addition.
-DEFINES += HAVE_RIPEMD160
-
-SOURCE_PATH += $(BOLOS_SDK)/lib_cxng/src/cx_ripemd160.c
-SOURCE_PATH += $(BOLOS_SDK)/lib_cxng/src/cx_hmac.c
-# RIPEMD160 - End
 
 ################
 # Default rule #
