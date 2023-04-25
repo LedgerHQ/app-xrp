@@ -25,7 +25,7 @@
 #include "readers.h"
 #include "number_helpers.h"
 #include "../limitations.h"
-#include "strings.h"
+#include "ascii_strings.h"
 
 #define EXP_MIN      -96
 #define EXP_MAX      80

@@ -32,8 +32,8 @@ add_library(xrp
   ../src/xrp/percentage.h
   ../src/xrp/readers.c
   ../src/xrp/readers.h
-  ../src/xrp/strings.c
-  ../src/xrp/strings.h
+  ../src/xrp/ascii_strings.c
+  ../src/xrp/ascii_strings.h
   ../src/xrp/time.c
   ../src/xrp/time.h
   ../src/xrp/transaction_types.h
