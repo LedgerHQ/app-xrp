@@ -90,7 +90,7 @@ static const bagl_element_t* loading_ui_button_prepro(const bagl_element_t* elem
     }
 }
 
-void execute_async(action_t action_to_load, char* message) {
+void execute_async(action_t action_to_load, const char* message) {
     loading_state = STATE_WAITING;
     pending_action = action_to_load;
 

@@ -177,7 +177,8 @@ unsigned char io_event(unsigned char channel) {
 
         case SEPROXYHAL_TAG_STATUS_EVENT:
             handle_seproxyhal_tag_status_event();
-        // no break is intentional
+            // no break is intentional
+            __attribute__((fallthrough));
         default:
             handle_default();
             break;

@@ -259,6 +259,7 @@ err_t handle_path_step(parseContext_t *context, field_t *field, uint8_t step_typ
 
             // Intentional fall through to read the currency,
             // which will be positioned before the issuer
+            __attribute__((fallthrough));
         case 0x10:
             field->data_type = STI_CURRENCY;
             field->id = XRP_CURRENCY_CURRENCY;
