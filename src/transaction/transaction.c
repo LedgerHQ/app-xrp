@@ -27,6 +27,7 @@
 #include "../xrp/format.h"
 #include "../xrp/readers.h"
 #include "../xrp/xrp_helpers.h"
+#include "handle_swap_sign_transaction.h"
 #include <string.h>
 
 static action_t approval_action;
@@ -180,11 +181,11 @@ void review_transaction(parseResult_t *transaction, action_t on_approve, action_
     if (called_from_swap) {
         if (check_swap_conditions_and_sign(transaction)) {
             approval_action();
+            finalize_exchange_sign_transaction(true);
         } else {
             rejection_action();
+            finalize_exchange_sign_transaction(false);
         }
-        called_from_swap = false;
-        os_sched_exit(0);
     } else {
         display_review_menu(transaction, on_approval_menu_result);
     }

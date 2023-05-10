@@ -1,6 +1,6 @@
 #include <string.h>
 
-#include "swap_lib_calls.h"
+#include "swap_utils.h"
 
 bool swap_str_to_u64(const uint8_t* src, size_t length, uint64_t* result) {
     const size_t num_bytes = 8;
