@@ -1,5 +1,6 @@
 #include "handle_swap_sign_transaction.h"
 #include "ux.h"
+#include "os.h"
 #include "os_io_seproxyhal.h"
 #include "../apdu/global.h"
 #include "swap_lib_calls.h"
@@ -26,6 +27,7 @@ bool copy_transaction_parameters(create_transaction_parameters_t* params) {
         return false;
     }
 
+    os_explicit_zero_BSS_segment();
     memcpy(&approval_strings.swap, &stack_data, sizeof(stack_data));
 
     return true;
@@ -46,7 +48,7 @@ void handle_swap_sign_transaction(void) {
 #endif  // TARGET_NANOX
 #ifdef HAVE_BLE
     BLE_power(0, NULL);
-    BLE_power(1, "Nano X");
+    BLE_power(1, NULL);
 #endif  // HAVE_BLE
     app_main();
 }
