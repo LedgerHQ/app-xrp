@@ -4,6 +4,10 @@
 #include "os_io_seproxyhal.h"
 #include "../apdu/global.h"
 #include "swap_lib_calls.h"
+#include "swap_utils.h"
+
+// Save the BSS address where we will write the return value when finished
+static uint8_t* G_swap_sign_return_value_address;
 
 bool copy_transaction_parameters(create_transaction_parameters_t* params) {
     // first copy parameters to stack, and then to global data.
@@ -27,10 +31,19 @@ bool copy_transaction_parameters(create_transaction_parameters_t* params) {
         return false;
     }
 
+    // Full reset the global variables
     os_explicit_zero_BSS_segment();
+    // Keep the address at wich we'll reply the signing status
+    G_swap_sign_return_value_address = &params->result;
+    // Commit the values read from exchange to the clean global space
     memcpy(&approval_strings.swap, &stack_data, sizeof(stack_data));
 
     return true;
+}
+
+void __attribute__((noreturn)) finalize_exchange_sign_transaction(bool is_success) {
+    *G_swap_sign_return_value_address = is_success;
+    os_lib_end();
 }
 
 void handle_swap_sign_transaction(void) {
