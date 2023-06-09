@@ -58,7 +58,7 @@ def test_get_public_key(backend, firmware, navigator):
 def test_sign_valid_tx_and_compare_screens(backend, raw_tx_path, firmware, navigator):
     if firmware.device == "nanosp":
         pytest.skip(f"TODO : add tests for nanosp")
-    sleep(1)
+
     xrp = XRPClient(backend, firmware, navigator)
 
     prefix = (
@@ -77,6 +77,8 @@ def test_sign_valid_tx_and_compare_screens(backend, raw_tx_path, firmware, navig
 
     path = Bip32Path.build(DEFAULT_PATH)
     payload = path + tx
+
+    backend.wait_for_home_screen()
     xrp.sign(payload, True, no_prefix_snappath)
     assert xrp._client.last_async_response.status == 0x9000
 

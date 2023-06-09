@@ -108,10 +108,9 @@ class XRPClient:
                 ) as r:
                     if navigate:
                         if self._firmware.device == "stax":
-                            sleep(1.5)
                             self._navigator.navigate_until_text_and_compare(
-                                NavIns(NavInsID.USE_CASE_REVIEW_TAP),
-                                [NavIns(NavInsID.USE_CASE_REVIEW_CONFIRM)],
+                                NavInsID.USE_CASE_REVIEW_TAP,
+                                [NavInsID.USE_CASE_REVIEW_CONFIRM, NavInsID.USE_CASE_STATUS_DISMISS],
                                 "Hold to confirm",
                                 pathlib.Path(__file__).parent.resolve(),
                                 snappath,
@@ -122,8 +121,8 @@ class XRPClient:
                             if self._firmware.device == "nanox":
                                 text_to_find = text_to_find[1:]
                             self._navigator.navigate_until_text_and_compare(
-                                NavIns(NavInsID.RIGHT_CLICK),
-                                [NavIns(NavInsID.BOTH_CLICK)],
+                                NavInsID.RIGHT_CLICK,
+                                [NavInsID.BOTH_CLICK],
                                 text_to_find,
                                 pathlib.Path(__file__).parent.resolve(),
                                 snappath,
