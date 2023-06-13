@@ -110,7 +110,7 @@ class XRPClient:
                         if self._firmware.device == "stax":
                             self._navigator.navigate_until_text_and_compare(
                                 NavInsID.USE_CASE_REVIEW_TAP,
-                                [NavInsID.USE_CASE_REVIEW_CONFIRM, NavInsID.USE_CASE_STATUS_DISMISS],
+                                [NavInsID.USE_CASE_REVIEW_CONFIRM],
                                 "Hold to confirm",
                                 pathlib.Path(__file__).parent.resolve(),
                                 snappath,
