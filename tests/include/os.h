@@ -23,7 +23,7 @@
 #define EXCEPTION_SYSTEM      18
 #define NOT_ENOUGH_SPACE      19
 
-#define PRINTF(strbuf, ...) fprintf(stderr, strbuf, MAX_FIELD_LEN, __VA_ARGS__)
+#define PRINTF(...)
 
 #define MAX(a, b) ((a) > (b)) ? (a) : (b)
 #define MIN(a, b) ((a) < (b)) ? (a) : (b)
