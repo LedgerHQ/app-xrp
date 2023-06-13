@@ -57,6 +57,7 @@ jobs:
     uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_build.yml@v1
     with:
       upload_app_binaries_artifact: compiled_app_binaries
+      flags: DEBUG=1
 
   ragger_tests:
     name: Functional tests with Ragger
