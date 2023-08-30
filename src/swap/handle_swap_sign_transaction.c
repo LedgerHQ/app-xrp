@@ -6,6 +6,10 @@
 #include "swap_lib_calls.h"
 #include "swap_utils.h"
 
+#ifdef HAVE_NBGL
+#include "nbgl_use_case.h"
+#endif
+
 // Save the BSS address where we will write the return value when finished
 static uint8_t* G_swap_sign_return_value_address;
 
@@ -51,6 +55,9 @@ void handle_swap_sign_transaction(void) {
     reset_transaction_context();
     io_seproxyhal_init();
     UX_INIT();
+#ifdef HAVE_NBGL
+    nbgl_useCaseSpinner("Signing");
+#endif  // HAVE_BAGL
     USB_power(0);
     USB_power(1);
     // ui_idle();
