@@ -22,8 +22,8 @@
 #include "nbgl_use_case.h"
 
 #define NB_INFO_FIELDS 2
-static const char* const infoTypes[] = {"Version", "XRP App"};
-static const char* const infoContents[] = {APPVERSION, "(c) 2023 Ledger"};
+static const char* const infoTypes[] = {"Version", "Developer"};
+static const char* const infoContents[] = {APPVERSION, "Ledger"};
 
 static void display_about_menu();
 static bool about_nav_clbk(uint8_t page, nbgl_pageContent_t* content);
@@ -42,7 +42,7 @@ static bool about_nav_clbk(uint8_t page, nbgl_pageContent_t* content) {
 }
 
 static void display_about_menu(void) {
-    nbgl_useCaseSettings("App infos", 0, 1, true, display_idle_menu, about_nav_clbk, NULL);
+    nbgl_useCaseSettings("App infos", 0, 1, false, display_idle_menu, about_nav_clbk, NULL);
 }
 
 static void on_quit_clbk(void) {
@@ -50,11 +50,6 @@ static void on_quit_clbk(void) {
 }
 
 void display_idle_menu() {
-    nbgl_useCaseHome("XRP",
-                     &C_icon_XRP_64px,
-                     "This app confirms actions on\nthe XRP network.",
-                     true,
-                     display_about_menu,
-                     on_quit_clbk);
+    nbgl_useCaseHome("XRP", &C_icon_XRP_64px, NULL, true, display_about_menu, on_quit_clbk);
 }
 #endif  // HAVE_NBGL

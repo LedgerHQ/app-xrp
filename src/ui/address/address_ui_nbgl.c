@@ -33,7 +33,7 @@ static void confirmationChoiceClbk(bool confirm) {
         nbgl_useCaseStatus("ADDRESS\nAPPROVED", true, display_idle_menu);
     } else {
         rejection_action();
-        nbgl_useCaseStatus("Address rejected", false, display_idle_menu);
+        nbgl_useCaseStatus("Address verification\ncancelled", false, display_idle_menu);
     }
 }
 
