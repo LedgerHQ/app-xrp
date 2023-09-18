@@ -9,8 +9,6 @@ pytest-3 -v -s
 import os
 import pytest
 import pathlib
-from contextlib import contextmanager
-from time import sleep
 from xrp import XRPClient, DEFAULT_PATH
 from ledgerwallet.params import Bip32Path
 from ragger.backend import RaisePolicy
@@ -54,7 +52,6 @@ def test_get_public_key(backend, firmware, navigator):
     xrp.get_pubkey()
 
 
-@contextmanager
 def test_sign_valid_tx_and_compare_screens(backend, raw_tx_path, firmware, navigator):
     if firmware.device == "nanosp":
         pytest.skip(f"TODO : add tests for nanosp")
