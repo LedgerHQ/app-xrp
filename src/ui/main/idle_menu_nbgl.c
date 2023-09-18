@@ -42,7 +42,7 @@ static bool about_nav_clbk(uint8_t page, nbgl_pageContent_t* content) {
 }
 
 static void display_about_menu(void) {
-    nbgl_useCaseSettings("App infos", 0, 1, false, display_idle_menu, about_nav_clbk, NULL);
+    nbgl_useCaseSettings(APPNAME, 0, 1, false, display_idle_menu, about_nav_clbk, NULL);
 }
 
 static void on_quit_clbk(void) {
@@ -50,6 +50,6 @@ static void on_quit_clbk(void) {
 }
 
 void display_idle_menu() {
-    nbgl_useCaseHome("XRP", &C_icon_XRP_64px, NULL, true, display_about_menu, on_quit_clbk);
+    nbgl_useCaseHome(APPNAME, &C_icon_XRP_64px, NULL, true, display_about_menu, on_quit_clbk);
 }
 #endif  // HAVE_NBGL
