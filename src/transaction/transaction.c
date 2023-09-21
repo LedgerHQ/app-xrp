@@ -16,17 +16,17 @@
  ********************************************************************************/
 
 #include "transaction.h"
-#include "../ui/transaction/review_menu.h"
+#include "review_menu.h"
 #ifdef HAVE_BAGL
-#include "../ui/other/loading.h"
+#include "loading.h"
 #endif  // HAVE_BAGL
-#include "../apdu/global.h"
-#include "../xrp/transaction_types.h"
-#include "../xrp/fields.h"
-#include "../xrp/amount.h"
-#include "../xrp/format.h"
-#include "../xrp/readers.h"
-#include "../xrp/xrp_helpers.h"
+#include "global.h"
+#include "transaction_types.h"
+#include "fields.h"
+#include "amount.h"
+#include "fmt.h"
+#include "readers.h"
+#include "xrp_helpers.h"
 #include "handle_swap_sign_transaction.h"
 #include <string.h>
 

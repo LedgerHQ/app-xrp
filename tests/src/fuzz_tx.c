@@ -7,7 +7,7 @@
 #include "cx.h"
 #include "../src/xrp/xrp_parse.h"
 #include "../src/xrp/xrp_helpers.h"
-#include "../src/xrp/format.h"
+#include "../src/xrp/fmt.h"
 
 field_name_t field_name;
 field_value_t field_value;

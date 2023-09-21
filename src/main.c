@@ -17,16 +17,16 @@
  ********************************************************************************/
 
 #include "os_io_seproxyhal.h"
-#include "apdu/entry.h"
-#include "apdu/global.h"
-#include "ui/main/idle_menu.h"
-#include "ui/address/address_ui.h"
+#include "entry.h"
+#include "global.h"
+#include "idle_menu.h"
+#include "address_ui.h"
 #include <ux.h>
 
-#include "swap/swap_lib_calls.h"
-#include "swap/handle_swap_sign_transaction.h"
-#include "swap/handle_get_printable_amount.h"
-#include "swap/handle_check_address.h"
+#include "swap_lib_calls.h"
+#include "handle_swap_sign_transaction.h"
+#include "handle_get_printable_amount.h"
+#include "handle_check_address.h"
 
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 

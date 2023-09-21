@@ -21,13 +21,13 @@
 
 #include "os_io_usb.h"
 #include "get_public_key.h"
-#include "../constants.h"
-#include "../global.h"
-#include "../../xrp/xrp_helpers.h"
-#include "../../xrp/xrp_pub_key.h"
-#include "../../xrp/xrp_parse.h"
-#include "../../ui/address/address_ui.h"
-#include "../../ui/main/idle_menu.h"
+#include "constants.h"
+#include "global.h"
+#include "xrp_helpers.h"
+#include "xrp_pub_key.h"
+#include "xrp_parse.h"
+#include "address_ui.h"
+#include "idle_menu.h"
 
 uint32_t set_result_get_public_key() {
     uint32_t tx = 0;

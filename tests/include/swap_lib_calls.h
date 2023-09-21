@@ -9,14 +9,6 @@
 #include "stdbool.h"
 #include "stdint.h"
 
-#define RUN_APPLICATION 1
-
-#define SIGN_TRANSACTION 2
-
-#define CHECK_ADDRESS 3
-
-#define GET_PRINTABLE_AMOUNT 4
-
 /*
  * Amounts are stored as bytes, with a max size of 16 (see protobuf
  * specifications). Max 16B integer is 340282366920938463463374607431768211455
@@ -33,7 +25,7 @@ typedef struct check_address_parameters_s {
     uint8_t *coin_configuration;
     uint8_t coin_configuration_length;
     // serialized path, segwit, version prefix, hash used, dictionary etc.
-    // fields and serialization format depends on spesific coin app
+    // fields and serialization format depends on specific coin app
     uint8_t *address_parameters;
     uint8_t address_parameters_length;
     char *address_to_check;
@@ -53,28 +45,3 @@ typedef struct get_printable_amount_parameters_s {
     // OUT
     char printable_amount[MAX_PRINTABLE_AMOUNT_SIZE];
 } get_printable_amount_parameters_t;
-
-typedef struct create_transaction_parameters_s {
-    // IN
-    uint8_t *coin_configuration;
-    uint8_t coin_configuration_length;
-    uint8_t *amount;
-    uint8_t amount_length;
-    uint8_t *fee_amount;
-    uint8_t fee_amount_length;
-    char *destination_address;
-    char *destination_address_extra_id;
-    // OUT
-    uint8_t result;
-} create_transaction_parameters_t;
-
-typedef struct libargs_s {
-    unsigned int id;
-    unsigned int command;
-    unsigned int unused;
-    union {
-        check_address_parameters_t *check_address;
-        create_transaction_parameters_t *create_transaction;
-        get_printable_amount_parameters_t *get_printable_amount;
-    };
-} libargs_t;

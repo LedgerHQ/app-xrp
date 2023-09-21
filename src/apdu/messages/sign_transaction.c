@@ -20,11 +20,11 @@
 #include <string.h>
 #include <os_io_usb.h>
 #include "sign_transaction.h"
-#include "../constants.h"
-#include "../global.h"
-#include "../transaction/transaction.h"
-#include "../ui/main/idle_menu.h"
-#include "../../xrp/xrp_helpers.h"
+#include "constants.h"
+#include "global.h"
+#include "transaction.h"
+#include "idle_menu.h"
+#include "xrp_helpers.h"
 
 static const uint8_t prefix_length = 4;
 static const uint8_t suffix_length = 20;

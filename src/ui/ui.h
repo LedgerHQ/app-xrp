@@ -15,8 +15,8 @@
  *  limitations under the License.
  ********************************************************************************/
 
-#ifndef LEDGER_APP_XRP_UX_H
-#define LEDGER_APP_XRP_UX_H
+#ifndef LEDGER_APP_XRP_UI_H
+#define LEDGER_APP_XRP_UI_H
 
 #if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
 #define DEV_SCREEN_H 64
@@ -46,4 +46,4 @@
             (char *) (text)                                               \
     }
 
-#endif  // LEDGER_APP_XRP_UX_H
+#endif  // LEDGER_APP_XRP_UI_H

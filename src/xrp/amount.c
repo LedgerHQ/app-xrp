@@ -20,11 +20,11 @@
 #include <stdbool.h>
 
 #include "amount.h"
-#include "format.h"
+#include "fmt.h"
 #include "xrp_helpers.h"
 #include "readers.h"
 #include "number_helpers.h"
-#include "../limitations.h"
+#include "limitations.h"
 #include "ascii_strings.h"
 
 #define EXP_MIN      -96
