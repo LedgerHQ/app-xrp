@@ -62,10 +62,10 @@ void sign_transaction() {
 
     cx_err_t error = CX_INTERNAL_ERROR;
     CX_CHECK(bip32_derive_init_privkey_256(tmp_ctx.transaction_context.curve,
-                                tmp_ctx.transaction_context.bip32_path,
-                                tmp_ctx.transaction_context.path_length,
-                                &private_key,
-                                NULL));
+                                           tmp_ctx.transaction_context.bip32_path,
+                                           tmp_ctx.transaction_context.path_length,
+                                           &private_key,
+                                           NULL));
 
     io_seproxyhal_io_heartbeat();
 
@@ -77,16 +77,15 @@ void sign_transaction() {
         uint8_t *suffix_data = key_buffer + XRP_PUBKEY_SIZE;
 
         CX_CHECK(cx_ecfp_generate_pair_no_throw(tmp_ctx.transaction_context.curve,
-                                &public_key,
-                                &private_key,
-                                1));
+                                                &public_key,
+                                                &private_key,
+                                                1));
         xrp_compress_public_key(&public_key, public_key_data);
         xrp_public_key_hash160(public_key_data, suffix_data);
 
-        memmove(
-            tmp_ctx.transaction_context.raw_tx + tmp_ctx.transaction_context.raw_tx_length,
-            suffix_data,
-            suffix_length);
+        memmove(tmp_ctx.transaction_context.raw_tx + tmp_ctx.transaction_context.raw_tx_length,
+                suffix_data,
+                suffix_length);
         tmp_ctx.transaction_context.raw_tx_length += suffix_length;
 
         explicit_bzero(key_buffer, sizeof(key_buffer));
@@ -94,9 +93,9 @@ void sign_transaction() {
 
     if (tmp_ctx.transaction_context.curve == CX_CURVE_256K1) {
         cx_hash_sha512(tmp_ctx.transaction_context.raw_tx,
-                        tmp_ctx.transaction_context.raw_tx_length,
-                        key_buffer,
-                        64);
+                       tmp_ctx.transaction_context.raw_tx_length,
+                       key_buffer,
+                       64);
         PRINTF("Hash to sign:\n%.*H\n", 32, key_buffer);
         io_seproxyhal_io_heartbeat();
 

@@ -60,7 +60,7 @@ void format_field(field_t* field, field_value_t* dst) {
     }
 
     if (ret != 0) {
-        strncpy(dst->buf, "[ERROR DURING FORMATING]", sizeof(dst->buf));
+        strncpy(dst->buf, "[ERROR DURING FORMATTING]", sizeof(dst->buf));
         return;
     }
 

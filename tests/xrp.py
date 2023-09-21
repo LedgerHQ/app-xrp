@@ -1,17 +1,13 @@
-#!/usr/bin/env python3
-
-from typing import Generator
 from contextlib import contextmanager
 from enum import IntEnum
-from time import sleep
-from ragger.backend.interface import BackendInterface, RAPDU
-from ragger.navigator import NavInsID, NavIns
-from ledgerwallet.params import Bip32Path
 import pathlib
-
-from ecdsa.util import sigdecode_der
-from ecdsa import VerifyingKey, SECP256k1
 from hashlib import sha256
+from ragger.backend.interface import BackendInterface, RAPDU
+from ragger.navigator import NavInsID
+from ledgerwallet.params import Bip32Path  # type: ignore [import]
+
+from ecdsa.util import sigdecode_der  # type: ignore [import]
+from ecdsa import VerifyingKey, SECP256k1  # type: ignore [import]
 
 DEFAULT_PATH = "44'/144'/0'/0'/0"
 
@@ -42,9 +38,6 @@ class Action(IntEnum):
     NAVIGATE = 0
     COMPARE = 1
     NONE = 2
-
-
-DEFAULT_PATH = "44'/144'/0'/0'/0"
 
 
 class XRPClient:
@@ -96,7 +89,7 @@ class XRPClient:
 
             size = min(len(payload), chunk_size)
             if size != len(payload):
-                p1 |= P1.MORE
+                p1 |= P1.MORE  # type: ignore[assignment]
 
             p2 = P2.CURVE_SECP256K1
 
@@ -105,7 +98,7 @@ class XRPClient:
             elif p1 in [P1.FIRST, P1.NEXT]:
                 with self._client.exchange_async(
                     self.CLA, ins=Ins.SIGN, p1=p1, p2=p2, data=payload[:size]
-                ) as r:
+                ):
                     if navigate:
                         if self._firmware.device == "stax":
                             self._navigator.navigate_until_text_and_compare(

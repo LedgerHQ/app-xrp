@@ -85,9 +85,9 @@ static bool check_field(const field_t *field,
 }
 
 /*
-Check that a previously parsed TX has the rigth shape/content for the app to sign it without user
+Check that a previously parsed TX has the right shape/content for the app to sign it without user
 approval.
-Exemple of such a swappable TX (as it would be displayed with the approval flow):
+Example of such a swappable TX (as it would be displayed with the approval flow):
 {
     "TransactionType" : "Payment",
     "Account" : "ra7Zr8ddy9tB88RaXL8B87YkqhEJG2vkAJ",

@@ -2,6 +2,7 @@
 
 #include "xrp_pub_key.h"
 #include "xrp_helpers.h"
+#include "lcx_hash.h"
 #include "crypto_helpers.h"
 
 /* return 0 on success */
@@ -19,5 +20,10 @@ int get_public_key(cx_curve_t curve,
 
     pub_key->curve = curve;
     pub_key->W_len = 65;
-    return bip32_derive_get_pubkey_256(curve, bip32_path_parsed, bip32_path_length, pub_key->W, chain_code, CX_SHA256);
+    return bip32_derive_get_pubkey_256(curve,
+                                       bip32_path_parsed,
+                                       bip32_path_length,
+                                       pub_key->W,
+                                       chain_code,
+                                       CX_SHA256);
 }

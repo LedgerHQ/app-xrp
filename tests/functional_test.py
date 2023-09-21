@@ -1,18 +1,16 @@
-#!/usr/bin/env python3
-
 """
-./speculos.py --log-level automation:DEBUG --automation file:$HOME/app-xrp/tests/automation.json ~/app-xrp/bin/app.elf &
+./speculos.py --log-level automation:DEBUG ~/app-xrp/bin/app.elf &
 
 export LEDGER_PROXY_ADDRESS=127.0.0.1 LEDGER_PROXY_PORT=9999
 pytest-3 -v -s
 """
 import os
-import pytest
 import pathlib
-from xrp import XRPClient, DEFAULT_PATH
-from ledgerwallet.params import Bip32Path
+import pytest
+from ledgerwallet.params import Bip32Path  # type: ignore [import]
 from ragger.backend import RaisePolicy
 from ragger.error import ExceptionRAPDU
+from .xrp import XRPClient, DEFAULT_PATH
 
 
 def test_sign_too_large(backend, firmware, navigator):
@@ -74,7 +72,7 @@ def test_sign_valid_tx_and_compare_screens(backend, raw_tx_path, firmware, navig
 
     backend.wait_for_home_screen()
     xrp.sign(payload, True, no_prefix_snappath)
-    assert xrp._client.last_async_response.status == 0x9000
+    assert backend.last_async_response.status == 0x9000
 
     # Verify tx signature (Does not work...)
     # key = xrp.get_pubkey()
