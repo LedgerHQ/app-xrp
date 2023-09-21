@@ -25,6 +25,7 @@
 #include "transaction.h"
 #include "idle_menu.h"
 #include "xrp_helpers.h"
+#include "crypto_helpers.h"
 
 static const uint8_t prefix_length = 4;
 static const uint8_t suffix_length = 20;
@@ -41,7 +42,7 @@ void handle_packet_content(uint8_t p1,
                            volatile unsigned int *flags);
 
 void sign_transaction() {
-    uint8_t private_key_data[64];
+    uint8_t key_buffer[64];
     cx_ecfp_private_key_t private_key;
     uint32_t info, tx = 0;
 
@@ -57,89 +58,77 @@ void sign_transaction() {
         return;
     }
 
-    int error = 0;
-    BEGIN_TRY {
-        TRY {
-            io_seproxyhal_io_heartbeat();
-            os_perso_derive_node_bip32(tmp_ctx.transaction_context.curve,
-                                       tmp_ctx.transaction_context.bip32_path,
-                                       tmp_ctx.transaction_context.path_length,
-                                       private_key_data,
-                                       NULL);
-            cx_ecfp_init_private_key(tmp_ctx.transaction_context.curve,
-                                     private_key_data,
-                                     32,
-                                     &private_key);
-            explicit_bzero(private_key_data, sizeof(private_key_data));
-            io_seproxyhal_io_heartbeat();
+    io_seproxyhal_io_heartbeat();
 
-            // Append public key to end of transaction if multi-signing
-            if (parse_context.has_empty_pub_key) {
-                cx_ecfp_public_key_t public_key;
+    cx_err_t error = CX_INTERNAL_ERROR;
+    CX_CHECK(bip32_derive_init_privkey_256(tmp_ctx.transaction_context.curve,
+                                tmp_ctx.transaction_context.bip32_path,
+                                tmp_ctx.transaction_context.path_length,
+                                &private_key,
+                                NULL));
 
-                // Re-use old buffer to save RAM
-                xrp_pubkey_t *public_key_data = (xrp_pubkey_t *) private_key_data;
-                uint8_t *suffix_data = private_key_data + XRP_PUBKEY_SIZE;
+    io_seproxyhal_io_heartbeat();
 
-                cx_ecfp_generate_pair(tmp_ctx.transaction_context.curve,
-                                      &public_key,
-                                      &private_key,
-                                      1);
-                xrp_compress_public_key(&public_key, public_key_data);
-                xrp_public_key_hash160(public_key_data, suffix_data);
+    // Append public key to end of transaction if multi-signing
+    if (parse_context.has_empty_pub_key) {
+        cx_ecfp_public_key_t public_key;
 
-                memmove(
-                    tmp_ctx.transaction_context.raw_tx + tmp_ctx.transaction_context.raw_tx_length,
-                    suffix_data,
-                    suffix_length);
-                tmp_ctx.transaction_context.raw_tx_length += suffix_length;
+        xrp_pubkey_t *public_key_data = (xrp_pubkey_t *) key_buffer;
+        uint8_t *suffix_data = key_buffer + XRP_PUBKEY_SIZE;
 
-                explicit_bzero(private_key_data, sizeof(private_key_data));
-            }
+        CX_CHECK(cx_ecfp_generate_pair_no_throw(tmp_ctx.transaction_context.curve,
+                                &public_key,
+                                &private_key,
+                                1));
+        xrp_compress_public_key(&public_key, public_key_data);
+        xrp_public_key_hash160(public_key_data, suffix_data);
 
-            if (tmp_ctx.transaction_context.curve == CX_CURVE_256K1) {
-                cx_hash_sha512(tmp_ctx.transaction_context.raw_tx,
-                               tmp_ctx.transaction_context.raw_tx_length,
-                               private_key_data,
-                               64);
-                PRINTF("Hash to sign:\n%.*H\n", 32, private_key_data);
-                io_seproxyhal_io_heartbeat();
-                tx = (uint32_t) cx_ecdsa_sign(&private_key,
-                                              CX_RND_RFC6979 | CX_LAST,
-                                              CX_SHA256,
-                                              private_key_data,
-                                              32,
-                                              G_io_apdu_buffer,
-                                              sizeof(G_io_apdu_buffer),
-                                              &info);
-                G_io_apdu_buffer[0] = 0x30;
-            } else {
-                tx = (uint32_t) cx_eddsa_sign(&private_key,
-                                              CX_LAST,
-                                              CX_SHA512,
-                                              tmp_ctx.transaction_context.raw_tx,
-                                              tmp_ctx.transaction_context.raw_tx_length,
-                                              NULL,
-                                              0,
-                                              G_io_apdu_buffer,
-                                              sizeof(G_io_apdu_buffer),
-                                              &info);
-            }
-        }
-        CATCH_OTHER(e) {
-            error = e;
-        }
-        FINALLY {
-            explicit_bzero(private_key_data, sizeof(private_key_data));
-            explicit_bzero(&private_key, sizeof(private_key));
+        memmove(
+            tmp_ctx.transaction_context.raw_tx + tmp_ctx.transaction_context.raw_tx_length,
+            suffix_data,
+            suffix_length);
+        tmp_ctx.transaction_context.raw_tx_length += suffix_length;
 
-            // Always reset transaction context after a transaction has been signed
-            reset_transaction_context();
-        }
+        explicit_bzero(key_buffer, sizeof(key_buffer));
     }
-    END_TRY;
 
-    if (error) {
+    if (tmp_ctx.transaction_context.curve == CX_CURVE_256K1) {
+        cx_hash_sha512(tmp_ctx.transaction_context.raw_tx,
+                        tmp_ctx.transaction_context.raw_tx_length,
+                        key_buffer,
+                        64);
+        PRINTF("Hash to sign:\n%.*H\n", 32, key_buffer);
+        io_seproxyhal_io_heartbeat();
+
+        tx = sizeof(G_io_apdu_buffer);
+        CX_CHECK(cx_ecdsa_sign_no_throw(&private_key,
+                                        CX_RND_RFC6979 | CX_LAST,
+                                        CX_SHA256,
+                                        key_buffer,
+                                        32,
+                                        G_io_apdu_buffer,
+                                        &tx,
+                                        &info));
+    } else {
+        size_t size;
+        CX_CHECK(cx_eddsa_sign_no_throw(&private_key,
+                                        CX_SHA512,
+                                        tmp_ctx.transaction_context.raw_tx,
+                                        tmp_ctx.transaction_context.raw_tx_length,
+                                        G_io_apdu_buffer,
+                                        sizeof(G_io_apdu_buffer)));
+        CX_CHECK(cx_ecdomain_parameters_length(private_key.curve, &size));
+        tx = size * 2;
+    }
+
+end:
+    explicit_bzero(key_buffer, sizeof(key_buffer));
+    explicit_bzero(&private_key, sizeof(private_key));
+
+    // Always reset transaction context after a transaction has been signed
+    reset_transaction_context();
+
+    if (error != CX_OK) {
         THROW(error);
     }
 

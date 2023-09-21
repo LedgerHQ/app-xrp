@@ -34,6 +34,8 @@ APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 
 # Application source files
 APP_SOURCE_PATH  += src
+APP_SOURCE_FILES += ${BOLOS_SDK}/lib_standard_app/crypto_helpers.c
+INCLUDES_PATH += ${BOLOS_SDK}/lib_standard_app
 
 # Application icons following guidelines:
 # https://developers.ledger.com/docs/embedded-app/design-requirements/#device-icon

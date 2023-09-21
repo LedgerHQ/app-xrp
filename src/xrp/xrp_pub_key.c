@@ -2,6 +2,7 @@
 
 #include "xrp_pub_key.h"
 #include "xrp_helpers.h"
+#include "crypto_helpers.h"
 
 /* return 0 on success */
 int get_public_key(cx_curve_t curve,
@@ -16,29 +17,7 @@ int get_public_key(cx_curve_t curve,
         return 0x6a80;
     }
 
-    cx_ecfp_private_key_t private_key;
-    uint8_t private_key_data[33];
-    int error = 0;
-
-    BEGIN_TRY {
-        TRY {
-            os_perso_derive_node_bip32(curve,
-                                       bip32_path_parsed,
-                                       bip32_path_length,
-                                       private_key_data,
-                                       chain_code);
-            cx_ecfp_init_private_key(curve, private_key_data, 32, &private_key);
-            cx_ecfp_generate_pair(curve, pub_key, &private_key, 1);
-        }
-        CATCH_OTHER(e) {
-            error = e;
-        }
-        FINALLY {
-            explicit_bzero(private_key_data, sizeof(private_key_data));
-            explicit_bzero(&private_key, sizeof(private_key));
-        }
-    }
-    END_TRY;
-
-    return error;
+    pub_key->curve = curve;
+    pub_key->W_len = 65;
+    return bip32_derive_get_pubkey_256(curve, bip32_path_parsed, bip32_path_length, pub_key->W, chain_code, CX_SHA256);
 }
