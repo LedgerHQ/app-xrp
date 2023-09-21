@@ -53,9 +53,6 @@ def test_get_public_key(backend, firmware, navigator):
 
 
 def test_sign_valid_tx_and_compare_screens(backend, raw_tx_path, firmware, navigator):
-    if firmware.device == "nanosp":
-        pytest.skip(f"TODO : add tests for nanosp")
-
     xrp = XRPClient(backend, firmware, navigator)
 
     prefix = (

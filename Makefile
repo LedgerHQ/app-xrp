@@ -41,6 +41,7 @@ INCLUDES_PATH += ${BOLOS_SDK}/lib_standard_app
 # https://developers.ledger.com/docs/embedded-app/design-requirements/#device-icon
 ICON_NANOS = img/nanos_app_xrp.gif
 ICON_NANOX = img/nanox_app_xrp.gif
+ICON_NANOSP = img/nanox_app_xrp.gif
 ICON_STAX = img/stax_app_xrp.gif
 
 # Application allowed derivation curves.
