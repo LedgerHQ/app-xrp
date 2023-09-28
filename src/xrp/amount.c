@@ -72,18 +72,18 @@ static int parse_decimal_number(char *dst,
         return -1;
     }
 
+    // 0. Abort early if number matches special case for zero
+    if (sign == 0 && exponent == 0 && mantissa == 0) {
+        dst[0] = '0';
+        return 0;
+    }
+
     if (exponent < EXP_MIN || exponent > EXP_MAX) {
         return -1;
     }
 
     if (mantissa < MANTISSA_MIN || mantissa > MANTISSA_MAX) {
         return -1;
-    }
-
-    // 0. Abort early if number matches special case for zero
-    if (sign == 0 && exponent == 0 && mantissa == 0) {
-        dst[0] = '0';
-        return 0;
     }
 
     // 1. Add leading minus sign if number is negative
