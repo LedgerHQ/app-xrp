@@ -1,88 +1,128 @@
-#!/usr/bin/env python3
-
 """
-./speculos.py --log-level automation:DEBUG --automation file:$HOME/app-xrp/tests/automation.json ~/app-xrp/bin/app.elf &
+./speculos.py --log-level automation:DEBUG ~/app-xrp/bin/app.elf &
 
 export LEDGER_PROXY_ADDRESS=127.0.0.1 LEDGER_PROXY_PORT=9999
 pytest-3 -v -s
 """
-import os
+from pathlib import Path
 import pytest
-import pathlib
-from xrp import XRPClient, DEFAULT_PATH
-from ledgerwallet.params import Bip32Path
+from ledgerwallet.params import Bip32Path  # type: ignore [import]
 from ragger.backend import RaisePolicy
+from ragger.bip import calculate_public_key_and_chaincode, CurveChoice
 from ragger.error import ExceptionRAPDU
+from .xrp import XRPClient, Errors
+from .utils import DEFAULT_PATH, DEFAULT_BIP32_PATH, util_navigate
+from .utils import verify_ecdsa_secp256k1, verify_version
+
+
+def test_app_configuration(backend, firmware, navigator):
+    xrp = XRPClient(backend, firmware, navigator)
+    version = xrp.get_configuration()
+    verify_version(version)
 
 
 def test_sign_too_large(backend, firmware, navigator):
     xrp = XRPClient(backend, firmware, navigator)
     max_size = 10001
-    path = Bip32Path.build(DEFAULT_PATH)
-    payload = path + b"a" * (max_size - 4)
+    payload = DEFAULT_BIP32_PATH + b"a" * (max_size - 4)
     try:
         backend.raise_policy = RaisePolicy.RAISE_ALL_BUT_0x9000
-        xrp.sign(payload, False)
+        xrp.sign(payload)
     except ExceptionRAPDU as rapdu:
-        assert rapdu.status in [0x6700, 0x6813]
+        assert rapdu.status in [Errors.SW_WRONG_LENGTH, Errors.SW_INTERNAL_3]
 
 
 def test_sign_invalid_tx(backend, firmware, navigator):
     xrp = XRPClient(backend, firmware, navigator)
-    path = Bip32Path.build(DEFAULT_PATH)
-    payload = path + b"a" * (40)
+    payload = DEFAULT_BIP32_PATH + b"a" * (40)
     try:
         backend.raise_policy = RaisePolicy.RAISE_ALL_BUT_0x9000
-        xrp.sign(payload, False)
+        xrp.sign(payload)
     except ExceptionRAPDU as rapdu:
-        assert rapdu.status in [0x6803, 0x6807]
+        assert rapdu.status in [Errors.SW_INTERNAL_1, Errors.SW_INTERNAL_2]
 
 
 def test_path_too_long(backend, firmware, navigator):
     xrp = XRPClient(backend, firmware, navigator)
     path = Bip32Path.build(DEFAULT_PATH + "/0/0/0/0/0/0")
     try:
-        xrp.get_pubkey(default_path=False, path=path)
+        xrp.get_pubkey_no_confirm(path)
     except ExceptionRAPDU as rapdu:
-        assert rapdu.status == 0x6A80
+        assert rapdu.status == Errors.SW_INVALID_PATH
 
 
-def test_get_public_key(backend, firmware, navigator):
+def test_get_public_key_no_confirm(backend, firmware, navigator):
     xrp = XRPClient(backend, firmware, navigator)
-    xrp.get_pubkey()
+    key_len, key_data, chain_len, chain_data = xrp.get_pubkey_no_confirm(chain_code=True)
+    ref_public_key, ref_chain_code = calculate_public_key_and_chaincode(
+        CurveChoice.Secp256k1, DEFAULT_PATH, compress_public_key=True)
+    assert key_data == ref_public_key
+    assert chain_data == ref_chain_code
+    print(f"   Pub Key[{key_len}]: {key_data}")
+    print(f"Chain code[{chain_len}]: {ref_chain_code}")
 
 
-def test_sign_valid_tx_and_compare_screens(backend, raw_tx_path, firmware, navigator):
-    if firmware.device == "nanosp":
-        pytest.skip(f"TODO : add tests for nanosp")
+def test_get_public_key_confirm(backend, firmware, navigator, test_name):
+    xrp = XRPClient(backend, firmware, navigator)
+    with xrp.get_pubkey_confirm():
+        util_navigate(firmware,navigator, test_name, "Approve")
 
+    # Check the status (Asynchronous)
+    reply = xrp.get_async_response()
+    assert reply.status == Errors.SW_SUCCESS
+
+
+def test_get_public_key_reject(backend, firmware, navigator, test_name):
     xrp = XRPClient(backend, firmware, navigator)
 
-    prefix = (
-        os.path.dirname(os.path.realpath(__file__)) + f"/snapshots/{firmware.device}/"
-    )
-    full_snappath = pathlib.Path(
-        raw_tx_path.replace("/testcases/", f"/snapshots/{firmware.device}/")
-    ).with_suffix("")
-    no_prefix_snappath = str(full_snappath)[len(prefix) :]
+    with pytest.raises(ExceptionRAPDU) as err:
+        with xrp.get_pubkey_confirm():
+            util_navigate(firmware, navigator, test_name, "Reject_pubkey")
 
+    # Assert we have received a refusal
+    assert err.value.status == Errors.SW_WRONG_ADDRESS
+    assert len(err.value.data) == 0
+
+
+def test_sign_reject(backend, firmware, navigator, test_name):
+    xrp = XRPClient(backend, firmware, navigator)
+
+    # pragma pylint: disable=line-too-long
+    # Transaction extracted from testcases/01-payment/01-basic.raw
+    transaction = "120000228000000024000000036140000000000F424068400000000000000F732102B79DA34F4551CA976B66AA78A55C43707EC2BB2BEC39F95BD53F24E2E45A9E6781140511E17DB83BB6F113939D67BC8EA539EDC926FC83140511E17DB83BB6F113939D67BC8EA539EDC926FC"
+    # pragma pylint: enable=line-too-long
+
+    # Convert message to bytes
+    message = bytes.fromhex(transaction)
+
+    # Send the APDU (Asynchronous)
+    with pytest.raises(ExceptionRAPDU) as err:
+        with xrp.sign(DEFAULT_BIP32_PATH + message):
+            util_navigate(firmware, navigator, test_name, "Reject_sign")
+
+    # Assert we have received a refusal
+    assert err.value.status == Errors.SW_WRONG_ADDRESS
+    assert len(err.value.data) == 0
+
+
+def test_sign_valid_tx(backend, raw_tx_path, firmware, navigator):
     if raw_tx_path.endswith("19-really-stupid-tx.raw"):
         pytest.skip(f"skip invalid tx {raw_tx_path}")
+
+    xrp = XRPClient(backend, firmware, navigator)
 
     with open(raw_tx_path, "rb") as fp:
         tx = fp.read()
 
-    path = Bip32Path.build(DEFAULT_PATH)
-    payload = path + tx
+    index = raw_tx_path.index("/testcases/") + len("/testcases/")
+    snapdir = Path(raw_tx_path[index :]).with_suffix("")
 
     backend.wait_for_home_screen()
-    xrp.sign(payload, True, no_prefix_snappath)
-    assert xrp._client.last_async_response.status == 0x9000
+    with xrp.sign(DEFAULT_BIP32_PATH + tx):
+        util_navigate(firmware, navigator, snapdir, "Sign transaction", False)
 
-    # Verify tx signature (Does not work...)
-    # key = xrp.get_pubkey()
-    # print(f"RECEIVED PUBKEY : {key}")
-    # print(f"RECEIVED PUBKEY binascii: {binascii.hexlify(key)}")
-    # print(f"RECEIVED PUBKEY binascii str:")
-    # print(str(binascii.hexlify(key), encoding="utf-8"))
-    # xrp.verify_ecdsa_secp256k1(tx, signature, str(binascii.hexlify(b'22'), encoding="utf-8"))
+    reply = xrp.get_async_response()
+    assert reply.status == Errors.SW_SUCCESS
+
+    # Verify signature
+    verify_ecdsa_secp256k1(tx, reply.data, raw_tx_path)

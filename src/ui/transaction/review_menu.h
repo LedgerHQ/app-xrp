@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "../../transaction/transaction.h"
-#include "../../xrp//xrp_parse.h"
+#include "transaction.h"
+#include "xrp_parse.h"
 
 #define OPTION_SIGN   0
 #define OPTION_REJECT 1

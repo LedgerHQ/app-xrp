@@ -18,135 +18,105 @@
 ifeq ($(BOLOS_SDK),)
 $(error Environment variable BOLOS_SDK is not set)
 endif
+
 include $(BOLOS_SDK)/Makefile.defines
 
+########################################
+#        Mandatory configuration       #
+########################################
+# Application name
 APPNAME = XRP
-APP_LOAD_PARAMS  = --curve secp256k1 --curve ed25519
-APP_LOAD_PARAMS += --appFlags 0xa40 # APPLICATION_FLAG_BOLOS_SETTINGS | APPLICATION_FLAG_LIBRARY | APPLICATION_FLAG_GLOBAL_PIN
-APP_LOAD_PARAMS += --path "44'/144'"
-APP_LOAD_PARAMS += $(COMMON_LOAD_PARAMS)
 
 APPVERSION_M=2
 APPVERSION_N=3
-APPVERSION_P=1
+APPVERSION_P=2
 APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
-DEFINES   += UNUSED\(x\)=\(void\)x
-DEFINES   += APPVERSION=\"$(APPVERSION)\"
-DEFINES   += APPNAME=\"$(APPNAME)\"
 
-COIN = xrp
+# Application source files
+APP_SOURCE_PATH  += src
+APP_SOURCE_FILES += ${BOLOS_SDK}/lib_standard_app/crypto_helpers.c
+INCLUDES_PATH += ${BOLOS_SDK}/lib_standard_app
 
-#prepare hsm generation
-ifeq ($(TARGET_NAME),TARGET_NANOS)
-ICONNAME=img/nanos_app_$(COIN).gif
-else ifeq ($(TARGET_NAME),TARGET_STAX)
-ICONNAME=img/stax_app_$(COIN).gif
-else
-ICONNAME=img/nanox_app_$(COIN).gif
-endif
+# Application icons following guidelines:
+# https://developers.ledger.com/docs/embedded-app/design-requirements/#device-icon
+ICON_NANOS = img/nanos_app_xrp.gif
+ICON_NANOX = img/nanox_app_xrp.gif
+ICON_NANOSP = img/nanox_app_xrp.gif
+ICON_STAX = img/stax_app_xrp.gif
 
+# Application allowed derivation curves.
+# Possibles curves are: secp256k1, secp256r1, ed25519 and bls12381g1
+# If your app needs it, you can specify multiple curves by using:
+# `CURVE_APP_LOAD_PARAMS = <curve1> <curve2>`
+CURVE_APP_LOAD_PARAMS = secp256k1 ed25519
 
-################
-# Default rule #
-################
-all: default
+# Application allowed derivation paths.
+# You should request a specific path for your app.
+# This serve as an isolation mechanism.
+# Most application will have to request a path according to the BIP-0044
+# and SLIP-0044 standards.
+# If your app needs it, you can specify multiple path by using:
+# `PATH_APP_LOAD_PARAMS = "44'/1'" "45'/1'"`
+PATH_APP_LOAD_PARAMS = "44'/144'"
 
-############
-# Platform #
-############
+# Setting to allow building variant applications
+# - <VARIANT_PARAM> is the name of the parameter which should be set
+#   to specify the variant that should be build.
+# - <VARIANT_VALUES> a list of variant that can be build using this app code.
+#   * It must at least contains one value.
+#   * Values can be the app ticker or anything else but should be unique.
+VARIANT_PARAM = COIN
+VARIANT_VALUES = xrp
 
-DEFINES   += OS_IO_SEPROXYHAL
-ifneq ($(TARGET_NAME),TARGET_STAX)
-DEFINES   += HAVE_BAGL HAVE_UX_FLOW
-endif
-DEFINES   += HAVE_SPRINTF HAVE_SNPRINTF_FORMAT_U
+# Enabling DEBUG flag will enable PRINTF and disable optimizations
+#DEBUG = 1
 
-DEFINES   += HAVE_IO_USB HAVE_L4_USBLIB IO_USB_MAX_ENDPOINTS=4 IO_HID_EP_LENGTH=64 HAVE_USB_APDU
-DEFINES   +=  LEDGER_MAJOR_VERSION=$(APPVERSION_M) LEDGER_MINOR_VERSION=$(APPVERSION_N) LEDGER_PATCH_VERSION=$(APPVERSION_P)
+#######################################
+#     Application custom permissions   #
+########################################
+# See SDK `include/appflags.h` for the purpose of each permission
+#HAVE_APPLICATION_FLAG_DERIVE_MASTER = 1
+HAVE_APPLICATION_FLAG_GLOBAL_PIN = 1
+HAVE_APPLICATION_FLAG_BOLOS_SETTINGS = 1
+HAVE_APPLICATION_FLAG_LIBRARY = 1
+
+########################################
+# Application communication interfaces #
+########################################
+ENABLE_BLUETOOTH = 1
+#ENABLE_NFC = 1
+
+########################################
+#         NBGL custom features         #
+########################################
+ENABLE_NBGL_QRCODE = 1
+#ENABLE_NBGL_KEYBOARD = 1
+#ENABLE_NBGL_KEYPAD = 1
+
+########################################
+#          Features disablers          #
+########################################
+# These advanced settings allow to disable some feature that are by
+# default enabled in the SDK `Makefile.standard_app`.
+DISABLE_STANDARD_APP_FILES = 1
+#DISABLE_DEFAULT_IO_SEPROXY_BUFFER_SIZE = 1 # To allow custom size declaration
+#DISABLE_STANDARD_APP_DEFINES = 1 # Will set all the following disablers
+#DISABLE_STANDARD_SNPRINTF = 1
+#DISABLE_STANDARD_USB = 1
+#DISABLE_STANDARD_WEBUSB = 1
+#DISABLE_STANDARD_BAGL_UX_FLOW = 1
+
+########################################
+#        Main app configuration        #
+########################################
 
 # U2F
-DEFINES   += HAVE_U2F HAVE_IO_U2F
-DEFINES   += USB_SEGMENT_SIZE=64
-DEFINES   += BLE_SEGMENT_SIZE=32 #max MTU, min 20
+DEFINES   += HAVE_IO_U2F
 DEFINES   += U2F_PROXY_MAGIC=\"XRP\"
 
-#WEBUSB_URL     = www.ledgerwallet.com
-#DEFINES       += HAVE_WEBUSB WEBUSB_URL_SIZE_B=$(shell echo -n $(WEBUSB_URL) | wc -c) WEBUSB_URL=$(shell echo -n $(WEBUSB_URL) | sed -e "s/./\\\'\0\\\',/g")
-DEFINES   += HAVE_WEBUSB WEBUSB_URL_SIZE_B=0 WEBUSB_URL=""
+SDK_SOURCE_PATH  += lib_u2f
 
-ifeq ($(TARGET_NAME),TARGET_NANOX)
-DEFINES   += HAVE_BLE BLE_COMMAND_TIMEOUT_MS=2000 HAVE_BLE_APDU
-else ifeq ($(TARGET_NAME),TARGET_STAX)
-DEFINES   += HAVE_BLE BLE_COMMAND_TIMEOUT_MS=2000 HAVE_BLE_APDU
-endif
+#########################
 
-ifeq ($(TARGET_NAME),TARGET_NANOS)
-DEFINES       += IO_SEPROXYHAL_BUFFER_SIZE_B=128
-else ifeq ($(TARGET_NAME),TARGET_STAX)
-DEFINES       += IO_SEPROXYHAL_BUFFER_SIZE_B=300
-DEFINES       += NBGL_QRCODE
-SDK_SOURCE_PATH += qrcode
-else
-DEFINES       += IO_SEPROXYHAL_BUFFER_SIZE_B=300
-DEFINES       += HAVE_GLO096
-DEFINES       += HAVE_BAGL BAGL_WIDTH=128 BAGL_HEIGHT=64
-DEFINES       += HAVE_BAGL_ELLIPSIS # long label truncation feature
-DEFINES       += HAVE_BAGL_FONT_OPEN_SANS_REGULAR_11PX
-DEFINES       += HAVE_BAGL_FONT_OPEN_SANS_EXTRABOLD_11PX
-DEFINES       += HAVE_BAGL_FONT_OPEN_SANS_LIGHT_16PX
-endif
-
-# Enabling debug PRINTF
-DEBUG:=0
-ifneq ($(DEBUG),0)
-
-        ifeq ($(TARGET_NAME),TARGET_NANOS)
-                DEFINES   += HAVE_PRINTF PRINTF=screen_printf
-        else
-                DEFINES   += HAVE_PRINTF PRINTF=mcu_usb_printf
-        endif
-else
-        DEFINES   += PRINTF\(...\)=
-endif
-
-##############
-# Compiler #
-##############
-
-CC      := $(CLANGPATH)clang
-AS      := $(GCCPATH)arm-none-eabi-gcc
-LD      := $(GCCPATH)arm-none-eabi-gcc
-LDLIBS  += -lm -lgcc -lc
-
-# import rules to compile glyphs(/pone)
-include $(BOLOS_SDK)/Makefile.glyphs
-
-### computed variables
-APP_SOURCE_PATH  += src
-SDK_SOURCE_PATH  += lib_stusb lib_stusb_impl lib_u2f
-
-ifneq ($(TARGET_NAME),TARGET_STAX)
-SDK_SOURCE_PATH += lib_ux
-endif
-
-ifeq ($(TARGET_NAME),TARGET_NANOX)
-SDK_SOURCE_PATH  += lib_blewbxx lib_blewbxx_impl
-else ifeq ($(TARGET_NAME),TARGET_STAX)
-SDK_SOURCE_PATH  += lib_blewbxx lib_blewbxx_impl
-endif
-
-load: all
-	python -m ledgerblue.loadApp $(APP_LOAD_PARAMS)
-
-delete:
-	python -m ledgerblue.deleteApp $(COMMON_DELETE_PARAMS)
-
-# import generic rules from the sdk
-include $(BOLOS_SDK)/Makefile.rules
-
-#add dependency on custom makefile filename
-dep/%.d: %.c Makefile.genericwallet
-
-
-listvariants:
-	@echo VARIANTS COIN xrp
+# Import generic rules from the SDK
+include $(BOLOS_SDK)/Makefile.standard_app

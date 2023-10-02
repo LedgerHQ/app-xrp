@@ -20,9 +20,9 @@
 
 #include "flags.h"
 #include "readers.h"
-#include "../apdu/messages/sign_transaction.h"
+#include "sign_transaction.h"
 #include "transaction_types.h"
-#include "format.h"
+#include "fmt.h"
 
 #define HAS_FLAG(value, flag) ((value) & (flag)) == flag
 

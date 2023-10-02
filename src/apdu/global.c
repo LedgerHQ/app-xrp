@@ -18,7 +18,7 @@
 
 #include <string.h>
 #include "global.h"
-#include "messages/sign_transaction.h"
+#include "sign_transaction.h"
 
 tmpCtx_t tmp_ctx;
 signState_e sign_state;

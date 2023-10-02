@@ -20,7 +20,7 @@
 #define LEDGER_APP_XRP_SIGNTRANSACTION_H
 
 #include <stdint.h>
-#include "../../xrp/xrp_parse.h"
+#include "xrp_parse.h"
 
 extern parseContext_t parse_context;
 

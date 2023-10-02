@@ -20,7 +20,7 @@
 #include <ux.h>
 #include "global.h"
 #include "transaction.h"
-#include "format.h"
+#include "fmt.h"
 #include "idle_menu.h"
 #include "review_menu.h"
 #include "nbgl_use_case.h"

@@ -1,4 +1,3 @@
-import pytest
 import os
 from pathlib import Path
 from ragger.conftest import configuration
@@ -19,8 +18,7 @@ def pytest_generate_tests(metafunc):
     # if a test function has a raw_tx_path parameter, give the list of raw tx
     # paths
     if "raw_tx_path" in metafunc.fixturenames:
-        metafunc.parametrize("raw_tx_path", paths, scope="function")
-
+        metafunc.parametrize("raw_tx_path", sorted(paths), scope="function")
 
 #########################
 ### CONFIGURATION END ###

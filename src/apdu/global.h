@@ -21,8 +21,8 @@
 
 #include <stdbool.h>
 #include "constants.h"
-#include "../xrp/xrp_parse.h"
-#include "../xrp/xrp_helpers.h"
+#include "xrp_parse.h"
+#include "xrp_helpers.h"
 
 typedef enum {
     IDLE,

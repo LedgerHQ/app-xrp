@@ -18,8 +18,8 @@
 #ifndef LEDGER_APP_XRP_TRANSACTION_H
 #define LEDGER_APP_XRP_TRANSACTION_H
 
-#include "../xrp/xrp_parse.h"
-#include "../common.h"
+#include "xrp_parse.h"
+#include "common.h"
 
 typedef void (*resultAction_t)(unsigned int result);
 

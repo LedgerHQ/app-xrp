@@ -19,7 +19,7 @@
 
 #include "fields.h"
 #include "flags.h"
-#include "../common.h"
+#include "common.h"
 
 #define HIDE(t, i) \
     if (field->data_type == (t) && field->id == (i) && field->array_info.type == 0) return true

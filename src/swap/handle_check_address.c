@@ -2,8 +2,8 @@
 
 #include "handle_check_address.h"
 #include "os.h"
-#include "../xrp/xrp_helpers.h"
-#include "../xrp/xrp_pub_key.h"
+#include "xrp_helpers.h"
+#include "xrp_pub_key.h"
 
 static int os_strcmp(const char* s1, const char* s2) {
     size_t size = strlen(s1) + 1;

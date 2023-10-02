@@ -7,7 +7,7 @@
 #include "cx.h"
 #include "../src/xrp/xrp_parse.h"
 #include "../src/xrp/xrp_helpers.h"
-#include "../src/xrp/format.h"
+#include "../src/xrp/fmt.h"
 
 field_name_t field_name;
 field_value_t field_value;
@@ -41,7 +41,7 @@ static void reset_transaction_context(void) {
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
     // Reset old transaction data that might still remain
     reset_transaction_context();
-    parse_context.data = Data;
+    parse_context.data = (uint8_t *)Data;
     parse_context.length = Size;
 
     if (parse_tx(&parse_context) != 0) {
