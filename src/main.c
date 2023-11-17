@@ -252,18 +252,7 @@ void coin_main() {
     app_exit();
 }
 
-struct libargs_s {
-    unsigned int id;
-    unsigned int command;
-    unsigned int unused;
-    union {
-        check_address_parameters_t *check_address;
-        create_transaction_parameters_t *create_transaction;
-        get_printable_amount_parameters_t *get_printable_amount;
-    };
-};
-
-static void library_main_helper(struct libargs_s *args) {
+static void library_main_helper(libargs_t *args) {
     check_api_level(CX_COMPAT_APILEVEL);
     PRINTF("Inside a library \n");
     switch (args->command) {
@@ -290,7 +279,7 @@ static void library_main_helper(struct libargs_s *args) {
     }
 }
 
-void library_main(struct libargs_s *args) {
+void library_main(libargs_t *args) {
     bool end = false;
     /* This loop ensures that library_main_helper and os_lib_end are called
      * within a try context, even if an exception is thrown */
@@ -322,7 +311,7 @@ __attribute__((section(".boot"))) int main(int arg0) {
         coin_main();
     } else {
         // Called as library from another app
-        struct libargs_s *args = (struct libargs_s *) arg0;
+        libargs_t *args = (libargs_t *) arg0;
         if (args->id == 0x100) {
             library_main(args);
         } else {

@@ -7,6 +7,7 @@
 
 #include "cx.h"
 #include "../src/swap/handle_check_address.h"
+#include "../src/swap/swap_utils.h"
 #include "../src/xrp/xrp_helpers.h"
 
 void test_check_address(void **state) {
