@@ -5,6 +5,15 @@
 
 typedef unsigned int cx_curve_t;
 
+/** Success. */
+#define CX_OK 0x00000000
+
+/** Internal error */
+#define CX_INTERNAL_ERROR 0xFFFFFF85
+
+/** Type of error code */
+typedef uint32_t cx_err_t;
+
 #define CX_CURVE_256K1     0x1234
 #define CX_CURVE_SECP256K1 CX_CURVE_256K1
 
