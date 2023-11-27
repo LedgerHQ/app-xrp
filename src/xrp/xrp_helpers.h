@@ -39,7 +39,7 @@ typedef struct {
     char buf[XRP_ADDRESS_SIZE];
 } xrp_address_t;
 
-void xrp_public_key_hash160(xrp_pubkey_t *pubkey, uint8_t *out);
+cx_err_t xrp_public_key_hash160(xrp_pubkey_t *pubkey, uint8_t *out);
 
 size_t xrp_public_key_to_encoded_base58(xrp_pubkey_t *pubkey,
                                         xrp_account_t *account,

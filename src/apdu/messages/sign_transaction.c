@@ -81,7 +81,7 @@ void sign_transaction() {
                                                 &private_key,
                                                 1));
         xrp_compress_public_key(&public_key, public_key_data);
-        xrp_public_key_hash160(public_key_data, suffix_data);
+        CX_CHECK(xrp_public_key_hash160(public_key_data, suffix_data));
 
         memmove(tmp_ctx.transaction_context.raw_tx + tmp_ctx.transaction_context.raw_tx_length,
                 suffix_data,
