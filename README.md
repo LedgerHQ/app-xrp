@@ -1,8 +1,8 @@
 # XRP Wallet App for Ledger devices
 
-[![Ensure compliance with Ledger guidelines](https://github.com/LedgerHQ/app-flow/actions/workflows/guidelines_enforcer.yml/badge.svg)](https://github.com/LedgerHQ/app-flow/actions/workflows/guidelines_enforcer.yml)
+[![Ensure compliance with Ledger guidelines](https://github.com/LedgerHQ/app-xrp/actions/workflows/guidelines_enforcer.yml/badge.svg)](https://github.com/LedgerHQ/app-xrp/actions/workflows/guidelines_enforcer.yml)
 
-[![Build and run functional tests using ragger through reusable workflow](https://github.com/LedgerHQ/app-flow/actions/workflows/build_and_functional_tests.yml/badge.svg)](https://github.com/LedgerHQ/app-flow/actions/workflows/build_and_functional_tests.yml)
+[![Build and run functional tests using ragger through reusable workflow](https://github.com/LedgerHQ/app-xrp/actions/workflows/build_and_functional_tests.yml/badge.svg)](https://github.com/LedgerHQ/app-xrp/actions/workflows/build_and_functional_tests.yml)
 
 ## Introduction
 
