@@ -1,7 +1,9 @@
 from contextlib import contextmanager
-from typing import Optional
+from typing import Optional, Tuple
 from enum import IntEnum
 from ragger.backend.interface import BackendInterface, RAPDU
+from ragger.firmware import Firmware
+from ragger.navigator import Navigator
 from ragger.utils.misc import split_message
 
 from .utils import DEFAULT_BIP32_PATH, unpack_get_public_key_response, unpack_configuration_response
@@ -57,7 +59,7 @@ class Errors(IntEnum):
 class XRPClient:
     CLA = 0xE0
 
-    def __init__(self, client: BackendInterface, firmware, navigator):
+    def __init__(self, client: BackendInterface, firmware: Firmware, navigator: Navigator) -> None:
         if not isinstance(client, BackendInterface):
             raise TypeError("client must be an instance of BackendInterface")
         self._client = client
@@ -78,13 +80,14 @@ class XRPClient:
                   data: bytes = b""):
         return self._client.exchange_async(self.CLA, ins, p1=p1, p2=p2, data=data)
 
-    def get_configuration(self):
+    def get_configuration(self) -> str:
         reply = self._exchange(Ins.GET_CONFIGURATION)
         assert reply.status == Errors.SW_SUCCESS
 
         return unpack_configuration_response(reply.data)
 
-    def get_pubkey_no_confirm(self, path: bytes = DEFAULT_BIP32_PATH, chain_code: bool = False):
+    def get_pubkey_no_confirm(self, path: bytes = DEFAULT_BIP32_PATH,
+                              chain_code: bool = False) -> Tuple[int, str, int, str]:
         p2 = P2.CURVE_SECP256K1
         if chain_code:
             p2 |= P2.CHAIN_CODE  # type: ignore[assignment]
