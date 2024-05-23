@@ -21,8 +21,8 @@
 
 #include "time.h"
 #include "readers.h"
-#include "format.h"
-#include "../limitations.h"
+#include "fmt.h"
+#include "limitations.h"
 
 /* 2000-03-01 (mod 400 year, immediately after feb29 */
 #define LEAPOCH             (946684800LL + 86400 * (31 + 29))

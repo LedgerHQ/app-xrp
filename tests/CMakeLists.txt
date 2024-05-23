@@ -10,7 +10,12 @@ set(CMAKE_C_COMPILER /usr/bin/clang)
 
 enable_testing()
 
-include_directories(include/ ../src)
+include_directories(
+  include
+  ../src
+  ../src/xrp
+  ../src/apdu/messages
+)
 
 add_library(xrp
   ../src/xrp/amount.c
@@ -22,8 +27,8 @@ add_library(xrp
   ../src/xrp/field_sort.h
   ../src/xrp/flags.c
   ../src/xrp/flags.h
-  ../src/xrp/format.c
-  ../src/xrp/format.h
+  ../src/xrp/fmt.c
+  ../src/xrp/fmt.h
   ../src/xrp/general.c
   ../src/xrp/general.h
   ../src/xrp/number_helpers.c
@@ -32,8 +37,8 @@ add_library(xrp
   ../src/xrp/percentage.h
   ../src/xrp/readers.c
   ../src/xrp/readers.h
-  ../src/xrp/strings.c
-  ../src/xrp/strings.h
+  ../src/xrp/ascii_strings.c
+  ../src/xrp/ascii_strings.h
   ../src/xrp/time.c
   ../src/xrp/time.h
   ../src/xrp/transaction_types.h

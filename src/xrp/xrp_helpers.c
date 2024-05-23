@@ -78,17 +78,20 @@ static size_t xrp_encode_base58_address(const base58_buf_t *in, xrp_address_t *o
     return outlen;
 }
 
-void xrp_public_key_hash160(xrp_pubkey_t *pubkey, uint8_t *out) {
+cx_err_t xrp_public_key_hash160(xrp_pubkey_t *pubkey, uint8_t *out) {
     union {
         cx_sha256_t shasha;
         cx_ripemd160_t riprip;
     } u;
     uint8_t buffer[32];
+    cx_err_t error = CX_INTERNAL_ERROR;
 
     cx_sha256_init(&u.shasha);
-    cx_hash(&u.shasha.header, CX_LAST, pubkey->buf, sizeof(pubkey->buf), buffer, 32);
+    error =
+        cx_hash_no_throw(&u.shasha.header, CX_LAST, pubkey->buf, sizeof(pubkey->buf), buffer, 32);
+    if (error != CX_OK) return error;
     cx_ripemd160_init(&u.riprip);
-    cx_hash(&u.riprip.header, CX_LAST, buffer, 32, out, 20);
+    return cx_hash_no_throw(&u.riprip.header, CX_LAST, buffer, 32, out, 20);
 }
 
 size_t xrp_public_key_to_encoded_base58(xrp_pubkey_t *pubkey,
@@ -99,6 +102,7 @@ size_t xrp_public_key_to_encoded_base58(xrp_pubkey_t *pubkey,
     unsigned char checksum_buffer[32];
     cx_sha256_t hash;
     unsigned char version_size = (version > 255 ? 2 : 1);
+    cx_err_t error = CX_INTERNAL_ERROR;
 
     if (version > 255) {
         tmp.buf[0] = (version >> 8u);
@@ -108,16 +112,20 @@ size_t xrp_public_key_to_encoded_base58(xrp_pubkey_t *pubkey,
     }
 
     if (pubkey != NULL) {
-        xrp_public_key_hash160(pubkey, tmp.buf + version_size);
+        error = xrp_public_key_hash160(pubkey, tmp.buf + version_size);
+        if (error != CX_OK) return 0;
     }
     if (account != NULL) {
         memmove(tmp.buf + version_size, account->buf, sizeof(account->buf));
     }
 
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, tmp.buf, 20 + version_size, checksum_buffer, 32);
+    error =
+        cx_hash_no_throw(&hash.header, CX_LAST, tmp.buf, 20 + version_size, checksum_buffer, 32);
+    if (error != CX_OK) return 0;
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, checksum_buffer, 32, checksum_buffer, 32);
+    error = cx_hash_no_throw(&hash.header, CX_LAST, checksum_buffer, 32, checksum_buffer, 32);
+    if (error != CX_OK) return 0;
 
     memmove(tmp.buf + 20 + version_size, checksum_buffer, 4);
     tmp.length = 24 + version_size;

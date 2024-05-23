@@ -9,7 +9,7 @@
 #include "cx.h"
 #include "../src/xrp/xrp_parse.h"
 #include "../src/xrp/xrp_helpers.h"
-#include "../src/xrp/format.h"
+#include "../src/xrp/fmt.h"
 
 parseContext_t parse_context;
 

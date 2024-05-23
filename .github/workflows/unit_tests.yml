@@ -1,0 +1,33 @@
+name: Unit testing with Codecov coverage checking
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+
+jobs:
+  job_unit_test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+
+    container:
+      image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder-legacy:latest
+
+    steps:
+      - name: Clone
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          apt-get install -y libssl-dev libcmocka-dev
+
+      - name: Build unit tests
+        run: |
+          cmake -Btests/build -Htests/ && make -C tests/build/
+
+      - name: Run unit tests
+        run: |
+          make -C tests/build test

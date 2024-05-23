@@ -25,8 +25,8 @@
 // Universal Transaction flags (hidden)
 #define TF_FULLY_CANONICAL_SIG 0x80000000u
 
-bool is_flag(field_t* field);
-bool is_flag_hidden(field_t* field);
+bool is_flag(const field_t* field);
+bool is_flag_hidden(const field_t* field);
 void format_flags(field_t* field, field_value_t* dst);
 
 #endif  // LEDGER_APP_XRP_FLAGS_H

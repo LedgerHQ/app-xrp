@@ -20,19 +20,19 @@
 
 #include "flags.h"
 #include "readers.h"
-#include "../apdu/messages/sign_transaction.h"
+#include "sign_transaction.h"
 #include "transaction_types.h"
-#include "format.h"
+#include "fmt.h"
 
 #define HAS_FLAG(value, flag) ((value) & (flag)) == flag
 
-bool is_flag(field_t *field) {
+bool is_flag(const field_t *field) {
     return field->data_type == STI_UINT32 &&
            (field->id == XRP_UINT32_FLAGS || field->id == XRP_UINT32_SET_FLAG ||
             field->id == XRP_UINT32_CLEAR_FLAG);
 }
 
-bool is_flag_hidden(field_t *field) {
+bool is_flag_hidden(const field_t *field) {
     if (is_flag(field)) {
         uint32_t value = field->data.u32;
 
@@ -47,7 +47,7 @@ static size_t set_error_value(field_value_t *out) {
     return sizeof(out->buf);
 }
 
-static size_t append_item(field_value_t *out, size_t offset, char *in) {
+static size_t append_item(field_value_t *out, size_t offset, const char *in) {
     size_t len = strlen(in);
 
     if (offset != 0) {

@@ -17,16 +17,16 @@
  ********************************************************************************/
 
 #include "os_io_seproxyhal.h"
-#include "apdu/entry.h"
-#include "apdu/global.h"
-#include "ui/main/idle_menu.h"
-#include "ui/address/address_ui.h"
+#include "entry.h"
+#include "global.h"
+#include "idle_menu.h"
+#include "address_ui.h"
 #include <ux.h>
 
-#include "swap/swap_lib_calls.h"
-#include "swap/handle_swap_sign_transaction.h"
-#include "swap/handle_get_printable_amount.h"
-#include "swap/handle_check_address.h"
+#include "swap_lib_calls.h"
+#include "handle_swap_sign_transaction.h"
+#include "handle_get_printable_amount.h"
+#include "handle_check_address.h"
 
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
@@ -122,17 +122,23 @@ void app_main(void) {
     }
 }
 
+#ifdef HAVE_BAGL
 // override point, but nothing more to do
 void io_seproxyhal_display(const bagl_element_t *element) {
     io_seproxyhal_display_default((bagl_element_t *) element);
 }
 
-void handle_seproxyhal_tag_finger_event() {
-    UX_FINGER_EVENT(G_io_seproxyhal_spi_buffer);
+void handle_seproxyhal_tag_display_processed_event() {
+    UX_DISPLAYED_EVENT({});
 }
 
 void handle_seproxyhal_tag_button_push_event() {
     UX_BUTTON_PUSH_EVENT(G_io_seproxyhal_spi_buffer);
+}
+#endif  // HAVE_BAGL
+
+void handle_seproxyhal_tag_finger_event() {
+    UX_FINGER_EVENT(G_io_seproxyhal_spi_buffer);
 }
 
 void handle_seproxyhal_tag_status_event() {
@@ -144,10 +150,6 @@ void handle_seproxyhal_tag_status_event() {
 
 void handle_default() {
     UX_DEFAULT_EVENT();
-}
-
-void handle_seproxyhal_tag_display_processed_event() {
-    UX_DISPLAYED_EVENT({});
 }
 
 void handle_seproxyhal_tag_ticker_event() {
@@ -168,20 +170,32 @@ unsigned char io_event(unsigned char channel) {
     // can't have more than one tag in the reply, not supported yet.
     switch (G_io_seproxyhal_spi_buffer[0]) {
         case SEPROXYHAL_TAG_BUTTON_PUSH_EVENT:
+#ifdef HAVE_BAGL
             handle_seproxyhal_tag_button_push_event();
+#endif  // HAVE_BAGL
             break;
 
         case SEPROXYHAL_TAG_STATUS_EVENT:
             handle_seproxyhal_tag_status_event();
-        // no break is intentional
+            // no break is intentional
+            __attribute__((fallthrough));
         default:
             handle_default();
             break;
 
         case SEPROXYHAL_TAG_DISPLAY_PROCESSED_EVENT:
+#ifdef HAVE_BAGL
             handle_seproxyhal_tag_display_processed_event();
+#endif  // HAVE_BAGL
+#ifdef HAVE_NBGL
+            UX_DEFAULT_EVENT();
+#endif  // HAVE_NBGL
             break;
-
+#ifdef HAVE_NBGL
+        case SEPROXYHAL_TAG_FINGER_EVENT:
+            UX_FINGER_EVENT(G_io_seproxyhal_spi_buffer);
+            break;
+#endif  // HAVE_NBGL
         case SEPROXYHAL_TAG_TICKER_EVENT:
             handle_seproxyhal_tag_ticker_event();
             break;
@@ -253,7 +267,6 @@ void coin_main() {
 }
 
 static void library_main_helper(libargs_t *args) {
-    check_api_level(CX_COMPAT_APILEVEL);
     PRINTF("Inside a library \n");
     switch (args->command) {
         case CHECK_ADDRESS:

@@ -15,15 +15,12 @@
  *  limitations under the License.
  ********************************************************************************/
 
-#ifndef LEDGER_APP_XRP_REVIEWMENU_H
-#define LEDGER_APP_XRP_REVIEWMENU_H
+#pragma once
 
-#include "../../transaction/transaction.h"
-#include "../../xrp//xrp_parse.h"
+#include "transaction.h"
+#include "xrp_parse.h"
 
 #define OPTION_SIGN   0
 #define OPTION_REJECT 1
 
 void display_review_menu(parseResult_t *transaction_param, resultAction_t callback);
-
-#endif  // LEDGER_APP_XRP_REVIEWMENU_H

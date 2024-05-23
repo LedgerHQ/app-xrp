@@ -2,7 +2,7 @@
 
 #include "handle_get_printable_amount.h"
 #include "swap_utils.h"
-#include "../xrp/xrp_helpers.h"
+#include "xrp_helpers.h"
 
 /* return 0 on error, 1 otherwise */
 int handle_get_printable_amount(get_printable_amount_parameters_t* params) {

@@ -2,9 +2,13 @@
 #include "ux.h"
 #include "os.h"
 #include "os_io_seproxyhal.h"
-#include "../apdu/global.h"
+#include "global.h"
 #include "swap_lib_calls.h"
 #include "swap_utils.h"
+
+#ifdef HAVE_NBGL
+#include "nbgl_use_case.h"
+#endif
 
 // Save the BSS address where we will write the return value when finished
 static uint8_t* G_swap_sign_return_value_address;
@@ -33,7 +37,7 @@ bool copy_transaction_parameters(create_transaction_parameters_t* params) {
 
     // Full reset the global variables
     os_explicit_zero_BSS_segment();
-    // Keep the address at wich we'll reply the signing status
+    // Keep the address at which we'll reply the signing status
     G_swap_sign_return_value_address = &params->result;
     // Commit the values read from exchange to the clean global space
     memcpy(&approval_strings.swap, &stack_data, sizeof(stack_data));
@@ -51,6 +55,9 @@ void handle_swap_sign_transaction(void) {
     reset_transaction_context();
     io_seproxyhal_init();
     UX_INIT();
+#ifdef HAVE_NBGL
+    nbgl_useCaseSpinner("Signing");
+#endif  // HAVE_BAGL
     USB_power(0);
     USB_power(1);
     // ui_idle();

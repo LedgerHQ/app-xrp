@@ -15,9 +15,6 @@
  *  limitations under the License.
  ********************************************************************************/
 
-#ifndef LEDGER_APP_XRP_IDLEMENU_H
-#define LEDGER_APP_XRP_IDLEMENU_H
+#pragma once
 
 void display_idle_menu();
-
-#endif  // LEDGER_APP_XRP_IDLEMENU_H

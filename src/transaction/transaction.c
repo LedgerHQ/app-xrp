@@ -16,15 +16,17 @@
  ********************************************************************************/
 
 #include "transaction.h"
-#include "../ui/transaction/review_menu.h"
-#include "../ui/other/loading.h"
-#include "../apdu/global.h"
-#include "../xrp/transaction_types.h"
-#include "../xrp/fields.h"
-#include "../xrp/amount.h"
-#include "../xrp/format.h"
-#include "../xrp/readers.h"
-#include "../xrp/xrp_helpers.h"
+#include "review_menu.h"
+#ifdef HAVE_BAGL
+#include "loading.h"
+#endif  // HAVE_BAGL
+#include "global.h"
+#include "transaction_types.h"
+#include "fields.h"
+#include "amount.h"
+#include "fmt.h"
+#include "readers.h"
+#include "xrp_helpers.h"
 #include "handle_swap_sign_transaction.h"
 #include <string.h>
 
@@ -34,7 +36,13 @@ static action_t rejection_action;
 void on_approval_menu_result(unsigned int result) {
     switch (result) {
         case OPTION_SIGN:
+#ifdef HAVE_BAGL
             execute_async(approval_action, "Signing...");
+#endif  // HAVE_BAGL
+
+#ifdef HAVE_NBGL  // HAVE_BAGL
+            approval_action();
+#endif  // HAVE_NBGL
             break;
         case OPTION_REJECT:
             rejection_action();
@@ -77,9 +85,9 @@ static bool check_field(const field_t *field,
 }
 
 /*
-Check that a previously parsed TX has the rigth shape/content for the app to sign it without user
+Check that a previously parsed TX has the right shape/content for the app to sign it without user
 approval.
-Exemple of such a swappable TX (as it would be displayed with the approval flow):
+Example of such a swappable TX (as it would be displayed with the approval flow):
 {
     "TransactionType" : "Payment",
     "Account" : "ra7Zr8ddy9tB88RaXL8B87YkqhEJG2vkAJ",

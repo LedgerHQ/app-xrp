@@ -7,6 +7,8 @@
 #include <cmocka.h>
 #include <openssl/sha.h>
 #include <openssl/ripemd.h>
+#include <openssl/evp.h>
+#include <openssl/provider.h>
 
 #include "cx.h"
 
@@ -24,26 +26,32 @@ int cx_ripemd160_init(cx_ripemd160_t *hash) {
     return CX_RIPEMD160;
 }
 
-int cx_hash(cx_hash_t *hash,
+int cx_hash_no_throw(cx_hash_t *hash,
             int mode,
             const uint8_t *in,
             size_t len,
             uint8_t *out,
             size_t out_len) {
-    assert_int_equal(mode, CX_LAST);
+
+    uint32_t digSize = 0;
+    EVP_MD_CTX *md_ctx = EVP_MD_CTX_new();
+    OSSL_PROVIDER *prov = NULL;
 
     if (hash->algo == CX_SHA256) {
-        // uint8_t hash[SHA256_DIGEST_LENGTH];
-        SHA256_CTX sha256;
-        SHA256_Init(&sha256);
-        SHA256_Update(&sha256, in, len);
-        SHA256_Final(out, &sha256);
+        EVP_DigestInit(md_ctx, EVP_sha256());
     } else if (hash->algo == CX_RIPEMD160) {
-        RIPEMD160_CTX ripemd160;
-        RIPEMD160_Init(&ripemd160);
-        RIPEMD160_Update(&ripemd160, in, len);
-        RIPEMD160_Final(out, &ripemd160);
+        prov = OSSL_PROVIDER_load(NULL, "legacy");
+        EVP_DigestInit(md_ctx, EVP_ripemd160());
     } else {
+        assert_true(false);
+    }
+
+    EVP_DigestUpdate(md_ctx, (const void*) in, len);
+    EVP_DigestFinal(md_ctx, out, (unsigned int *)&digSize);
+    EVP_MD_CTX_free(md_ctx);
+    if (prov) OSSL_PROVIDER_unload(prov);
+
+    if (digSize != out_len) {
         assert_true(false);
     }
 

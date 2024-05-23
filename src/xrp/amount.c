@@ -20,12 +20,12 @@
 #include <stdbool.h>
 
 #include "amount.h"
-#include "format.h"
+#include "fmt.h"
 #include "xrp_helpers.h"
 #include "readers.h"
 #include "number_helpers.h"
-#include "../limitations.h"
-#include "strings.h"
+#include "limitations.h"
+#include "ascii_strings.h"
 
 #define EXP_MIN      -96
 #define EXP_MAX      80
@@ -72,18 +72,18 @@ static int parse_decimal_number(char *dst,
         return -1;
     }
 
+    // 0. Abort early if number matches special case for zero
+    if (sign == 0 && exponent == 0 && mantissa == 0) {
+        dst[0] = '0';
+        return 0;
+    }
+
     if (exponent < EXP_MIN || exponent > EXP_MAX) {
         return -1;
     }
 
     if (mantissa < MANTISSA_MIN || mantissa > MANTISSA_MAX) {
         return -1;
-    }
-
-    // 0. Abort early if number matches special case for zero
-    if (sign == 0 && exponent == 0 && mantissa == 0) {
-        dst[0] = '0';
-        return 0;
     }
 
     // 1. Add leading minus sign if number is negative

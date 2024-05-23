@@ -24,7 +24,7 @@
 #include "os.h"
 #include "cx.h"
 #include "fields.h"
-#include "../limitations.h"
+#include "limitations.h"
 
 typedef struct {
     uint8_t num_fields;

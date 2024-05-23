@@ -20,9 +20,9 @@
 #include "constants.h"
 #include "global.h"
 #include "entry.h"
-#include "messages/get_public_key.h"
-#include "messages/sign_transaction.h"
-#include "messages/get_app_configuration.h"
+#include "get_public_key.h"
+#include "sign_transaction.h"
+#include "get_app_configuration.h"
 
 static unsigned char last_ins = 0;
 

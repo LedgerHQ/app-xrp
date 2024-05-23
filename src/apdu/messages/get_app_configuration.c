@@ -21,9 +21,9 @@
 
 void handle_get_app_configuration(volatile unsigned int *tx) {
     G_io_apdu_buffer[0] = 0x00;
-    G_io_apdu_buffer[1] = LEDGER_MAJOR_VERSION;
-    G_io_apdu_buffer[2] = LEDGER_MINOR_VERSION;
-    G_io_apdu_buffer[3] = LEDGER_PATCH_VERSION;
+    G_io_apdu_buffer[1] = MAJOR_VERSION;
+    G_io_apdu_buffer[2] = MINOR_VERSION;
+    G_io_apdu_buffer[3] = PATCH_VERSION;
     *tx = 4;
     THROW(0x9000);
 }
