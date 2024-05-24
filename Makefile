@@ -43,6 +43,7 @@ ICON_NANOS = img/nanos_app_xrp.gif
 ICON_NANOX = img/nanox_app_xrp.gif
 ICON_NANOSP = img/nanox_app_xrp.gif
 ICON_STAX = img/stax_app_xrp.gif
+ICON_FLEX = img/flex_app_xrp.gif
 
 # Application allowed derivation curves.
 # Possibles curves are: secp256k1, secp256r1, ed25519 and bls12381g1
