@@ -30,10 +30,10 @@ static action_t rejection_action;
 static void confirmationChoiceClbk(bool confirm) {
     if (confirm) {
         approval_action();
-        nbgl_useCaseStatus("ADDRESS\nVERIFIED", true, display_idle_menu);
+        nbgl_useCaseReviewStatus(STATUS_TYPE_ADDRESS_VERIFIED, display_idle_menu);
     } else {
         rejection_action();
-        nbgl_useCaseStatus("Address verification\ncancelled", false, display_idle_menu);
+        nbgl_useCaseReviewStatus(STATUS_TYPE_ADDRESS_REJECTED, display_idle_menu);
     }
 }
 
@@ -42,6 +42,11 @@ void display_address_confirmation_ui(char* address, action_t on_approve, action_
     rejection_action = on_reject;
     memset(full_address, 0, sizeof(full_address));
     strncpy(full_address, address, sizeof(full_address));
-    nbgl_useCaseAddressConfirmation((char*) full_address, confirmationChoiceClbk);
+    nbgl_useCaseAddressReview((char*) full_address,
+                              NULL,
+                              &C_icon_XRP_64px,
+                              "Verify XRP Address",
+                              NULL,
+                              confirmationChoiceClbk);
 }
 #endif  // HAVE_NBGL

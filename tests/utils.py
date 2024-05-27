@@ -13,8 +13,6 @@ from ecdsa.util import sigdecode_der  # type: ignore [import]
 from ecdsa import VerifyingKey, SECP256k1  # type: ignore [import]
 
 from ragger.bip import calculate_public_key_and_chaincode, CurveChoice
-from ragger.navigator import NavInsID, NavIns, Navigator
-from ragger.firmware import Firmware
 
 
 ROOT_SCREENSHOT_PATH = Path(__file__).parent.resolve()
@@ -24,7 +22,7 @@ TX_PREFIX_SINGLE = [0x53, 0x54, 0x58, 0x00]
 TX_PREFIX_MULTI = [0x53, 0x4D, 0x54, 0x00]
 
 
-def pop_size_prefixed_buf_from_buf(buffer:bytes):
+def pop_size_prefixed_buf_from_buf(buffer:bytes) -> Tuple[bytes, int, bytes]:
     """ Returns remainder, data_len, data """
 
     data_len = buffer[0]
@@ -55,55 +53,6 @@ def unpack_get_public_key_response(reply: bytes) -> Tuple[int, str, int, str]:
     reply, key_len, key_data = pop_size_prefixed_buf_from_buf(reply)
     chain_data, _, _ = pop_size_prefixed_buf_from_buf(reply)
     return key_len, key_data.hex(), len(chain_data), chain_data.hex()
-
-
-def util_navigate(
-        firmware: Firmware,
-        navigator: Navigator,
-        test_name: Path,
-        text: str = "",
-        screen_change: bool = True,
-) -> None:
-    """ Navigate in the menus with conditions """
-
-    assert text
-    valid_instr: list[NavIns | NavInsID] = []
-
-    if firmware.device.startswith("nano"):
-        text = text.split("_")[0]
-        nav_inst = NavInsID.RIGHT_CLICK
-        valid_instr.append(NavInsID.BOTH_CLICK)
-
-    else:
-        if text == "Approve":
-            text = "Confirm"
-            valid_instr.append(NavInsID.USE_CASE_ADDRESS_CONFIRMATION_CONFIRM)
-            nav_inst = NavInsID.USE_CASE_REVIEW_TAP
-
-        elif text == "Reject_pubkey":
-            text = "Cancel"
-            valid_instr.append(NavInsID.USE_CASE_CHOICE_REJECT)
-            nav_inst = NavInsID.USE_CASE_REVIEW_REJECT
-
-        elif text == "Reject_sign":
-            text = "Reject transaction"
-            valid_instr.append(NavInsID.USE_CASE_CHOICE_CONFIRM)
-            nav_inst = NavInsID.USE_CASE_REVIEW_REJECT
-
-        elif text == "Sign transaction":
-            text = "Hold to confirm"
-            valid_instr.append(NavInsID.USE_CASE_REVIEW_CONFIRM)
-            nav_inst = NavInsID.USE_CASE_REVIEW_TAP
-
-        else:
-            raise ValueError(f'Wrong text "{text}"')
-
-    navigator.navigate_until_text_and_compare(nav_inst,
-                                              valid_instr,
-                                              text,
-                                              ROOT_SCREENSHOT_PATH,
-                                              test_name,
-                                              screen_change_after_last_instruction=screen_change)
 
 
 def verify_version(version: str) -> None:
