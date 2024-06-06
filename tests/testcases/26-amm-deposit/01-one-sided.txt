@@ -1,0 +1,8 @@
+Transaction Type; AMM Deposit
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Flags; Single Asset
+Amount; XRP 0.001
+Fee; XRP 0.000015
+Asset; XRP
+Asset 2; USD
+Issuer;   rExKpRKXNz25    UAjbckCRtQs     JFcSfjL9Er3   

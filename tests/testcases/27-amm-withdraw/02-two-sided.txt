@@ -1,0 +1,10 @@
+Transaction Type; AMM Withdraw
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Flags; Two Asset
+Amount; XRP 0.00005
+Fee; XRP 0.000015
+Amount 2; USD 50
+Issuer;   rExKpRKXNz25    UAjbckCRtQs     JFcSfjL9Er3   
+Asset; XRP
+Asset 2; USD
+Issuer;   rExKpRKXNz25    UAjbckCRtQs     JFcSfjL9Er3   

@@ -8,7 +8,7 @@
   "AccountTxnID": "F02EB74CB4F5D2E6AC8BE70CEA41CCA872E680F9EFD2027605F0B42666037AA8",
   "Amount": "1000000",
   "Fee": "15",
-  "Flags": 2147483648,
+  "Flags": 0,
   "Sequence": 7,
   "SigningPubKey": "OWN_PUBKEY"
 }

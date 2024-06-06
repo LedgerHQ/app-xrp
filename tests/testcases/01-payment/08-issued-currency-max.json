@@ -9,7 +9,7 @@
     "issuer": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B"
   },
   "Fee": "15",
-  "Flags": 2147483648,
+  "Flags": 0,
   "Sequence": 7,
   "SigningPubKey": "OWN_PUBKEY"
 }

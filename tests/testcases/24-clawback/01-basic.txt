@@ -1,0 +1,5 @@
+Transaction Type; Clawback
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Amount; FOO 314.159
+Issuer;   rsA2Lpzuawew    SBQXkiju3YQ     TMzW13pAAdW   
+Fee; XRP 0.00001

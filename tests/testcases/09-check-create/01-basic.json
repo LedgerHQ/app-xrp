@@ -2,7 +2,7 @@
     "TransactionType": "CheckCreate",
     "Account": "OWN_ADDR",
     "Fee": "10",
-    "Flags": 2147483648,
+    "Flags": 0,
     "Sequence": 25,
     "SendMax": "184674407",
     "Destination": "rBKz5MC2iXdoS3XgnNSYmF69K1Yo4NS3Ws",

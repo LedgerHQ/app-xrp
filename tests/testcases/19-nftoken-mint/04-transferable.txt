@@ -1,0 +1,6 @@
+Transaction Type; NFToken Mint
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Flags; Transferable
+NFToken Taxon; 0
+Fee; XRP 0.000015
+URI; ipfs://basic
