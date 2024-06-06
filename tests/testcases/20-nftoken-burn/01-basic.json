@@ -1,0 +1,9 @@
+{
+    "TransactionType": "NFTokenBurn",
+    "Account": "OWN_ADDR",
+    "Fee": "15",
+    "Flags": 0,
+    "NFTokenID": "000000003C0E955DFA24367806070434D8BE16A12E410C3B559CFBED00000052",
+    "Sequence": 3,
+    "SigningPubKey": "OWN_PUBKEY"
+}

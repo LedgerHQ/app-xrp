@@ -106,36 +106,54 @@ static void format_account_set_transaction_flags(uint32_t value, field_value_t *
 
 static const char *format_account_set_field_flags(uint32_t value) {
 // AccountSet flags for fields SetFlag and ClearFlag
-#define ASF_ACCOUNT_TXN_ID 5
-#define ASF_DEFAULT_RIPPLE 8
-#define ASF_DEPOSIT_AUTH   9
-#define ASF_DISABLE_MASTER 4
-#define ASF_DISALLOW_XRP   3
-#define ASF_GLOBAL_FREEZE  7
-#define ASF_NO_FREEZE      6
-#define ASF_REQUIRE_AUTH   2
-#define ASF_REQUIRE_DEST   1
+#define ASF_REQUIRE_DEST                    1
+#define ASF_REQUIRE_AUTH                    2
+#define ASF_DISALLOW_XRP                    3
+#define ASF_DISABLE_MASTER                  4
+#define ASF_ACCOUNT_TXN_ID                  5
+#define ASF_NO_FREEZE                       6
+#define ASF_GLOBAL_FREEZE                   7
+#define ASF_DEFAULT_RIPPLE                  8
+#define ASF_DEPOSIT_AUTH                    9
+#define ASF_AUTH_TOKEN_MINTER               10
+#define ASF_DISALLOW_INCOMING_NFTOKEN_OFFER 12
+#define ASF_DISALLOW_INCOMING_CHECK         13
+#define ASF_DISALLOW_INCOMING_PAYCHAN       14
+#define ASF_DISALLOW_INCOMING_TRUSTLINE     15
+#define ASF_ALLOW_TRUSTLINE_CLAWBACK        16
 
     // Logic is different because only one flag is allowed per field
     switch (value) {
-        case ASF_ACCOUNT_TXN_ID:
-            return "Track Txn ID";
-        case ASF_DEFAULT_RIPPLE:
-            return "Ripple by default";
-        case ASF_DEPOSIT_AUTH:
-            return "Deposit Auth";
-        case ASF_DISABLE_MASTER:
-            return "Disable Master";
-        case ASF_DISALLOW_XRP:
-            return "Disallow XRP";
-        case ASF_GLOBAL_FREEZE:
-            return "Global Freeze";
-        case ASF_NO_FREEZE:
-            return "No Freeze";
-        case ASF_REQUIRE_AUTH:
-            return "Require Auth";
         case ASF_REQUIRE_DEST:
             return "Require Dest";
+        case ASF_REQUIRE_AUTH:
+            return "Require Auth";
+        case ASF_DISALLOW_XRP:
+            return "Disallow XRP";
+        case ASF_DISABLE_MASTER:
+            return "Disable Master";
+        case ASF_ACCOUNT_TXN_ID:
+            return "Track Txn ID";
+        case ASF_NO_FREEZE:
+            return "No Freeze";
+        case ASF_GLOBAL_FREEZE:
+            return "Global Freeze";
+        case ASF_DEFAULT_RIPPLE:
+            return "Default Ripple";
+        case ASF_DEPOSIT_AUTH:
+            return "Deposit Auth";
+        case ASF_AUTH_TOKEN_MINTER:
+            return "Auth NFToken Minter";
+        case ASF_DISALLOW_INCOMING_NFTOKEN_OFFER:
+            return "Disallow NFToken Offer";
+        case ASF_DISALLOW_INCOMING_CHECK:
+            return "Disallow Check";
+        case ASF_DISALLOW_INCOMING_PAYCHAN:
+            return "Disallow PayChan";
+        case ASF_DISALLOW_INCOMING_TRUSTLINE:
+            return "Disallow Trustline";
+        case ASF_ALLOW_TRUSTLINE_CLAWBACK:
+            return "Allow Clawback";
         default:
             return NULL;
     }
@@ -209,7 +227,7 @@ static void format_trust_set_flags(uint32_t value, field_value_t *dst) {
 
     size_t offset = 0;
     if (HAS_FLAG(value, TF_SETF_AUTH)) {
-        offset = append_item(dst, offset, "Setf Auth");
+        offset = append_item(dst, offset, "Set Auth");
     }
 
     if (HAS_FLAG(value, TF_SET_NO_RIPPLE)) {
@@ -244,6 +262,98 @@ static void format_payment_channel_claim_flags(uint32_t value, field_value_t *ds
     }
 }
 
+static void format_nftoken_mint_flags(uint32_t value, field_value_t *dst) {
+// NFTokenMint flags
+#define TF_BURNABLE 0x00000001u
+#define TF_ONLY_XRP 0x00000002u
+// @deprecated
+// #define TF_TRUSTLINE 0x00000004u
+#define TF_TRANSFERABLE 0x00000008u
+
+    size_t offset = 0;
+    if (HAS_FLAG(value, TF_BURNABLE)) {
+        offset = append_item(dst, offset, "Burnable");
+    }
+    if (HAS_FLAG(value, TF_ONLY_XRP)) {
+        offset = append_item(dst, offset, "Only XRP");
+    }
+    // @deprecated
+    // if (HAS_FLAG(value, TF_TRUSTLINE)) {
+    //     offset = append_item(dst, offset, "Auto Trustline");
+    // }
+    if (HAS_FLAG(value, TF_TRANSFERABLE)) {
+        append_item(dst, offset, "Transferable");
+    }
+}
+
+static void format_nftoken_create_offer_flags(uint32_t value, field_value_t *dst) {
+// NFTokenCreateOffer flags
+#define TF_SELL_NFTOKEN 0x00000001u
+
+    size_t offset = 0;
+    if (HAS_FLAG(value, TF_SELL_NFTOKEN)) {
+        append_item(dst, offset, "Sell");
+    }
+}
+
+#define TF_LP_TOKEN               0x00010000u
+#define TF_WITHDRAW_ALL           0x00020000u
+#define TF_ONE_ASSET_WITHDRAW_ALL 0x00040000u
+#define TF_SINGLE_ASSET           0x00080000u
+#define TF_TWO_ASSET              0x00100000u
+#define TF_ONE_ASSET_LP_TOKEN     0x00200000u
+#define TF_LIMIT_LP_TOKEN         0x00400000u
+#define TF_TWO_ASSET_IF_EMPTY     0x00800000u
+
+static void format_amm_deposit_flags(uint32_t value, field_value_t *dst) {
+    // AMMDeposit flags
+    size_t offset = 0;
+    if (HAS_FLAG(value, TF_LP_TOKEN)) {
+        offset = append_item(dst, offset, "LP Token");
+    }
+    if (HAS_FLAG(value, TF_SINGLE_ASSET)) {
+        offset = append_item(dst, offset, "Single Asset");
+    }
+    if (HAS_FLAG(value, TF_TWO_ASSET)) {
+        offset = append_item(dst, offset, "Two Asset");
+    }
+    if (HAS_FLAG(value, TF_ONE_ASSET_LP_TOKEN)) {
+        offset = append_item(dst, offset, "One Asset LP Token");
+    }
+    if (HAS_FLAG(value, TF_LIMIT_LP_TOKEN)) {
+        offset = append_item(dst, offset, "Limit LP Token");
+    }
+    if (HAS_FLAG(value, TF_TWO_ASSET_IF_EMPTY)) {
+        append_item(dst, offset, "Two Asset If Empty");
+    }
+}
+
+static void format_amm_withdraw_flags(uint32_t value, field_value_t *dst) {
+    // AMMWithdraw flags
+    size_t offset = 0;
+    if (HAS_FLAG(value, TF_LP_TOKEN)) {
+        offset = append_item(dst, offset, "LP Token");
+    }
+    if (HAS_FLAG(value, TF_SINGLE_ASSET)) {
+        offset = append_item(dst, offset, "Single Asset");
+    }
+    if (HAS_FLAG(value, TF_TWO_ASSET)) {
+        offset = append_item(dst, offset, "Two Asset");
+    }
+    if (HAS_FLAG(value, TF_ONE_ASSET_LP_TOKEN)) {
+        offset = append_item(dst, offset, "One Asset LP Token");
+    }
+    if (HAS_FLAG(value, TF_LIMIT_LP_TOKEN)) {
+        offset = append_item(dst, offset, "Limit LP Token");
+    }
+    if (HAS_FLAG(value, TF_WITHDRAW_ALL)) {
+        offset = append_item(dst, offset, "Withdraw All");
+    }
+    if (HAS_FLAG(value, TF_ONE_ASSET_WITHDRAW_ALL)) {
+        append_item(dst, offset, "One Asset Withdraw All");
+    }
+}
+
 void format_flags(field_t *field, field_value_t *dst) {
     uint32_t value = field->data.u32;
     switch (parse_context.transaction_type) {
@@ -261,6 +371,18 @@ void format_flags(field_t *field, field_value_t *dst) {
             break;
         case TRANSACTION_PAYMENT_CHANNEL_CLAIM:
             format_payment_channel_claim_flags(value, dst);
+            break;
+        case TRANSACTION_NFTOKEN_MINT:
+            format_nftoken_mint_flags(value, dst);
+            break;
+        case TRANSACTION_NFTOKEN_CREATE_OFFER:
+            format_nftoken_create_offer_flags(value, dst);
+            break;
+        case TRANSACTION_AMM_DEPOSIT:
+            format_amm_deposit_flags(value, dst);
+            break;
+        case TRANSACTION_AMM_WITHDRAW:
+            format_amm_withdraw_flags(value, dst);
             break;
         default:
             snprintf(dst->buf,

@@ -1,0 +1,6 @@
+Transaction Type; NFToken Cancel Offer
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Fee; XRP 0.000015
+NFToken Offers; 2
+NFToken Offer; 9c92e061381c1ef37a8cde0e8fc35188bfc30b1883825042a64309ac09f4c36d
+NFToken Offer; 000000003c0e955dfa24367806070434d8be16a12e410c3b559cfbed00000052

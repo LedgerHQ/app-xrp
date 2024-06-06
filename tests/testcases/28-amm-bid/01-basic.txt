@@ -1,0 +1,6 @@
+Transaction Type; AMM Bid
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Fee; XRP 0.000015
+Asset; XRP
+Asset 2; USD
+Issuer;   rExKpRKXNz25    UAjbckCRtQs     JFcSfjL9Er3   

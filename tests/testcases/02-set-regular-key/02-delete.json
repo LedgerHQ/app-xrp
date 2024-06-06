@@ -3,6 +3,6 @@
   "Account": "OWN_ADDR",
   "Fee": "18",
   "Sequence": 31,
-  "Flags": 2147483648,
+  "Flags": 0,
   "SigningPubKey": "OWN_PUBKEY"
 }

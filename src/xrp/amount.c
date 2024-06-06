@@ -139,7 +139,7 @@ static int format_xrp(uint64_t amount, field_value_t *dst) {
     return 0;
 }
 
-static bool is_all_zeros(const uint8_t *data, uint8_t length) {
+bool is_all_zeros(const uint8_t *data, uint8_t length) {
     for (size_t i = 0; i < length; ++i) {
         if (data[i] != 0) {
             return false;

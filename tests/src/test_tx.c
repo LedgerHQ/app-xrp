@@ -90,6 +90,31 @@ static const char *testcases[] = {
     "../testcases/18-arrays/01-basic.raw",
     "../testcases/18-arrays/02-multiple.raw",
     "../testcases/18-arrays/03-not-last.raw",
+    "../testcases/19-nftoken-mint/01-basic.raw",
+    "../testcases/19-nftoken-mint/02-burnable.raw",
+    "../testcases/19-nftoken-mint/03-only-xrp.raw",
+    "../testcases/19-nftoken-mint/04-transferable.raw",
+    "../testcases/20-nftoken-burn/01-basic.raw",
+    "../testcases/21-nftoken-create-offer/01-sell.raw",
+    "../testcases/21-nftoken-create-offer/02-sell-destination.raw",
+    "../testcases/21-nftoken-create-offer/03-buy.raw",
+    "../testcases/21-nftoken-create-offer/04-buy-expiration.raw",
+    "../testcases/22-nftoken-cancel-offer/01-basic.raw",
+    "../testcases/23-nftoken-accept-offer/01-basic.raw",
+    "../testcases/23-nftoken-accept-offer/02-broker.raw",
+    "../testcases/24-clawback/01-basic.raw",
+    "../testcases/25-amm-create/01-basic.raw",
+    "../testcases/26-amm-deposit/01-one-sided.raw",
+    "../testcases/26-amm-deposit/02-two-sided.raw",
+    "../testcases/26-amm-deposit/03-amount-lp-out.raw",
+    "../testcases/26-amm-deposit/04-lp-out.raw",
+    "../testcases/27-amm-withdraw/01-one-sided.raw",
+    "../testcases/27-amm-withdraw/02-two-sided.raw",
+    "../testcases/27-amm-withdraw/03-amount-lp-out.raw",
+    "../testcases/27-amm-withdraw/04-lp-out.raw",
+    "../testcases/28-amm-bid/01-basic.raw",
+    "../testcases/28-amm-bid/02-min-max.raw",
+    "../testcases/29-amm-vote/01-basic.raw",
     NULL,
 };
 
@@ -161,7 +186,7 @@ static void generate_expected_result(const char *filename, parseResult_t *transa
 }
 
 static void check_transaction_results(const char *filename, parseResult_t *transaction) {
-    // printf("[*] %s\n", filename);
+    printf("[*] %s\n", filename);
     char path[1024];
     get_result_filename(filename, path, sizeof(path));
 

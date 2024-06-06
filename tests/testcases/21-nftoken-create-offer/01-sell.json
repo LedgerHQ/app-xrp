@@ -1,0 +1,14 @@
+{
+    "TransactionType": "NFTokenCreateOffer",
+    "Account": "OWN_ADDR",
+    "NFTokenID": "000000003C0E955DFA24367806070434D8BE16A12E410C3B559CFBED00000052",
+    "Amount": {
+        "currency": "FOO",
+        "issuer": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+        "value": "314.159"
+    },
+    "Fee": "15",
+    "Flags": 1,
+    "Sequence": 3,
+    "SigningPubKey": "OWN_PUBKEY"
+}

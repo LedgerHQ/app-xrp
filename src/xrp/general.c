@@ -38,6 +38,8 @@ void uint8_formatter(field_t* field, field_value_t* dst) {
 
 static const char* resolve_transaction_name(uint16_t value) {
     switch (value) {
+        case TRANSACTION_INVALID:
+            return "Sign In";
         case TRANSACTION_PAYMENT:
             return "Payment";
         case TRANSACTION_ESCROW_CREATE:
@@ -54,6 +56,10 @@ static const char* resolve_transaction_name(uint16_t value) {
             return "Create Offer";
         case TRANSACTION_OFFER_CANCEL:
             return "Cancel Offer";
+        case TRANSACTION_TICKET_CREATE:
+            return "Ticket Create";
+        case TRANSACTION_TICKET_CANCEL:
+            return "Ticket Cancel";
         case TRANSACTION_SIGNER_LIST_SET:
             return "Set Signer List";
         case TRANSACTION_PAYMENT_CHANNEL_CREATE:
@@ -74,6 +80,30 @@ static const char* resolve_transaction_name(uint16_t value) {
             return "Set Trust Line";
         case TRANSACTION_ACCOUNT_DELETE:
             return "Delete Account";
+        case TRANSACTION_NFTOKEN_MINT:
+            return "NFToken Mint";
+        case TRANSACTION_NFTOKEN_BURN:
+            return "NFToken Burn";
+        case TRANSACTION_NFTOKEN_CREATE_OFFER:
+            return "NFToken Create Offer";
+        case TRANSACTION_NFTOKEN_CANCEL_OFFER:
+            return "NFToken Cancel Offer";
+        case TRANSACTION_NFTOKEN_ACCEPT_OFFER:
+            return "NFToken Accept Offer";
+        case TRANSACTION_CLAWBACK:
+            return "Clawback";
+        case TRANSACTION_AMM_CREATE:
+            return "AMM Create";
+        case TRANSACTION_AMM_DEPOSIT:
+            return "AMM Deposit";
+        case TRANSACTION_AMM_WITHDRAW:
+            return "AMM Withdraw";
+        case TRANSACTION_AMM_VOTE:
+            return "AMM Vote";
+        case TRANSACTION_AMM_BID:
+            return "AMM Bid";
+        case TRANSACTION_AMM_DELETE:
+            return "AMM Delete";
         default:
             return "Unknown";
     }
@@ -126,6 +156,7 @@ static bool should_format_blob_as_string(field_t* field) {
         case XRP_VL_MEMO_FORMAT:
             return true;
         case XRP_VL_MEMO_DATA:
+        case XRP_VL_URI:
             return is_purely_ascii(field->data.ptr, field->length, false);
         default:
             return false;
@@ -149,6 +180,11 @@ void blob_formatter(field_t* field, field_value_t* dst) {
     if (too_long) {
         strncpy(dst->buf + sizeof(dst->buf) - 4, "...", 4);
     }
+}
+
+void vector_formatter256(field_t* field, field_value_t* dst) {
+    uint16_t count = field->length / XRP_VECTOR256_SIZE;
+    snprintf(dst->buf, sizeof(dst->buf), "%d", count);
 }
 
 void account_formatter(field_t* field, field_value_t* dst) {

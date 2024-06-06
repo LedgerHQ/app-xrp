@@ -207,6 +207,46 @@ err_t read_amount(parseContext_t *context, field_t *field) {
     return err;
 }
 
+err_t read_vector256_field(parseContext_t *context, field_t *field) {
+    field->data_type = STI_VECTOR256;
+
+    err_t err;
+    uint8_t value;
+
+    CHECK(read_next_byte(context, &value));
+
+    uint16_t count = value / XRP_VECTOR256_SIZE;
+    read_fixed_size_field(context, field, XRP_VECTOR256_SIZE * count);
+    for (size_t i = 0; i < count; i++) {
+        field_t *hash256;
+        CHECK(append_new_field(context, &hash256));
+        hash256->data_type = STI_HASH256;
+        hash256->id = XRP_HASH256_NFTOKEN_BUY_OFFER;
+        hash256->data.hash256 = (hash256_t *) (field->data.ptr + (i * 32));
+        hash256->length = XRP_VECTOR256_SIZE;
+    }
+
+    return err;
+}
+
+err_t read_issue(parseContext_t *context, field_t *field) {
+    err_t err;
+
+    if (!is_all_zeros(context->data + context->offset, 20)) {
+        CHECK(read_fixed_size_field(context, field, XRP_ISSUE_SIZE));
+        field_t *issuer;
+        CHECK(append_new_field(context, &issuer));
+        issuer->data_type = STI_ACCOUNT;
+        issuer->id = XRP_ACCOUNT_ISSUER;
+        issuer->data.account = (xrp_account_t *) (field->data.ptr + 20);
+        issuer->length = XRP_ACCOUNT_SIZE;
+    } else {
+        CHECK(read_fixed_size_field(context, field, XRP_CURRENCY_SIZE));
+    }
+    
+    return err;
+}
+
 void handle_array_field(parseContext_t *context, field_t *field) {
     if (field->id != ARR_END) {
         // Begin array
@@ -358,6 +398,9 @@ err_t read_field_value(parseContext_t *context, field_t *field) {
         case STI_ACCOUNT:
             err = read_variable_length_field(context, field);
             break;
+        case STI_VECTOR256:
+            err = read_vector256_field(context, field);
+            break;
         case STI_ARRAY:
             handle_array_field(context, field);
             break;
@@ -366,6 +409,9 @@ err_t read_field_value(parseContext_t *context, field_t *field) {
             break;
         case STI_PATHSET:
             handle_path_set_field(context);
+            break;
+        case STI_ISSUE:
+            err = read_issue(context, field);
             break;
         default:
             err.err = NOT_SUPPORTED;
@@ -421,15 +467,6 @@ err_t post_process_field(parseContext_t *context, field_t *field) {
             }
             break;
         case STI_UINT32:
-            // Reject transaction if tfFullyCanonicalSig is not set
-            if (field->id == XRP_UINT32_FLAGS) {
-                uint32_t value = field->data.u32;
-                if ((value & TF_FULLY_CANONICAL_SIG) == 0) {
-                    err.err = 0x6800;
-                    return err;
-                }
-            }
-
             break;
         case STI_VL:
             // Detect when SigningPubKey is empty (needed for multi-sign)

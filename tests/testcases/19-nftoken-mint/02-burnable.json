@@ -1,0 +1,10 @@
+{
+    "TransactionType": "NFTokenMint",
+    "Account": "OWN_ADDR",
+    "Fee": "15",
+    "Flags": 1,
+    "URI": "697066733A2F2F6261736963",
+    "Sequence": 3,
+    "SigningPubKey": "OWN_PUBKEY",
+    "NFTokenTaxon": 0
+}

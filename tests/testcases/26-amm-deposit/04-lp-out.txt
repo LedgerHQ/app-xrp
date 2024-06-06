@@ -1,0 +1,9 @@
+Transaction Type; AMM Deposit
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Flags; LP Token
+Fee; XRP 0.000015
+LP Token Out; USD 5
+Issuer;   rExKpRKXNz25    UAjbckCRtQs     JFcSfjL9Er3   
+Asset; XRP
+Asset 2; USD
+Issuer;   rExKpRKXNz25    UAjbckCRtQs     JFcSfjL9Er3   

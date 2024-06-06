@@ -1,0 +1,8 @@
+Transaction Type; AMM Create
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Trading Fee; 12
+Amount; EUR 250
+Issuer;   rMqTbPY6rzTs    puBGBcS7po7     FFTPwitrKHX   
+Fee; XRP 2
+Amount 2; USD 250
+Issuer;   rExKpRKXNz25    UAjbckCRtQs     JFcSfjL9Er3   

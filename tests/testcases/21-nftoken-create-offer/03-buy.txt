@@ -1,0 +1,7 @@
+Transaction Type; NFToken Create Offer
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+NFToken ID; 000000003c0e955dfa24367806070434d8be16a12e410c3b559cfbed00000052
+Amount; FOO 314.159
+Issuer;   rsA2Lpzuawew    SBQXkiju3YQ     TMzW13pAAdW   
+Fee; XRP 0.000015
+Owner;   ra7Zr8ddy9tB    88RaXL8B87Y     kqhEJG2vkAJ   

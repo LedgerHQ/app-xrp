@@ -22,19 +22,19 @@ TX_PREFIX_SINGLE = [0x53, 0x54, 0x58, 0x00]
 TX_PREFIX_MULTI = [0x53, 0x4D, 0x54, 0x00]
 
 
-def pop_size_prefixed_buf_from_buf(buffer:bytes) -> Tuple[bytes, int, bytes]:
-    """ Returns remainder, data_len, data """
+def pop_size_prefixed_buf_from_buf(buffer: bytes) -> Tuple[bytes, int, bytes]:
+    """Returns remainder, data_len, data"""
 
     data_len = buffer[0]
-    return buffer[1+data_len:], data_len, buffer[1:data_len+1]
+    return buffer[1 + data_len :], data_len, buffer[1 : data_len + 1]
 
 
 def unpack_configuration_response(reply: bytes) -> str:
-    """ Unpack reply for 'get_configuration' APDU:
-           TEST (1)
-           MAJOR (1)
-           MINOR (1)
-           PATCH (1)
+    """Unpack reply for 'get_configuration' APDU:
+    TEST (1)
+    MAJOR (1)
+    MINOR (1)
+    PATCH (1)
     """
 
     assert len(reply) == 4
@@ -45,9 +45,9 @@ def unpack_configuration_response(reply: bytes) -> str:
 
 
 def unpack_get_public_key_response(reply: bytes) -> Tuple[int, str, int, str]:
-    """ Unpack reply for 'get_public_key' APDU:
-           pub_key (65)
-           pub_key_str (65 * 2)
+    """Unpack reply for 'get_public_key' APDU:
+    pub_key (65)
+    pub_key_str (65 * 2)
     """
 
     reply, key_len, key_data = pop_size_prefixed_buf_from_buf(reply)
@@ -56,7 +56,7 @@ def unpack_get_public_key_response(reply: bytes) -> Tuple[int, str, int, str]:
 
 
 def verify_version(version: str) -> None:
-    """ Verify the app version, based on defines in Makefile """
+    """Verify the app version, based on defines in Makefile"""
 
     print(f"version: {version}")
     parent = Path(ROOT_SCREENSHOT_PATH).parent.resolve()
@@ -81,11 +81,12 @@ def verify_version(version: str) -> None:
 
 
 def verify_ecdsa_secp256k1(tx: bytes, sig: bytes, raw_tx_path: str) -> bool:
-    """ Verify the transaction signature """
+    """Verify the transaction signature"""
 
     # Get Public key
     key_data, _ = calculate_public_key_and_chaincode(
-        CurveChoice.Secp256k1, DEFAULT_PATH, compress_public_key=True)
+        CurveChoice.Secp256k1, DEFAULT_PATH, compress_public_key=True
+    )
     pub_key = bytearray.fromhex(key_data)
 
     # Check single/multi signature

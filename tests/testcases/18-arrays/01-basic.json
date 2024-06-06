@@ -12,7 +12,7 @@
     }
   ],
   "Fee": "15",
-  "Flags": 2147483648,
+  "Flags": 0,
   "Sequence": 131429307,
   "LastLedgerSequence": 87108682,
   "SigningPubKey": "OWN_PUBKEY"

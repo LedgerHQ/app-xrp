@@ -1,4 +1,4 @@
 Transaction Type; Account Setting
 Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
-Set Flag; Ripple by default
+Set Flag; Default Ripple
 Fee; XRP 0.00001
