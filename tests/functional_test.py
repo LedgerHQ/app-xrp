@@ -15,13 +15,16 @@ from ragger.bip import calculate_public_key_and_chaincode, CurveChoice
 from ragger.error import ExceptionRAPDU
 from .xrp import XRPClient, Errors
 from .utils import DEFAULT_PATH, DEFAULT_BIP32_PATH
-from .utils import ROOT_SCREENSHOT_PATH, verify_ecdsa_secp256k1, verify_version
+from .utils import verify_ecdsa_secp256k1, verify_version
 
 
-def test_app_configuration(backend: BackendInterface, firmware: Firmware, navigator: Navigator):
+def test_app_configuration(backend: BackendInterface,
+                           firmware: Firmware,
+                           navigator: Navigator,
+                           default_screenshot_path: Path):
     xrp = XRPClient(backend, firmware, navigator)
     version = xrp.get_configuration()
-    verify_version(version)
+    verify_version(default_screenshot_path, version)
 
 
 def test_sign_too_large(backend: BackendInterface, firmware: Firmware, navigator: Navigator):
@@ -70,11 +73,10 @@ def test_get_public_key_no_confirm(backend: BackendInterface,
 def test_get_public_key_confirm(backend: BackendInterface,
                                 firmware: Firmware,
                                 navigator: Navigator,
-                                scenario_navigator: NavigateWithScenario,
-                                test_name: str):
+                                scenario_navigator: NavigateWithScenario):
     xrp = XRPClient(backend, firmware, navigator)
     with xrp.get_pubkey_confirm():
-        scenario_navigator.address_review_approve(ROOT_SCREENSHOT_PATH, test_name)
+        scenario_navigator.address_review_approve()
 
     # Check the status (Asynchronous)
     reply = xrp.get_async_response()
@@ -84,13 +86,12 @@ def test_get_public_key_confirm(backend: BackendInterface,
 def test_get_public_key_reject(backend: BackendInterface,
                                firmware: Firmware,
                                navigator: Navigator,
-                               scenario_navigator: NavigateWithScenario,
-                               test_name: str):
+                               scenario_navigator: NavigateWithScenario):
     xrp = XRPClient(backend, firmware, navigator)
 
     with pytest.raises(ExceptionRAPDU) as err:
         with xrp.get_pubkey_confirm():
-            scenario_navigator.address_review_reject(ROOT_SCREENSHOT_PATH, test_name)
+            scenario_navigator.address_review_reject()
 
     # Assert we have received a refusal
     assert err.value.status == Errors.SW_WRONG_ADDRESS
@@ -100,8 +101,7 @@ def test_get_public_key_reject(backend: BackendInterface,
 def test_sign_reject(backend: BackendInterface,
                      firmware: Firmware,
                      navigator: Navigator,
-                     scenario_navigator: NavigateWithScenario,
-                     test_name: str):
+                     scenario_navigator: NavigateWithScenario):
     xrp = XRPClient(backend, firmware, navigator)
 
     # pragma pylint: disable=line-too-long
@@ -115,7 +115,7 @@ def test_sign_reject(backend: BackendInterface,
     # Send the APDU (Asynchronous)
     with pytest.raises(ExceptionRAPDU) as err:
         with xrp.sign(DEFAULT_BIP32_PATH + message):
-            scenario_navigator.review_reject(ROOT_SCREENSHOT_PATH, test_name)
+            scenario_navigator.review_reject()
 
     # Assert we have received a refusal
     assert err.value.status == Errors.SW_WRONG_ADDRESS
@@ -144,7 +144,7 @@ def test_sign_valid_tx(backend: BackendInterface,
     else:
         text = "^Hold to sign$"
     with xrp.sign(DEFAULT_BIP32_PATH + tx):
-        scenario_navigator.review_approve(ROOT_SCREENSHOT_PATH, snapdir, text)
+        scenario_navigator.review_approve(test_name=snapdir, custom_screen_text=text)
 
     reply = xrp.get_async_response()
     assert reply and reply.status == Errors.SW_SUCCESS
