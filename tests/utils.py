@@ -15,7 +15,6 @@ from ecdsa import VerifyingKey, SECP256k1  # type: ignore [import]
 from ragger.bip import calculate_public_key_and_chaincode, CurveChoice
 
 
-ROOT_SCREENSHOT_PATH = Path(__file__).parent.resolve()
 DEFAULT_PATH = "44'/144'/0'/0'/0"
 DEFAULT_BIP32_PATH = Bip32Path.build(DEFAULT_PATH)
 TX_PREFIX_SINGLE = [0x53, 0x54, 0x58, 0x00]
@@ -55,12 +54,11 @@ def unpack_get_public_key_response(reply: bytes) -> Tuple[int, str, int, str]:
     return key_len, key_data.hex(), len(chain_data), chain_data.hex()
 
 
-def verify_version(version: str) -> None:
+def verify_version(root_path: Path, version: str) -> None:
     """ Verify the app version, based on defines in Makefile """
 
     print(f"version: {version}")
-    parent = Path(ROOT_SCREENSHOT_PATH).parent.resolve()
-    makefile = f"{parent}/Makefile"
+    makefile = f"{root_path.parent.resolve()}/Makefile"
     print(f"{makefile}")
     with open(makefile, "r", encoding="utf-8") as f_p:
         lines = f_p.readlines()
