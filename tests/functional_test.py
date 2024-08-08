@@ -128,7 +128,7 @@ def test_sign_valid_tx(backend: BackendInterface,
                        scenario_navigator: NavigateWithScenario,
                        raw_tx_path: str):
     if raw_tx_path.endswith("19-really-stupid-tx.raw"):
-        pytest.skip(f"skip invalid tx {raw_tx_path}")
+        pytest.skip(f"skip invalid tx from '{Path(raw_tx_path).stem}'")
 
     xrp = XRPClient(backend, firmware, navigator)
 

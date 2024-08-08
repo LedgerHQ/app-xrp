@@ -52,8 +52,10 @@ void on_address_confirmed() {
     G_io_apdu_buffer[tx++] = 0x00;
     // Send back the response, do not restart the event loop
     io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
+#ifndef HAVE_NBGL
     // Display back the original UX
     display_idle_menu();
+#endif
 }
 
 void on_address_rejected() {
@@ -61,8 +63,10 @@ void on_address_rejected() {
     G_io_apdu_buffer[1] = 0x85;
     // Send back the response, do not restart the event loop
     io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, 2);
+#ifndef HAVE_NBGL
     // Display back the original UX
     display_idle_menu();
+#endif
 }
 
 void handle_get_public_key(uint8_t p1,

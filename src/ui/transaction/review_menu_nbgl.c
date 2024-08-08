@@ -77,7 +77,7 @@ void display_review_menu(parseResult_t *transaction_param, resultAction_t callba
                        &C_icon_XRP_64px,
                        "Review transaction",
                        NULL,
-                       "Sign transaction",
+                       "Sign transaction?",
                        reviewChoice);
 }
 #endif  // HAVE_NBGL
