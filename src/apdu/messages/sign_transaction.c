@@ -141,8 +141,10 @@ end:
         return;
     }
 
+#ifndef HAVE_NBGL
     // Display back the original UX
     display_idle_menu();
+#endif
 }
 
 void reject_transaction() {
@@ -164,7 +166,9 @@ void reject_transaction() {
 
     // Reset transaction context and display back the original UX
     reset_transaction_context();
+#ifndef HAVE_NBGL
     display_idle_menu();
+#endif
 }
 
 bool is_first(uint8_t p1) {
