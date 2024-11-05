@@ -146,22 +146,22 @@ typedef enum {
 // VECTOR256
 #define XRP_VECTOR256_NF_TOKEN_OFFERS 0x04
 // STOBJECT
-#define XRP_STOBJECT_MEMO                                                 0x0A
-#define XRP_STOBJECT_SIGNER_ENTRY                                         0x0B
-#define XRP_STOBJECT_NFTOKEN                                              0x0C
-#define XRP_STOBJECT_SIGNER                                               0x10
-#define XRP_STOBJECT_AUTH_ACCOUNT                                         0x1B
+#define XRP_STOBJECT_MEMO         0x0A
+#define XRP_STOBJECT_SIGNER_ENTRY 0x0B
+#define XRP_STOBJECT_NFTOKEN      0x0C
+#define XRP_STOBJECT_SIGNER       0x10
+#define XRP_STOBJECT_AUTH_ACCOUNT 0x1B
 // STARRAY
-#define XRP_STARRAY_SIGNERS                            0x03
-#define XRP_STARRAY_SIGNER_ENTRIES                     0x04
-#define XRP_STARRAY_MEMOS                              0x09
-#define XRP_STARRAY_NFTOKENS                           0x0A
-#define XRP_STARRAY_MAJORITIES                         0x10
-#define XRP_STARRAY_DISABLED_VALIDATORS                0x11
-#define XRP_STARRAY_AUTH_ACCOUNTS                      0x19
+#define XRP_STARRAY_SIGNERS             0x03
+#define XRP_STARRAY_SIGNER_ENTRIES      0x04
+#define XRP_STARRAY_MEMOS               0x09
+#define XRP_STARRAY_NFTOKENS            0x0A
+#define XRP_STARRAY_MAJORITIES          0x10
+#define XRP_STARRAY_DISABLED_VALIDATORS 0x11
+#define XRP_STARRAY_AUTH_ACCOUNTS       0x19
 // ISSUE
-#define XRP_ISSUE_ASSET               0x03
-#define XRP_ISSUE_ASSET2              0x04
+#define XRP_ISSUE_ASSET  0x03
+#define XRP_ISSUE_ASSET2 0x04
 // CURRENCY
 #define XRP_CURRENCY_CURRENCY 0x01
 
