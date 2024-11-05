@@ -243,7 +243,7 @@ err_t read_issue(parseContext_t *context, field_t *field) {
     } else {
         CHECK(read_fixed_size_field(context, field, XRP_CURRENCY_SIZE));
     }
-    
+
     return err;
 }
 
