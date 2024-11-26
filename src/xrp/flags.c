@@ -266,8 +266,6 @@ static void format_nftoken_mint_flags(uint32_t value, field_value_t *dst) {
 // NFTokenMint flags
 #define TF_BURNABLE 0x00000001u
 #define TF_ONLY_XRP 0x00000002u
-// @deprecated
-// #define TF_TRUSTLINE 0x00000004u
 #define TF_TRANSFERABLE 0x00000008u
 
     size_t offset = 0;
@@ -277,10 +275,6 @@ static void format_nftoken_mint_flags(uint32_t value, field_value_t *dst) {
     if (HAS_FLAG(value, TF_ONLY_XRP)) {
         offset = append_item(dst, offset, "Only XRP");
     }
-    // @deprecated
-    // if (HAS_FLAG(value, TF_TRUSTLINE)) {
-    //     offset = append_item(dst, offset, "Auto Trustline");
-    // }
     if (HAS_FLAG(value, TF_TRANSFERABLE)) {
         append_item(dst, offset, "Transferable");
     }
