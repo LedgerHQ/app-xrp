@@ -157,14 +157,14 @@ bool has_non_standard_currency(field_t *field) {
     return has_non_standard_currency_internal(&field->data.ptr[8]);
 }
 
-static void format_standard_currency(uint8_t *currency_data, char *buf, size_t size) {
-    if (has_non_standard_currency_internal(currency_data)) {
-    } else if (is_all_zeros(currency_data, 20)) {
+static void format_standard_currency(xrp_currency_t *currency, char *buf, size_t size) {
+    if (has_non_standard_currency_internal(currency->buf)) {
+    } else if (is_all_zeros(currency->buf, 20)) {
         // Special case for XRP currency
         strncpy(buf, "XRP", size);
     } else {
         // Standard currency code
-        memcpy(buf, &currency_data[12], 3);
+        memcpy(buf, &currency->buf[12], 3);
     }
 }
 
@@ -224,7 +224,8 @@ void amount_formatter(field_t *field, field_value_t *dst) {
     if (field->length == XRP_AMOUNT_LEN) {
         error = format_xrp(value, dst);
     } else if (field->length == ISSUED_CURRENCY_LEN) {
-        format_standard_currency(&field->data.ptr[8], dst->buf, sizeof(dst->buf));
+        xrp_currency_t *currency = (xrp_currency_t *) &field->data.ptr[8];
+        format_standard_currency(currency, dst->buf, sizeof(dst->buf));
         error = format_issued_currency(value, dst->buf, sizeof(dst->buf));
     } else {
         error = 1;
