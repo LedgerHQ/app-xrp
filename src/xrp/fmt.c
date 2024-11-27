@@ -23,6 +23,10 @@
 #include "general.h"
 
 void format_field(field_t* field, field_value_t* dst) {
+    if (field == NULL || dst == NULL) {
+        return;
+    }
+
     memset(dst->buf, '\x00', sizeof(dst->buf));
 
     int ret = 0;
