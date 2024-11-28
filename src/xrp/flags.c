@@ -264,8 +264,8 @@ static void format_payment_channel_claim_flags(uint32_t value, field_value_t *ds
 
 static void format_nftoken_mint_flags(uint32_t value, field_value_t *dst) {
 // NFTokenMint flags
-#define TF_BURNABLE 0x00000001u
-#define TF_ONLY_XRP 0x00000002u
+#define TF_BURNABLE     0x00000001u
+#define TF_ONLY_XRP     0x00000002u
 #define TF_TRANSFERABLE 0x00000008u
 
     size_t offset = 0;
