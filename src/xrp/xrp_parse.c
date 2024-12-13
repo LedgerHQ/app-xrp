@@ -216,7 +216,7 @@ err_t read_vector256_field(parseContext_t *context, field_t *field) {
     CHECK(read_next_byte(context, &value));
 
     uint16_t count = value / XRP_VECTOR256_SIZE;
-    read_fixed_size_field(context, field, XRP_VECTOR256_SIZE * count);
+    CHECK(read_fixed_size_field(context, field, XRP_VECTOR256_SIZE * count));
     for (size_t i = 0; i < count; i++) {
         field_t *hash256;
         CHECK(append_new_field(context, &hash256));
