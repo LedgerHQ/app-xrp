@@ -19,15 +19,27 @@ and the examples below.
 The XRP wallet app comes with the following features:
 
 - Support for all transaction types:
+  - AMMBid
+  - AMMCreate
+  - AMMDelete
+  - AMMDeposit
+  - AMMVote
+  - AMMWithdrawal
   - AccountSet
   - AccountDelete
   - CheckCancel
   - CheckCash
   - CheckCreate
+  - Clawback
   - DepositPreauth
   - EscrowCancel
   - EscrowCreate
   - EscrowFinish
+  - NFTokenAcceptOffer
+  - NFTokenBurn
+  - NFTokenCancelOffer
+  - NFTokenCreateOffer
+  - NFTokenMint
   - OfferCancel
   - OfferCreate
   - Payment
@@ -36,6 +48,8 @@ The XRP wallet app comes with the following features:
   - PaymentChannelFund
   - SetRegularKey
   - SignerListSet
+  - TicketCancel
+  - TicketCreate
   - TrustSet
 - Support for all transaction common fields such as memos
 - Support for issued assets such as SOLO, stocks and ETFs
@@ -93,50 +107,49 @@ An example of a basic payment transaction using this library is shown below:
 import Transport from "@ledgerhq/hw-transport-node-hid";
 // import Transport from "@ledgerhq/hw-transport-u2f"; // for browser
 import Xrp from "@ledgerhq/hw-app-xrp";
-import { encode } from 'ripple-binary-codec';
+import { encode } from "ripple-binary-codec";
 
 function establishConnection() {
-    return Transport.create()
-        .then(transport => new Xrp(transport));
+  return Transport.create().then((transport) => new Xrp(transport));
 }
 
 function fetchAddress(xrp) {
-    return xrp.getAddress("44'/144'/0'/0/0").then(deviceData => {
-        return {
-            xrp,
-            address: deviceData.address,
-            publicKey: deviceData.publicKey.toUpperCase()
-        }
-    });
+  return xrp.getAddress("44'/144'/0'/0/0").then((deviceData) => {
+    return {
+      xrp,
+      address: deviceData.address,
+      publicKey: deviceData.publicKey.toUpperCase(),
+    };
+  });
 }
 
 function signTransaction(context, transaction) {
-    const preparedTransaction = {
-        Account: context.address,
-        SigningPubKey: context.publicKey,
-        ...transaction
-    };
+  const preparedTransaction = {
+    Account: context.address,
+    SigningPubKey: context.publicKey,
+    ...transaction,
+  };
 
-    const transactionBlob = encode(preparedTransaction);
+  const transactionBlob = encode(preparedTransaction);
 
-    console.log('Sending transaction to device for approval...');
-    return context.xrp.signTransaction("44'/144'/0'/0/0", transactionBlob);
+  console.log("Sending transaction to device for approval...");
+  return context.xrp.signTransaction("44'/144'/0'/0/0", transactionBlob);
 }
 
 const transactionJSON = {
-    TransactionType: "Payment",
-    Destination: "rTooLkitCksh5mQa67eaa2JaWHDBnHkpy",
-    Amount: "1000000",
-    Fee: "15",
-    Flags: 2147483648,
-    Sequence: 57,
+  TransactionType: "Payment",
+  Destination: "rTooLkitCksh5mQa67eaa2JaWHDBnHkpy",
+  Amount: "1000000",
+  Fee: "15",
+  Flags: 2147483648,
+  Sequence: 57,
 };
 
 establishConnection()
-    .then(xrp => fetchAddress(xrp))
-    .then(context => signTransaction(context, transactionJSON))
-    .then(signature => console.log(`Signature: ${signature}`))
-    .catch(e => console.log(`An error occurred (${e.message})`));
+  .then((xrp) => fetchAddress(xrp))
+  .then((context) => signTransaction(context, transactionJSON))
+  .then((signature) => console.log(`Signature: ${signature}`))
+  .catch((e) => console.log(`An error occurred (${e.message})`));
 ```
 
 ### Advanced Usage
@@ -151,64 +164,60 @@ with a signature of the Ledger device is shown below (uses imports and functions
 
 ```javascript
 const transactionJSON = {
-    Account: "r4PCuDkjuV2e23xVP8ChkVxo1aG2Ufpkjb",
-    TransactionType: "Payment",
-    Destination: "rTooLkitCksh5mQa67eaa2JaWHDBnHkpy",
-    Amount: "1000000",
-    Fee: "15",
-    Flags: 2147483648,
-    Sequence: 47,
-    SigningPubKey: "" // Must be blank
+  Account: "r4PCuDkjuV2e23xVP8ChkVxo1aG2Ufpkjb",
+  TransactionType: "Payment",
+  Destination: "rTooLkitCksh5mQa67eaa2JaWHDBnHkpy",
+  Amount: "1000000",
+  Fee: "15",
+  Flags: 2147483648,
+  Sequence: 47,
+  SigningPubKey: "", // Must be blank
 };
 
 // Sourced externally from other signing parties, replace "..." with actual values.
 const otherSigners = [
-    {
-        Signer: {
-            Account: "...",
-            SigningPubKey: "...",
-            TxnSignature: "..."
-        }
+  {
+    Signer: {
+      Account: "...",
+      SigningPubKey: "...",
+      TxnSignature: "...",
     },
-    {
-        Signer: {
-            Account: "...",
-            SigningPubKey: "...",
-            TxnSignature: "..."
-        }
-    }
+  },
+  {
+    Signer: {
+      Account: "...",
+      SigningPubKey: "...",
+      TxnSignature: "...",
+    },
+  },
 ];
 
 function retrieveSignerData(transaction) {
-    return establishConnection()
-        .then(xrp => fetchAddress(xrp))
-        .then(context => {
-            return signTransaction(context, transaction)
-                .then(signature => {
-                    return {
-                        Signer: {
-                            Account: context.account,
-                            SigningPubKey: context.publicKey,
-                            TxnSignature: signature.toUpperCase()
-                        }
-                    }
-                });
-        })
-        .catch(e => console.log(`An error occurred (${e.message})`));
+  return establishConnection()
+    .then((xrp) => fetchAddress(xrp))
+    .then((context) => {
+      return signTransaction(context, transaction).then((signature) => {
+        return {
+          Signer: {
+            Account: context.account,
+            SigningPubKey: context.publicKey,
+            TxnSignature: signature.toUpperCase(),
+          },
+        };
+      });
+    })
+    .catch((e) => console.log(`An error occurred (${e.message})`));
 }
 
 retrieveSignerData(transactionJSON)
-    .then(signer => {
-        return {
-            ...transactionJSON,
-            Signers: [
-                ...otherSigners,
-                signer
-            ]
-        }
-    })
-    .then(transaction => console.log(transaction))
-    .catch(e => console.log(`An error occurred (${e.message})`));
+  .then((signer) => {
+    return {
+      ...transactionJSON,
+      Signers: [...otherSigners, signer],
+    };
+  })
+  .then((transaction) => console.log(transaction))
+  .catch((e) => console.log(`An error occurred (${e.message})`));
 ```
 
 ### Additional Notes

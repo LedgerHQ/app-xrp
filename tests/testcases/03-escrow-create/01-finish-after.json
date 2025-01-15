@@ -5,7 +5,7 @@
   "Amount" : "10000",
   "FinishAfter": 533171558,
   "Fee": "20",
-  "Flags": 2147483648,
+  "Flags": 0,
   "Sequence": 3,
   "SigningPubKey": "OWN_PUBKEY"
 }

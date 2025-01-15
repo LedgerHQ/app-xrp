@@ -1,0 +1,7 @@
+Transaction Type; AMM Create
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Trading Fee; 12
+Amount; XRP 0.00025
+Fee; XRP 2
+Amount 2; USD 250
+Issuer;   rExKpRKXNz25    UAjbckCRtQs     JFcSfjL9Er3   

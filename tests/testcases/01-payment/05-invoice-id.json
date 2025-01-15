@@ -5,7 +5,7 @@
   "InvoiceID": "F86D43FBCFC24B31AD5F035083B34722C71871412A60429D4D79DAA833031EA6",
   "Amount": "1000000",
   "Fee": "15",
-  "Flags": 2147483648,
+  "Flags": 0,
   "Sequence": 7,
   "SigningPubKey": "OWN_PUBKEY"
 }

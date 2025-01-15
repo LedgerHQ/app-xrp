@@ -1,0 +1,4 @@
+Transaction Type; NFToken Burn
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+NFToken ID; 000000003c0e955dfa24367806070434d8be16a12e410c3b559cfbed00000052
+Fee; XRP 0.000015

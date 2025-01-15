@@ -3,7 +3,7 @@
     "Account": "OWN_ADDR",
     "Fee": "10",
     "Sequence": 39,
-    "Flags": 2147483648,
+    "Flags": 0,
     "DeliverMin": {
         "value": "184467e44",
         "currency": "USD",

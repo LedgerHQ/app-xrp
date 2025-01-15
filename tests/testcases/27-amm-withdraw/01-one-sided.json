@@ -1,0 +1,15 @@
+{
+    "TransactionType": "AMMWithdraw",
+    "Account": "OWN_ADDR",
+    "Asset": {
+        "currency": "XRP"
+    },
+    "Asset2": {
+        "currency": "USD",
+        "issuer": "rExKpRKXNz25UAjbckCRtQsJFcSfjL9Er3"
+    },
+    "Amount": "500",
+    "Fee": "15",
+    "Flags": 524288,
+    "SigningPubKey": "OWN_PUBKEY"
+}

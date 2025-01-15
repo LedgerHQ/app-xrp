@@ -31,6 +31,8 @@
 #define TRANSACTION_SET_REGULAR_KEY        5
 #define TRANSACTION_OFFER_CREATE           7
 #define TRANSACTION_OFFER_CANCEL           8
+#define TRANSACTION_TICKET_CREATE          10
+#define TRANSACTION_TICKET_CANCEL          11
 #define TRANSACTION_SIGNER_LIST_SET        12
 #define TRANSACTION_PAYMENT_CHANNEL_CREATE 13
 #define TRANSACTION_PAYMENT_CHANNEL_FUND   14
@@ -41,6 +43,18 @@
 #define TRANSACTION_DEPOSIT_PREAUTH        19
 #define TRANSACTION_TRUST_SET              20
 #define TRANSACTION_ACCOUNT_DELETE         21
+#define TRANSACTION_NFTOKEN_MINT           25
+#define TRANSACTION_NFTOKEN_BURN           26
+#define TRANSACTION_NFTOKEN_CREATE_OFFER   27
+#define TRANSACTION_NFTOKEN_CANCEL_OFFER   28
+#define TRANSACTION_NFTOKEN_ACCEPT_OFFER   29
+#define TRANSACTION_CLAWBACK               30
+#define TRANSACTION_AMM_CREATE             35
+#define TRANSACTION_AMM_DEPOSIT            36
+#define TRANSACTION_AMM_WITHDRAW           37
+#define TRANSACTION_AMM_VOTE               38
+#define TRANSACTION_AMM_BID                39
+#define TRANSACTION_AMM_DELETE             40
 
 static inline bool is_transaction_type_field(field_t *field) {
     return field->data_type == STI_UINT16 && field->id == XRP_UINT16_TRANSACTION_TYPE;

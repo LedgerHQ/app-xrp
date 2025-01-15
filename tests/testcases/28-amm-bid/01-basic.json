@@ -1,0 +1,14 @@
+{
+    "TransactionType": "AMMBid",
+    "Account": "OWN_ADDR",
+    "Fee": "15",
+    "Asset": {
+        "currency": "XRP"
+    },
+    "Asset2": {
+        "currency": "USD",
+        "issuer": "rExKpRKXNz25UAjbckCRtQsJFcSfjL9Er3"
+    },
+    "Flags": 0,
+    "SigningPubKey": "OWN_PUBKEY"
+}

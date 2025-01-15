@@ -1,0 +1,20 @@
+{
+    "TransactionType": "AMMWithdraw",
+    "Account": "OWN_ADDR",
+    "Asset": {
+        "currency": "XRP"
+    },
+    "Asset2": {
+        "currency": "USD",
+        "issuer": "rExKpRKXNz25UAjbckCRtQsJFcSfjL9Er3"
+    },
+    "Amount": "5",
+    "LPTokenIn": {
+        "currency": "USD",
+        "issuer": "rExKpRKXNz25UAjbckCRtQsJFcSfjL9Er3",
+        "value": "5"
+    },
+    "Fee": "15",
+    "Flags": 2097152,
+    "SigningPubKey": "OWN_PUBKEY"
+}

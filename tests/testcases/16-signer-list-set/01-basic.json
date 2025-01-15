@@ -2,7 +2,7 @@
     "TransactionType": "SignerListSet",
     "Account": "OWN_ADDR",
     "Fee": "10",
-    "Flags": 2147483648,
+    "Flags": 0,
     "Sequence": 98,
     "SignerQuorum": 11,
     "SignerEntries": [
