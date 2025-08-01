@@ -46,8 +46,6 @@
             (char *) (text)                                               \
     }
 
-
-
 #if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
 #define ICON_APP_HOME C_icon_XRP
 #elif defined(TARGET_STAX) || defined(TARGET_FLEX)

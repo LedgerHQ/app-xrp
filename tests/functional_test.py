@@ -7,8 +7,8 @@ pytest-3 -v -s
 from pathlib import Path
 import pytest
 from ledgerwallet.params import Bip32Path  # type: ignore [import]
+from ledgered.devices import Device  # type: ignore [import]
 from ragger.backend import BackendInterface, RaisePolicy
-from ledgered.devices import Device
 from ragger.navigator import Navigator
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 from ragger.bip import calculate_public_key_and_chaincode, CurveChoice
