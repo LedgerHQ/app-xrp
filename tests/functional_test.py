@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 from ledgerwallet.params import Bip32Path  # type: ignore [import]
 from ragger.backend import BackendInterface, RaisePolicy
-from ragger.firmware import Firmware
+from ledgered.devices import Device
 from ragger.navigator import Navigator
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 from ragger.bip import calculate_public_key_and_chaincode, CurveChoice
@@ -19,16 +19,15 @@ from .utils import verify_ecdsa_secp256k1, verify_version
 
 
 def test_app_configuration(backend: BackendInterface,
-                           firmware: Firmware,
                            navigator: Navigator,
                            default_screenshot_path: Path):
-    xrp = XRPClient(backend, firmware, navigator)
+    xrp = XRPClient(backend, navigator)
     version = xrp.get_configuration()
     verify_version(default_screenshot_path, version)
 
 
-def test_sign_too_large(backend: BackendInterface, firmware: Firmware, navigator: Navigator):
-    xrp = XRPClient(backend, firmware, navigator)
+def test_sign_too_large(backend: BackendInterface, navigator: Navigator):
+    xrp = XRPClient(backend, navigator)
     max_size = 10001
     payload = DEFAULT_BIP32_PATH + b"a" * (max_size - 4)
     try:
@@ -38,8 +37,8 @@ def test_sign_too_large(backend: BackendInterface, firmware: Firmware, navigator
         assert rapdu.status in [Errors.SW_WRONG_LENGTH, Errors.SW_INTERNAL_3]
 
 
-def test_sign_invalid_tx(backend: BackendInterface, firmware: Firmware, navigator: Navigator):
-    xrp = XRPClient(backend, firmware, navigator)
+def test_sign_invalid_tx(backend: BackendInterface, navigator: Navigator):
+    xrp = XRPClient(backend, navigator)
     payload = DEFAULT_BIP32_PATH + b"a" * (40)
     try:
         backend.raise_policy = RaisePolicy.RAISE_ALL_BUT_0x9000
@@ -48,8 +47,8 @@ def test_sign_invalid_tx(backend: BackendInterface, firmware: Firmware, navigato
         assert rapdu.status in [Errors.SW_INTERNAL_1, Errors.SW_INTERNAL_2]
 
 
-def test_path_too_long(backend: BackendInterface, firmware: Firmware, navigator: Navigator):
-    xrp = XRPClient(backend, firmware, navigator)
+def test_path_too_long(backend: BackendInterface, navigator: Navigator):
+    xrp = XRPClient(backend, navigator)
     path = Bip32Path.build(DEFAULT_PATH + "/0/0/0/0/0/0")
     try:
         xrp.get_pubkey_no_confirm(path)
@@ -58,9 +57,8 @@ def test_path_too_long(backend: BackendInterface, firmware: Firmware, navigator:
 
 
 def test_get_public_key_no_confirm(backend: BackendInterface,
-                                   firmware: Firmware,
                                    navigator: Navigator):
-    xrp = XRPClient(backend, firmware, navigator)
+    xrp = XRPClient(backend, navigator)
     key_len, key_data, chain_len, chain_data = xrp.get_pubkey_no_confirm(chain_code=True)
     ref_public_key, ref_chain_code = calculate_public_key_and_chaincode(
         CurveChoice.Secp256k1, DEFAULT_PATH, compress_public_key=True)
@@ -71,10 +69,9 @@ def test_get_public_key_no_confirm(backend: BackendInterface,
 
 
 def test_get_public_key_confirm(backend: BackendInterface,
-                                firmware: Firmware,
                                 navigator: Navigator,
                                 scenario_navigator: NavigateWithScenario):
-    xrp = XRPClient(backend, firmware, navigator)
+    xrp = XRPClient(backend, navigator)
     with xrp.get_pubkey_confirm():
         scenario_navigator.address_review_approve()
 
@@ -84,10 +81,9 @@ def test_get_public_key_confirm(backend: BackendInterface,
 
 
 def test_get_public_key_reject(backend: BackendInterface,
-                               firmware: Firmware,
                                navigator: Navigator,
                                scenario_navigator: NavigateWithScenario):
-    xrp = XRPClient(backend, firmware, navigator)
+    xrp = XRPClient(backend, navigator)
 
     with pytest.raises(ExceptionRAPDU) as err:
         with xrp.get_pubkey_confirm():
@@ -99,10 +95,9 @@ def test_get_public_key_reject(backend: BackendInterface,
 
 
 def test_sign_reject(backend: BackendInterface,
-                     firmware: Firmware,
                      navigator: Navigator,
                      scenario_navigator: NavigateWithScenario):
-    xrp = XRPClient(backend, firmware, navigator)
+    xrp = XRPClient(backend, navigator)
 
     # pragma pylint: disable=line-too-long
     # Transaction extracted from testcases/01-payment/01-basic.raw
@@ -123,14 +118,14 @@ def test_sign_reject(backend: BackendInterface,
 
 
 def test_sign_valid_tx(backend: BackendInterface,
-                       firmware: Firmware,
+                       device: Device,
                        navigator: Navigator,
                        scenario_navigator: NavigateWithScenario,
                        raw_tx_path: str):
     if raw_tx_path.endswith("19-really-stupid-tx.raw"):
         pytest.skip(f"skip invalid tx from '{Path(raw_tx_path).stem}'")
 
-    xrp = XRPClient(backend, firmware, navigator)
+    xrp = XRPClient(backend, navigator)
 
     with open(raw_tx_path, "rb") as fp:
         tx = fp.read()
@@ -139,7 +134,7 @@ def test_sign_valid_tx(backend: BackendInterface,
     snapdir = str(Path(raw_tx_path[index :]).with_suffix(""))
 
     backend.wait_for_home_screen()
-    if firmware.device.startswith("nano"):
+    if not device.touchable:
         text = "^Sign transaction$"
     else:
         text = "^Hold to sign$"

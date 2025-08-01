@@ -20,6 +20,7 @@
 #include "glyphs.h"
 #include "idle_menu.h"
 #include "nbgl_use_case.h"
+#include "ui.h"
 
 #define NB_INFO_FIELDS 2
 static const char* const infoTypes[] = {"Version", "Developer"};
@@ -36,7 +37,7 @@ void display_idle_menu() {
     infosList.infoTypes = (const char**) infoTypes;
     infosList.infoContents = (const char**) infoContents;
     nbgl_useCaseHomeAndSettings(APPNAME,
-                                &C_icon_XRP_64px,
+                                &ICON_APP_HOME,
                                 NULL,
                                 INIT_HOME_PAGE,
                                 NULL,

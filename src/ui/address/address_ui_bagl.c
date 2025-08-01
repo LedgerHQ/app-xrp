@@ -19,6 +19,7 @@
 #include <string.h>
 #include <ux.h>
 #include "address_ui.h"
+#include "ui.h"
 
 static char full_address[43];
 static action_t approval_action;

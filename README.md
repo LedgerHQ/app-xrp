@@ -8,9 +8,9 @@
 
 This repository contains the source code for the XRP wallet app
 that makes it possible to securely store XRP and assets issued
-on the XRP Ledger using Ledger Nano devices.
+on the XRP Ledger using Ledger devices.
 
-To add Ledger Nano S and Ledger Nano X support in your application, please see the
+To add Ledger device support in your application, please see the
 NPM package [hw-app-xrp](https://www.npmjs.com/package/@ledgerhq/hw-app-xrp)
 and the examples below.
 
@@ -55,7 +55,7 @@ The XRP wallet app comes with the following features:
 - Support for issued assets such as SOLO, stocks and ETFs
 - Support for signing on behalf of others
 - Support for multi-signing
-- Unified UI across Ledger Nano devices
+- Unified UI across Ledger devices
 
 ## User Interface
 

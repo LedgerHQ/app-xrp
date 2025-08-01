@@ -46,4 +46,14 @@
             (char *) (text)                                               \
     }
 
+
+
+#if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
+#define ICON_APP_HOME C_icon_XRP
+#elif defined(TARGET_STAX) || defined(TARGET_FLEX)
+#define ICON_APP_HOME C_icon_XRP_64px
+#elif defined(TARGET_APEX_P)
+#define ICON_APP_HOME C_icon_XRP_48px
+#endif
+
 #endif  // LEDGER_APP_XRP_UI_H
