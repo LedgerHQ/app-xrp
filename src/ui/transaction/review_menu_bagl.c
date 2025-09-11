@@ -23,6 +23,7 @@
 #include "global.h"
 #include "transaction.h"
 #include "fmt.h"
+#include "ui.h"
 
 parseResult_t *transaction;
 resultAction_t approval_menu_callback;

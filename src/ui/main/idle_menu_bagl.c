@@ -20,13 +20,14 @@
 #include "idle_menu.h"
 #include "glyphs.h"
 #include <ux.h>
+#include "ui.h"
 
 // clang-format off
 UX_STEP_NOCB(
         ux_idle_flow_1_step,
         pnn,
         {
-            &C_icon_XRP,
+            &ICON_APP_HOME,
             "Use wallet to",
             "view accounts",
         });
