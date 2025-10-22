@@ -28,8 +28,8 @@ include $(BOLOS_SDK)/Makefile.defines
 APPNAME = XRP
 
 APPVERSION_M=2
-APPVERSION_N=4
-APPVERSION_P=1
+APPVERSION_N=5
+APPVERSION_P=2
 APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 
 # Application source files
@@ -44,6 +44,7 @@ ICON_NANOX = img/nanox_app_xrp.gif
 ICON_NANOSP = img/nanox_app_xrp.gif
 ICON_STAX = img/stax_app_xrp.gif
 ICON_FLEX = img/flex_app_xrp.gif
+ICON_APEX_P = img/apex_p_app_xrp.png
 
 # Application allowed derivation curves.
 # Possibles curves are: secp256k1, secp256r1, ed25519 and bls12381g1
@@ -77,7 +78,7 @@ VARIANT_VALUES = xrp
 ########################################
 # See SDK `include/appflags.h` for the purpose of each permission
 #HAVE_APPLICATION_FLAG_DERIVE_MASTER = 1
-HAVE_APPLICATION_FLAG_GLOBAL_PIN = 1
+#HAVE_APPLICATION_FLAG_GLOBAL_PIN = 1
 HAVE_APPLICATION_FLAG_BOLOS_SETTINGS = 1
 HAVE_APPLICATION_FLAG_LIBRARY = 1
 

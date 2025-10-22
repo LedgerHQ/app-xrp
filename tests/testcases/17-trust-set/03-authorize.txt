@@ -1,6 +1,6 @@
 Transaction Type; Set Trust Line
 Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
-Flags; Setf Auth
+Flags; Set Auth
 Limit Amount; USD 123
 Issuer;   rsP3mgGb2tcY    UrxiLFiHJiQ     XhsziegtwBc   
 Fee; XRP 0.00001

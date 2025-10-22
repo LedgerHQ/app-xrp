@@ -2,7 +2,7 @@
     "TransactionType": "PaymentChannelCreate",
     "Account": "OWN_ADDR",
     "Fee": "10",
-    "Flags": 2147483648,
+    "Flags": 0,
     "Sequence": 25,
     "Amount": "10000",
     "Destination": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",

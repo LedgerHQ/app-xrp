@@ -20,6 +20,7 @@
 #include "idle_menu.h"
 #include "review_menu.h"
 #include "nbgl_use_case.h"
+#include "ui.h"
 
 #define MAX_FIELDS_PER_PAGE 5
 
@@ -74,7 +75,7 @@ void display_review_menu(parseResult_t *transaction_param, resultAction_t callba
 
     nbgl_useCaseReview(TYPE_TRANSACTION,
                        &pairList,
-                       &C_icon_XRP_64px,
+                       &ICON_APP_HOME,
                        "Review transaction",
                        NULL,
                        "Sign transaction?",

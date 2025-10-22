@@ -1,0 +1,20 @@
+{
+    "TransactionType": "AMMDeposit",
+    "Account": "OWN_ADDR",
+    "Asset": {
+        "currency": "XRP"
+    },
+    "Asset2": {
+        "currency": "USD",
+        "issuer": "rExKpRKXNz25UAjbckCRtQsJFcSfjL9Er3"
+    },
+    "Amount": "100",
+    "Amount2": {
+        "currency": "USD",
+        "issuer": "rExKpRKXNz25UAjbckCRtQsJFcSfjL9Er3",
+        "value": "250"
+    },
+    "Fee": "15",
+    "Flags": 1048576,
+    "SigningPubKey": "OWN_PUBKEY"
+}

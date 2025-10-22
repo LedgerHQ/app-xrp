@@ -1,0 +1,10 @@
+Transaction Type; AMM Withdraw
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Flags; One Asset LP Token
+Amount; XRP 0.000005
+Fee; XRP 0.000015
+LP Token In; USD 5
+Issuer;   rExKpRKXNz25    UAjbckCRtQs     JFcSfjL9Er3   
+Asset; XRP
+Asset 2; USD
+Issuer;   rExKpRKXNz25    UAjbckCRtQs     JFcSfjL9Er3   

@@ -2,7 +2,6 @@ from contextlib import contextmanager
 from typing import Optional, Tuple
 from enum import IntEnum
 from ragger.backend.interface import BackendInterface, RAPDU
-from ragger.firmware import Firmware
 from ragger.navigator import Navigator
 from ragger.utils.misc import split_message
 
@@ -59,11 +58,10 @@ class Errors(IntEnum):
 class XRPClient:
     CLA = 0xE0
 
-    def __init__(self, client: BackendInterface, firmware: Firmware, navigator: Navigator) -> None:
+    def __init__(self, client: BackendInterface, navigator: Navigator) -> None:
         if not isinstance(client, BackendInterface):
             raise TypeError("client must be an instance of BackendInterface")
         self._client = client
-        self._firmware = firmware
         self._navigator = navigator
 
     def _exchange(self,

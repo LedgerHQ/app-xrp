@@ -23,6 +23,10 @@
 #include "general.h"
 
 void format_field(field_t* field, field_value_t* dst) {
+    if (field == NULL || dst == NULL) {
+        return;
+    }
+
     memset(dst->buf, '\x00', sizeof(dst->buf));
 
     int ret = 0;
@@ -48,10 +52,16 @@ void format_field(field_t* field, field_value_t* dst) {
         case STI_VL:
             blob_formatter(field, dst);
             break;
+        case STI_VECTOR256:
+            vector_formatter256(field, dst);
+            break;
         case STI_ACCOUNT:
             account_formatter(field, dst);
             break;
         case STI_CURRENCY:
+            currency_formatter(field, dst);
+            break;
+        case STI_ISSUE:
             currency_formatter(field, dst);
             break;
         default:

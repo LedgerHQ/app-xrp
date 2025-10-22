@@ -1,0 +1,15 @@
+{
+    "TransactionType": "NFTokenAcceptOffer",
+    "Account": "OWN_ADDR",
+    "Fee": "15",
+    "Flags": 0,
+    "NFTokenSellOffer": "000000003C0E955DFA24367806070434D8BE16A12E410C3B559CFBED00000052",
+    "NFTokenBuyOffer": "000000003C0E955DFA24367806070434D8BE16A12E410C3B559CFBED00000052",
+    "NFTokenBrokerFee": {
+        "currency": "FOO",
+        "issuer": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+        "value": "1"
+    },
+    "Sequence": 3,
+    "SigningPubKey": "OWN_PUBKEY"
+}

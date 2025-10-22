@@ -22,6 +22,7 @@
 #include "idle_menu.h"
 #include "nbgl_page.h"
 #include "nbgl_use_case.h"
+#include "ui.h"
 
 static char full_address[43];
 static action_t approval_action;
@@ -44,7 +45,7 @@ void display_address_confirmation_ui(char* address, action_t on_approve, action_
     strncpy(full_address, address, sizeof(full_address));
     nbgl_useCaseAddressReview((char*) full_address,
                               NULL,
-                              &C_icon_XRP_64px,
+                              &ICON_APP_HOME,
                               "Verify XRP Address",
                               NULL,
                               confirmationChoiceClbk);

@@ -2,7 +2,7 @@
     "TransactionType": "PaymentChannelFund",
     "Account": "OWN_ADDR",
     "Fee": "10",
-    "Flags": 2147483648,
+    "Flags": 0,
     "Sequence": 25,
     "Amount": "10000",
     "Channel": "C1AE6DDDEEC05CF2978C0BAD6FE302948E9533691DC749DCDD3B9E5992CA6198",
