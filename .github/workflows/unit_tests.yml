@@ -10,24 +10,8 @@ on:
 
 jobs:
   job_unit_test:
-    name: Unit tests
-    runs-on: ubuntu-latest
-
-    container:
-      image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder-legacy:latest
-
-    steps:
-      - name: Clone
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: |
-          apt-get install -y libssl-dev libcmocka-dev
-
-      - name: Build unit tests
-        run: |
-          cmake -Btests/build -Htests/ && make -C tests/build/
-
-      - name: Run unit tests
-        run: |
-          make -C tests/build test
+    name: Call Ledger unit_test
+    uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_unit_tests.yml@v1
+    secrets: inherit
+    with:
+      additional_packages: libssl-dev libclang-rt-14-dev
