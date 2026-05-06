@@ -1,0 +1,7 @@
+Transaction Type; Credential Create
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Expiration; 2024-09-05 19:00:00 UTC
+Fee; XRP 0.00001
+URI; https://issuer.example/kyc/123
+Credential Type; 4b5943
+Subject;   rsA2Lpzuawew    SBQXkiju3YQ     TMzW13pAAdW   

@@ -128,6 +128,7 @@ typedef enum {
 #define XRP_VL_CONDITION       0x11
 #define XRP_VL_DID_DOCUMENT    0x1A
 #define XRP_VL_DATA            0x1B
+#define XRP_VL_CREDENTIAL_TYPE 0x1F
 // AccountID
 #define XRP_ACCOUNT_ACCOUNT                    0x01
 #define XRP_ACCOUNT_OWNER                      0x02
@@ -143,6 +144,7 @@ typedef enum {
 #define XRP_ACCOUNT_ATTESTATION_REWARD_ACCOUNT 0x15
 #define XRP_ACCOUNT_LOCKING_CHAIN_DOOR         0x16
 #define XRP_ACCOUNT_ISSUING_CHAIN_DOOR         0x17
+#define XRP_ACCOUNT_SUBJECT                    0x18
 // VECTOR256
 #define XRP_VECTOR256_NF_TOKEN_OFFERS 0x04
 // STOBJECT

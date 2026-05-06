@@ -115,6 +115,9 @@ static const char *testcases[] = {
     "../testcases/28-amm-bid/01-basic.raw",
     "../testcases/28-amm-bid/02-min-max.raw",
     "../testcases/29-amm-vote/01-basic.raw",
+    "../testcases/35-credential-create/01-basic.raw",
+    "../testcases/36-credential-accept/01-basic.raw",
+    "../testcases/37-credential-delete/01-basic.raw",
     NULL,
 };
 

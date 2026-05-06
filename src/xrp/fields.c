@@ -203,6 +203,8 @@ const char *resolve_field_name(field_t *field) {
                 return "Fulfillment";
             case 17:
                 return "Condition";
+            case 31:
+                return "Credential Type";
         }
     }
 
@@ -232,6 +234,8 @@ const char *resolve_field_name(field_t *field) {
                 return "Regular Key";
             case 9:
                 return "NFToken Minter";
+            case 24:
+                return "Subject";
         }
     }
 

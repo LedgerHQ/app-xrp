@@ -1,0 +1,12 @@
+{
+    "TransactionType": "CredentialCreate",
+    "Account": "OWN_ADDR",
+    "Subject": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+    "CredentialType": "4B5943",
+    "URI": "68747470733A2F2F6973737565722E6578616D706C652F6B79632F313233",
+    "Expiration": 778878000,
+    "Fee": "10",
+    "Flags": 0,
+    "Sequence": 9,
+    "SigningPubKey": "OWN_PUBKEY"
+}
