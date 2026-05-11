@@ -6,3 +6,5 @@ tests/build/
 build/
 tests/snapshots-tmp
 venv/
+.venv-load/
+.DS_Store
