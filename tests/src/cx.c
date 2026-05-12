@@ -27,12 +27,11 @@ int cx_ripemd160_init(cx_ripemd160_t *hash) {
 }
 
 int cx_hash_no_throw(cx_hash_t *hash,
-            int mode,
-            const uint8_t *in,
-            size_t len,
-            uint8_t *out,
-            size_t out_len) {
-
+                     int mode,
+                     const uint8_t *in,
+                     size_t len,
+                     uint8_t *out,
+                     size_t out_len) {
     uint32_t digSize = 0;
     EVP_MD_CTX *md_ctx = EVP_MD_CTX_new();
     OSSL_PROVIDER *prov = NULL;
@@ -46,8 +45,8 @@ int cx_hash_no_throw(cx_hash_t *hash,
         assert_true(false);
     }
 
-    EVP_DigestUpdate(md_ctx, (const void*) in, len);
-    EVP_DigestFinal(md_ctx, out, (unsigned int *)&digSize);
+    EVP_DigestUpdate(md_ctx, (const void *) in, len);
+    EVP_DigestFinal(md_ctx, out, (unsigned int *) &digSize);
     EVP_MD_CTX_free(md_ctx);
     if (prov) OSSL_PROVIDER_unload(prov);
 

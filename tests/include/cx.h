@@ -91,11 +91,11 @@ typedef struct cx_ripemd160_s cx_ripemd160_t;
 int cx_sha256_init(cx_sha256_t *hash);
 int cx_ripemd160_init(cx_ripemd160_t *hash);
 int cx_hash_no_throw(cx_hash_t *hash,
-            int mode,
-            const uint8_t *in,
-            size_t len,
-            uint8_t *out,
-            size_t out_len);
+                     int mode,
+                     const uint8_t *in,
+                     size_t len,
+                     uint8_t *out,
+                     size_t out_len);
 
 #define CX_LAST (1 << 0)
 
