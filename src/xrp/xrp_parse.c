@@ -232,6 +232,11 @@ err_t read_vector256_field(parseContext_t *context, field_t *field) {
 err_t read_issue(parseContext_t *context, field_t *field) {
     err_t err;
 
+    if (!has_data(context, 20)) {
+        err.err = EXCEPTION_OVERFLOW;
+        return err;
+    }
+
     if (!is_all_zeros(context->data + context->offset, 20)) {
         CHECK(read_fixed_size_field(context, field, XRP_ISSUE_SIZE));
         field_t *issuer;
