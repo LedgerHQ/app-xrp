@@ -386,8 +386,7 @@ err_t read_field_value(parseContext_t *context, field_t *field) {
             break;
         case STI_UINT32:
             CHECK(read_fixed_size_field(context, field, 4));
-            field->data.u32 = (uint32_t) field->data.ptr[3] |
-                              ((uint32_t) field->data.ptr[2] << 8) |
+            field->data.u32 = (uint32_t) field->data.ptr[3] | ((uint32_t) field->data.ptr[2] << 8) |
                               ((uint32_t) field->data.ptr[1] << 16) |
                               ((uint32_t) field->data.ptr[0] << 24);
             break;

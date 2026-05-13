@@ -13,6 +13,19 @@
 #include <openssl/provider.h>
 #endif
 
+// When built under MemorySanitizer, OpenSSL is usually uninstrumented so MSan
+// can't see that EVP_DigestFinal initializes its output buffer. Unpoison it
+// explicitly to avoid false positives downstream.
+#if defined(__has_feature)
+#if __has_feature(memory_sanitizer)
+#include <sanitizer/msan_interface.h>
+#define MSAN_UNPOISON(p, n) __msan_unpoison((p), (n))
+#endif
+#endif
+#ifndef MSAN_UNPOISON
+#define MSAN_UNPOISON(p, n) ((void) 0)
+#endif
+
 #include "cx.h"
 
 int cx_sha256_init(cx_sha256_t *hash) {
@@ -54,6 +67,9 @@ int cx_hash_no_throw(cx_hash_t *hash,
 
     EVP_DigestUpdate(md_ctx, (const void *) in, len);
     EVP_DigestFinal(md_ctx, out, (unsigned int *) &digSize);
+    MSAN_UNPOISON(out, out_len);  // Manually unpoison output buffer of the OpenSSL digest as it is
+                                  // not instrumented (installed from apt) and MSan can't see that
+                                  // it is initialized by EVP_DigestFinal.
     EVP_MD_CTX_free(md_ctx);
 #if OPENSSL_VERSION_NUMBER >= 0x30000000L
     if (prov) OSSL_PROVIDER_unload(prov);
