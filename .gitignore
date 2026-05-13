@@ -6,3 +6,6 @@ tests/build/
 build/
 tests/snapshots-tmp
 venv/
+unit-tests/build/
+fuzzing/build*/
+fuzzing/crash*
