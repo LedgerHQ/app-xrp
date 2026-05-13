@@ -7,5 +7,6 @@ build/
 tests/snapshots-tmp
 venv/
 unit-tests/build/
+unit-tests/coverage*
 fuzzing/build*/
 fuzzing/crash*
