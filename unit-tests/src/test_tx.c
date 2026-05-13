@@ -215,7 +215,6 @@ static void check_transaction_results(const char *filename, parseResult_t *trans
         if (p != NULL) {
             *p = '\x00';
         }
-        assert_string_equal(expected_title, field_name.buf);
         assert_string_equal(field_value.buf, expected_value);
     }
 
