@@ -88,4 +88,4 @@ add_executable(fuzz_tx
   ../unit-tests/include/os.h
 )
 
-target_link_libraries(fuzz_tx PUBLIC cmocka crypto ssl xrp)
+target_link_libraries(fuzz_tx PUBLIC crypto ssl xrp)

@@ -1,10 +1,10 @@
 #include <setjmp.h>
 #include <stdarg.h>
 #include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 
-#include <cmocka.h>
 #include <openssl/opensslv.h>
 #include <openssl/sha.h>
 #include <openssl/ripemd.h>
@@ -49,7 +49,7 @@ int cx_hash_no_throw(cx_hash_t *hash,
 #endif
         EVP_DigestInit(md_ctx, EVP_ripemd160());
     } else {
-        assert_true(false);
+        abort();
     }
 
     EVP_DigestUpdate(md_ctx, (const void *) in, len);
@@ -60,7 +60,7 @@ int cx_hash_no_throw(cx_hash_t *hash,
 #endif
 
     if (digSize != out_len) {
-        assert_true(false);
+        abort();
     }
 
     return 0;
