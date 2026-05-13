@@ -5,8 +5,12 @@ include(CTest)
 
 set(CMAKE_C_STANDARD 11)
 
-# required for fuzzing
-set(CMAKE_C_COMPILER /usr/bin/clang)
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Debug")
+endif()
+
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -O0 --coverage")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage -lgcov")
 
 enable_testing()
 
@@ -75,7 +79,7 @@ add_executable(test_tx
   include/os.h
 )
 
-add_executable(fuzz_tx
+add_executable(fuzz_tx EXCLUDE_FROM_ALL
   src/fuzz_tx.c
   src/cx.c
   include/bolos_target.h
