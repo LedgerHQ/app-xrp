@@ -51,10 +51,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
     parseResult_t *transaction = &parse_context.result;
     for (int i = 0; i < transaction->num_fields; ++i) {
         field_t *field = &transaction->fields[i];
-        printf("%x\n", field->id);
         update_title(field, &field_name);
         update_value(field, &field_value);
-        printf("%s: %s\n", field_name.buf, field_value.buf);
     }
 
     return 0;
