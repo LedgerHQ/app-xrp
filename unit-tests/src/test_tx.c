@@ -119,18 +119,22 @@ static const char *testcases[] = {
 };
 
 static uint8_t *load_transaction_data(const char *filename, size_t *size) {
-    uint8_t *data;
+    uint8_t *data = NULL;
 
     FILE *f = fopen(filename, "rb");
     assert_non_null(f);
 
-    fseek(f, 0, SEEK_END);
-    long filesize = ftell(f);
-    fseek(f, 0, SEEK_SET);
+    assert_int_equal(fseek(f, 0, SEEK_END), 0);
+    long filesize_long = ftell(f);
+    assert_true(filesize_long >= 0);
+    assert_int_equal(fseek(f, 0, SEEK_SET), 0);
 
-    data = malloc(filesize);
-    assert_non_null(data);
-    assert_int_equal(fread(data, 1, filesize, f), filesize);
+    size_t filesize = (size_t) filesize_long;
+    if (filesize > 0) {
+        data = malloc(filesize);
+        assert_non_null(data);
+        assert_true(fread(data, 1, filesize, f) == filesize);
+    }
     *size = filesize;
     fclose(f);
 
