@@ -1,0 +1,5 @@
+Transaction Type; Credential Accept
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Fee; XRP 0.00001
+Credential Type; 4b5943
+Issuer;   rsA2Lpzuawew    SBQXkiju3YQ     TMzW13pAAdW   
