@@ -28,6 +28,8 @@
 #include "readers.h"
 #include "xrp_helpers.h"
 #include "handle_swap_sign_transaction.h"
+#include "lcx_hash.h"
+#include "crypto_helpers.h"
 #include <string.h>
 
 static action_t approval_action;
@@ -84,6 +86,31 @@ static bool check_field(const field_t *field,
     return ret;
 }
 
+// Verify that the BIP32 path the host is about to sign with derives to the
+// transaction's Account field. Without this, a compromised host can keep
+// destination/tag/amount/fee identical to what Exchange approved while
+// substituting a different source account.
+static bool swap_signer_matches_account(const xrp_account_t *account) {
+    cx_ecfp_public_key_t public_key;
+    public_key.curve = CX_CURVE_256K1;
+    public_key.W_len = 65;
+    if (bip32_derive_get_pubkey_256(CX_CURVE_256K1,
+                                    tmp_ctx.transaction_context.bip32_path,
+                                    tmp_ctx.transaction_context.path_length,
+                                    public_key.W,
+                                    NULL,
+                                    CX_SHA256) != 0) {
+        return false;
+    }
+    xrp_address_t signer_address;
+    get_address(&public_key, &signer_address);
+
+    xrp_address_t account_address;
+    size_t addr_len =
+        xrp_public_key_to_encoded_base58(NULL, (xrp_account_t *) account, &account_address, 0);
+    return strncmp(signer_address.buf, account_address.buf, addr_len) == 0;
+}
+
 /*
 Check that a previously parsed TX has the right shape/content for the app to sign it without user
 approval.
@@ -118,6 +145,9 @@ bool check_swap_conditions_and_sign(parseResult_t *transaction) {
     // "Account" field
     field = &transaction->fields[step_index++];
     if (!check_field(field, STI_ACCOUNT, XRP_ACCOUNT_ACCOUNT, false, 0)) {
+        return false;
+    }
+    if (!swap_signer_matches_account(field->data.account)) {
         return false;
     }
 
