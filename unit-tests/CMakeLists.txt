@@ -79,16 +79,6 @@ add_executable(test_tx
   include/os.h
 )
 
-add_executable(fuzz_tx EXCLUDE_FROM_ALL
-  src/fuzz_tx.c
-  src/cx.c
-  include/bolos_target.h
-  include/cx.h
-  include/os.h
-)
-
-target_compile_options(fuzz_tx PRIVATE -Wall -fsanitize=fuzzer,address -g -ggdb2)
-target_link_libraries(fuzz_tx PRIVATE cmocka crypto ssl xrp -fsanitize=fuzzer,address)
 target_link_libraries(test_printers PRIVATE cmocka crypto ssl xrp)
 target_link_libraries(test_swap PRIVATE cmocka crypto ssl xrp)
 target_link_libraries(test_tx PRIVATE cmocka crypto ssl xrp)
