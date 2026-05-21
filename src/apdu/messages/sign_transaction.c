@@ -188,6 +188,10 @@ void handle_first_packet(uint8_t p1,
         THROW(0x6A80);
     }
 
+    if (data_length < 1) {
+        THROW(0x6A80);
+    }
+
     // Reset old transaction data that might still remain
     reset_transaction_context();
     parse_context.data = tmp_ctx.transaction_context.raw_tx + prefix_length;

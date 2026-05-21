@@ -75,6 +75,10 @@ void handle_get_public_key(uint8_t p1,
                            uint16_t data_length,
                            volatile unsigned int *flags,
                            volatile unsigned int *tx) {
+    if (data_length < 1) {
+        THROW(0x6a80);
+    }
+
     uint8_t bip32_path_length = *(data_buffer++);
     data_length--;
     uint8_t p2_chain = p2 & 0x3Fu;

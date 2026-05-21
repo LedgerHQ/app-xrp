@@ -20,6 +20,11 @@ int handle_check_address(check_address_parameters_t* params) {
         return 0;
     }
 
+    if (params->address_parameters == NULL || params->address_parameters_length < 1) {
+        PRINTF("Invalid address parameters\n");
+        return 0;
+    }
+
     size_t params_length = params->address_parameters_length;
     uint8_t* bip32_path_ptr = params->address_parameters;
     uint8_t bip32_path_length = *(bip32_path_ptr++);
