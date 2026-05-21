@@ -149,8 +149,23 @@ bool is_all_zeros(const uint8_t *data, uint8_t length) {
     return true;
 }
 
+static bool is_standard_currency_code(const uint8_t *currency_data) {
+    for (size_t i = 0; i < 20; i++) {
+        // Check that bytes 12 to 14 are valid ASCII characters.
+        if (i >= 12 && i <= 14) {
+            if (currency_data[i] < 32 || currency_data[i] > 126) {
+                return false;
+            }
+            // Check that all other bytes are 0x00.
+        } else if (currency_data[i] != 0x00) {
+            return false;
+        }
+    }
+    return true;
+}
+
 static bool has_non_standard_currency_internal(const uint8_t *currency_data) {
-    return currency_data[0] != 0x00;
+    return !is_standard_currency_code(currency_data) && !is_all_zeros(currency_data, 20);
 }
 
 bool has_non_standard_currency(field_t *field) {
