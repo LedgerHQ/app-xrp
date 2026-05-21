@@ -26,6 +26,7 @@
 #include "number_helpers.h"
 #include "limitations.h"
 #include "ascii_strings.h"
+#include "fields.h"
 
 #define EXP_MIN      -96
 #define EXP_MAX      80
@@ -150,7 +151,7 @@ bool is_all_zeros(const uint8_t *data, uint8_t length) {
 }
 
 static bool is_standard_currency_code(const uint8_t *currency_data) {
-    for (size_t i = 0; i < 20; i++) {
+    for (size_t i = 0; i < XRP_CURRENCY_SIZE; i++) {
         // Check that bytes 12 to 14 are valid ASCII characters.
         if (i >= 12 && i <= 14) {
             if (currency_data[i] < 32 || currency_data[i] > 126) {
@@ -165,7 +166,8 @@ static bool is_standard_currency_code(const uint8_t *currency_data) {
 }
 
 static bool has_non_standard_currency_internal(const uint8_t *currency_data) {
-    return !is_standard_currency_code(currency_data) && !is_all_zeros(currency_data, 20);
+    return !is_standard_currency_code(currency_data) &&
+           !is_all_zeros(currency_data, XRP_CURRENCY_SIZE);
 }
 
 bool has_non_standard_currency(field_t *field) {
@@ -174,7 +176,7 @@ bool has_non_standard_currency(field_t *field) {
 
 static void format_standard_currency(xrp_currency_t *currency, char *buf, size_t size) {
     if (has_non_standard_currency_internal(currency->buf)) {
-    } else if (is_all_zeros(currency->buf, 20)) {
+    } else if (is_all_zeros(currency->buf, XRP_CURRENCY_SIZE)) {
         // Special case for XRP currency
         strncpy(buf, "XRP", size);
     } else {
@@ -189,7 +191,7 @@ static void format_non_standard_currency(xrp_currency_t *currency, field_value_t
         bool contains_only_ascii = is_purely_ascii(currency->buf, sizeof(currency->buf), true);
         if (contains_only_ascii && currency->buf[sizeof(currency->buf) - 1] == '\x00' &&
             strstr((char *) currency->buf, "XRP")) {
-            memcpy(dst->buf, currency->buf, 20);
+            memcpy(dst->buf, currency->buf, XRP_CURRENCY_SIZE);
         } else {
             read_hex(dst->buf, sizeof(dst->buf), currency->buf, sizeof(currency->buf));
         }
