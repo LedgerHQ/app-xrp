@@ -152,9 +152,16 @@ void xrp_compress_public_key(cx_ecfp_public_key_t *public_key, xrp_pubkey_t *out
 
 bool parse_bip32_path(uint8_t *path,
                       size_t path_length,
+                      size_t path_bytes,
                       uint32_t *path_parsed,
                       size_t path_parsed_length) {
     if ((path_length < 0x01) || (path_length > path_parsed_length)) {
+        return false;
+    }
+
+    // Check that actual byte length of the input path buffer is consistent with the number of
+    // elements specified in the first byte
+    if (path_bytes < path_length * sizeof(uint32_t)) {
         return false;
     }
 

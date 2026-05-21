@@ -9,11 +9,16 @@
 int get_public_key(cx_curve_t curve,
                    uint8_t *bip32_path,
                    size_t bip32_path_length,
+                   size_t bip32_path_bytes,
                    cx_ecfp_public_key_t *pub_key,
                    uint8_t *chain_code) {
     uint32_t bip32_path_parsed[MAX_BIP32_PATH];
 
-    if (!parse_bip32_path(bip32_path, bip32_path_length, bip32_path_parsed, MAX_BIP32_PATH)) {
+    if (!parse_bip32_path(bip32_path,
+                          bip32_path_length,
+                          bip32_path_bytes,
+                          bip32_path_parsed,
+                          MAX_BIP32_PATH)) {
         PRINTF("Invalid path\n");
         return 0x6a80;
     }

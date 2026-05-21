@@ -75,9 +75,8 @@ void handle_get_public_key(uint8_t p1,
                            uint16_t data_length,
                            volatile unsigned int *flags,
                            volatile unsigned int *tx) {
-    UNUSED(data_length);
-
     uint8_t bip32_path_length = *(data_buffer++);
+    data_length--;
     uint8_t p2_chain = p2 & 0x3Fu;
     cx_curve_t curve;
 
@@ -104,6 +103,7 @@ void handle_get_public_key(uint8_t p1,
     error = get_public_key(curve,
                            data_buffer,
                            bip32_path_length,
+                           data_length,
                            &tmp_ctx.public_key_context.public_key,
                            chain_code);
     if (error != 0) {
