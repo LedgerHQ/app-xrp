@@ -126,9 +126,9 @@ const char *resolve_field_name(field_t *field) {
             case 24:
                 return "Check ID";
             case 28:
-                return "NFToken Offer";
+                return "NFToken Buy Offer";
             case 29:
-                return "NFToken Offer";
+                return "NFToken Sell Offer";
         }
     }
 
