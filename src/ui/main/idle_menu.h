@@ -18,3 +18,7 @@
 #pragma once
 
 void display_idle_menu();
+
+#ifdef HAVE_NBGL
+void display_settings_menu();
+#endif

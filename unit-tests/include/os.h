@@ -22,6 +22,7 @@
 #define EXCEPTION_CXPORT      17
 #define EXCEPTION_SYSTEM      18
 #define NOT_ENOUGH_SPACE      19
+#define BLIND_SIGN_REQUIRED   20
 
 #define PRINTF(...)
 

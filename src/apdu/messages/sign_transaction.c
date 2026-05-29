@@ -26,6 +26,7 @@
 #include "idle_menu.h"
 #include "xrp_helpers.h"
 #include "crypto_helpers.h"
+#include "globals.h"
 
 static const uint8_t prefix_length = 4;
 static const uint8_t suffix_length = 20;
@@ -264,7 +265,7 @@ void handle_packet_content(uint8_t p1,
         // Try to parse the transaction. If the parsing fails an exception is thrown,
         // causing the processing to abort and the transaction context to be reset.
         int exception = parse_tx(&parse_context);
-        if (exception) {
+        if (exception && exception != BLIND_SIGN_REQUIRED) {
             THROW(exception);
         }
 
@@ -280,7 +281,8 @@ void handle_packet_content(uint8_t p1,
             memmove(tmp_ctx.transaction_context.raw_tx, sign_prefix, prefix_length);
         }
 
-        review_transaction(&parse_context.result, sign_transaction, reject_transaction);
+        bool blind_sign = (exception == BLIND_SIGN_REQUIRED);
+        review_transaction(&parse_context.result, sign_transaction, reject_transaction, blind_sign);
 
         *flags |= IO_ASYNCH_REPLY;
     }

@@ -27,6 +27,7 @@
 #include "transaction_types.h"
 #include "field_sort.h"
 #include "flags.h"
+#include "globals.h"
 
 #define SUCCESS 0
 #define CHECK(x)                  \
@@ -50,6 +51,46 @@ static bool has_field(parseContext_t *context, field_type_t data_type, uint8_t i
     }
 
     return false;
+}
+
+static bool is_supported_transaction_type(uint16_t t) {
+    switch (t) {
+        case TRANSACTION_PAYMENT:
+        case TRANSACTION_ESCROW_CREATE:
+        case TRANSACTION_ESCROW_FINISH:
+        case TRANSACTION_ACCOUNT_SET:
+        case TRANSACTION_ESCROW_CANCEL:
+        case TRANSACTION_SET_REGULAR_KEY:
+        case TRANSACTION_OFFER_CREATE:
+        case TRANSACTION_OFFER_CANCEL:
+        case TRANSACTION_TICKET_CREATE:
+        case TRANSACTION_TICKET_CANCEL:
+        case TRANSACTION_SIGNER_LIST_SET:
+        case TRANSACTION_PAYMENT_CHANNEL_CREATE:
+        case TRANSACTION_PAYMENT_CHANNEL_FUND:
+        case TRANSACTION_PAYMENT_CHANNEL_CLAIM:
+        case TRANSACTION_CHECK_CREATE:
+        case TRANSACTION_CHECK_CASH:
+        case TRANSACTION_CHECK_CANCEL:
+        case TRANSACTION_DEPOSIT_PREAUTH:
+        case TRANSACTION_TRUST_SET:
+        case TRANSACTION_ACCOUNT_DELETE:
+        case TRANSACTION_NFTOKEN_MINT:
+        case TRANSACTION_NFTOKEN_BURN:
+        case TRANSACTION_NFTOKEN_CREATE_OFFER:
+        case TRANSACTION_NFTOKEN_CANCEL_OFFER:
+        case TRANSACTION_NFTOKEN_ACCEPT_OFFER:
+        case TRANSACTION_CLAWBACK:
+        case TRANSACTION_AMM_CREATE:
+        case TRANSACTION_AMM_DEPOSIT:
+        case TRANSACTION_AMM_WITHDRAW:
+        case TRANSACTION_AMM_VOTE:
+        case TRANSACTION_AMM_BID:
+        case TRANSACTION_AMM_DELETE:
+            return true;
+        default:
+            return false;
+    }
 }
 
 uint8_t *current_position(parseContext_t *context) {
@@ -550,7 +591,20 @@ err_t parse_tx_internal(parseContext_t *context) {
     }
 
     CHECK(post_process_transaction(context));
+
+    if (!has_field(context, STI_UINT16, XRP_UINT16_TRANSACTION_TYPE) ||
+        !has_field(context, STI_ACCOUNT, XRP_ACCOUNT_ACCOUNT)) {
+        err.err = NOT_SUPPORTED;
+        return err;
+    }
+
     sort_fields(&context->result);
+
+    if (context->transaction_type == TRANSACTION_INVALID ||
+        !is_supported_transaction_type(context->transaction_type)) {
+        err.err = BLIND_SIGN_REQUIRED;
+        return err;
+    }
 
     err.err = SUCCESS;
     return err;
