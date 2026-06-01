@@ -118,6 +118,8 @@ static const char *testcases[] = {
     "../../tests/testcases/30-mptokenissuance-create/01-basic.raw",
     "../../tests/testcases/30-mptokenissuance-create/02-flags.raw",
     "../../tests/testcases/30-mptokenissuance-create/03-full-fields.raw",
+    "../../tests/testcases/30-mptokenissuance-create/04-can-lock-flags.raw",
+    "../../tests/testcases/30-mptokenissuance-create/05-domain-id.raw",
     "../../tests/testcases/31-mptokenissuance-destroy/01-basic.raw",
     "../../tests/testcases/32-mptokenissuance-set/01-lock.raw",
     "../../tests/testcases/32-mptokenissuance-set/02-unlock-with-holder.raw",

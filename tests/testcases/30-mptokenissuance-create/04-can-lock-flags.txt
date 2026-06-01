@@ -1,0 +1,4 @@
+Transaction Type; MPT Issuance Create
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Flags; Can Lock, Require Auth, Can Escrow, Can Trade
+Fee; XRP 0.00001
