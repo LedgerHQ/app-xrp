@@ -126,6 +126,7 @@ static const char *testcases[] = {
     "../../tests/testcases/33-mptokenauthorize/01-authorize.raw",
     "../../tests/testcases/33-mptokenauthorize/02-unauthorize.raw",
     "../../tests/testcases/01-payment/19-mpt-amount.raw",
+    "../../tests/testcases/01-payment/20-mpt-amount-zero.raw",
     NULL,
 };
 

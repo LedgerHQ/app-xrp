@@ -48,7 +48,7 @@ typedef enum {
 // Small collection of used field IDs
 
 // UINT8
-#define XRP_UINT8_TICK_SIZE  0x10
+#define XRP_UINT8_TICK_SIZE   0x10
 #define XRP_UINT8_ASSET_SCALE 0x05
 // UINT16
 #define XRP_UINT16_TRANSACTION_TYPE 0x02
@@ -122,21 +122,21 @@ typedef enum {
 #define XRP_UINT64_MIN_ACCOUNT_CREATE_AMOUNT 0x1E
 #define XRP_UINT64_LPTOKEN_BALANCE           0x1F
 // VL (Blob)
-#define XRP_VL_PUBLIC_KEY        0x01
-#define XRP_VL_MESSAGE_KEY       0x02
-#define XRP_VL_SIGNING_PUB_KEY   0x03
-#define XRP_VL_TXN_SIGNATURE     0x04
-#define XRP_VL_URI               0x05
-#define XRP_VL_SIGNATURE         0x06
-#define XRP_VL_DOMAIN            0x07
-#define XRP_VL_MEMO_TYPE         0x0C
-#define XRP_VL_MEMO_DATA         0x0D
-#define XRP_VL_MEMO_FORMAT       0x0E
-#define XRP_VL_FULFILLMENT       0x10
-#define XRP_VL_CONDITION         0x11
-#define XRP_VL_DID_DOCUMENT      0x1A
-#define XRP_VL_DATA              0x1B
-#define XRP_VL_MPTOKEN_METADATA  0x1E
+#define XRP_VL_PUBLIC_KEY       0x01
+#define XRP_VL_MESSAGE_KEY      0x02
+#define XRP_VL_SIGNING_PUB_KEY  0x03
+#define XRP_VL_TXN_SIGNATURE    0x04
+#define XRP_VL_URI              0x05
+#define XRP_VL_SIGNATURE        0x06
+#define XRP_VL_DOMAIN           0x07
+#define XRP_VL_MEMO_TYPE        0x0C
+#define XRP_VL_MEMO_DATA        0x0D
+#define XRP_VL_MEMO_FORMAT      0x0E
+#define XRP_VL_FULFILLMENT      0x10
+#define XRP_VL_CONDITION        0x11
+#define XRP_VL_DID_DOCUMENT     0x1A
+#define XRP_VL_DATA             0x1B
+#define XRP_VL_MPTOKEN_METADATA 0x1E
 // AccountID
 #define XRP_ACCOUNT_ACCOUNT                    0x01
 #define XRP_ACCOUNT_OWNER                      0x02

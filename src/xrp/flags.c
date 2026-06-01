@@ -350,12 +350,12 @@ static void format_amm_withdraw_flags(uint32_t value, field_value_t *dst) {
 
 static void format_mptokenissuance_create_flags(uint32_t value, field_value_t *dst) {
 // MPTokenIssuanceCreate flags
-#define TF_MPT_CAN_LOCK      0x00000002u
-#define TF_MPT_REQUIRE_AUTH  0x00000004u
-#define TF_MPT_CAN_ESCROW    0x00000008u
-#define TF_MPT_CAN_TRADE     0x00000010u
-#define TF_MPT_CAN_TRANSFER  0x00000020u
-#define TF_MPT_CAN_CLAWBACK  0x00000040u
+#define TF_MPT_CAN_LOCK     0x00000002u
+#define TF_MPT_REQUIRE_AUTH 0x00000004u
+#define TF_MPT_CAN_ESCROW   0x00000008u
+#define TF_MPT_CAN_TRADE    0x00000010u
+#define TF_MPT_CAN_TRANSFER 0x00000020u
+#define TF_MPT_CAN_CLAWBACK 0x00000040u
 
     size_t offset = 0;
     if (HAS_FLAG(value, TF_MPT_CAN_LOCK)) {
