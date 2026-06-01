@@ -28,7 +28,6 @@
 #include "limitations.h"
 #include "transaction_types.h"
 #include "percentage.h"
-#include "amount.h"
 
 #define PAGE_W          16
 #define ADDR_DST_OFFSET (PAGE_W * 3 + 2)
@@ -167,9 +166,7 @@ void hash_formatter256(field_t* field, field_value_t* dst) {
 
 void uint64_formatter(field_t* field, field_value_t* dst) {
     uint64_t value = read_unsigned64(field->data.ptr);
-    if (print_uint64_t(dst->buf, sizeof(dst->buf), value) != 0) {
-        strncpy(dst->buf, "Invalid value", sizeof(dst->buf));
-    }
+    snprintf(dst->buf, sizeof(dst->buf), "%llu", (unsigned long long) value);
 }
 
 static bool should_format_blob_as_string(field_t* field) {
