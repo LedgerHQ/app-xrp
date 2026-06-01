@@ -183,7 +183,20 @@ err_t read_amount(parseContext_t *context, field_t *field) {
 
     CHECK(peak_next_byte(context, &first_byte));
     if ((first_byte >> 7u) == 0) {
-        CHECK(read_fixed_size_field(context, field, XRP_AMOUNT_LEN));
+        if ((first_byte & 0x20u) != 0) {
+            // MPT amount: 1 byte flags + 8 bytes value + 4 bytes sequence + 20 bytes issuer
+            CHECK(read_fixed_size_field(context, field, MPT_AMOUNT_LEN));
+
+            // Synthesize a Hash192 field to display the MPTokenIssuanceID (bytes 9-32)
+            field_t *issuance_id;
+            CHECK(append_new_field(context, &issuance_id));
+            issuance_id->data_type = STI_HASH192;
+            issuance_id->id = XRP_HASH192_MPTOKENISSUANCE_ID;
+            issuance_id->data.hash192 = (hash192_t *) (field->data.ptr + 9);
+            issuance_id->length = sizeof(hash192_t);
+        } else {
+            CHECK(read_fixed_size_field(context, field, XRP_AMOUNT_LEN));
+        }
     } else {
         CHECK(read_fixed_size_field(context, field, ISSUED_CURRENCY_LEN));
 
@@ -390,8 +403,14 @@ err_t read_field_value(parseContext_t *context, field_t *field) {
                               ((uint32_t) field->data.ptr[1] << 16) |
                               ((uint32_t) field->data.ptr[0] << 24);
             break;
+        case STI_UINT64:
+            err = read_fixed_size_field(context, field, 8);
+            break;
         case STI_HASH128:
             err = read_fixed_size_field(context, field, sizeof(hash128_t));
+            break;
+        case STI_HASH192:
+            err = read_fixed_size_field(context, field, sizeof(hash192_t));
             break;
         case STI_HASH256:
             err = read_fixed_size_field(context, field, sizeof(hash256_t));

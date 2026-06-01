@@ -1,0 +1,8 @@
+{
+    "TransactionType": "MPTokenAuthorize",
+    "Account": "OWN_ADDR",
+    "Fee": "10",
+    "Flags": 1,
+    "MPTokenIssuanceID": "000000010511E17DB83BB6F113939D67BC8EA539EDC926FC",
+    "SigningPubKey": "OWN_PUBKEY"
+}

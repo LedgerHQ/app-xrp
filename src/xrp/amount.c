@@ -40,6 +40,16 @@ static void normalize(uint64_t *mantissa_param, int16_t *exponent_param) {
 }
 
 static int print_uint64_t(char *dst, uint16_t len, uint64_t value) {
+    if (len < 2) {
+        return -1;
+    }
+
+    if (value == 0) {
+        dst[0] = '0';
+        dst[1] = '\x00';
+        return 0;
+    }
+
     uint16_t num_digits = 0, i;
     uint64_t base = 1;
 
@@ -217,12 +227,28 @@ static int format_issued_currency(uint64_t value, char *buf, size_t size) {
     return parse_decimal_number(p, size, sign, exponent, mantissa);
 }
 
+static int format_mpt_amount(uint8_t *data, field_value_t *dst) {
+    // bytes 1-8: 64-bit amount value (big-endian, MSB must be 0)
+    uint64_t value = read_unsigned64(data + 1);
+    if (print_uint64_t(dst->buf, sizeof(dst->buf), value) != 0) {
+        return -1;
+    }
+    // Append " MPT" label so the user sees this is an MPT (not XRP drops)
+    size_t len = strlen(dst->buf);
+    if (len + 4 < sizeof(dst->buf)) {
+        memcpy(dst->buf + len, " MPT", 5);
+    }
+    return 0;
+}
+
 void amount_formatter(field_t *field, field_value_t *dst) {
     uint64_t value = read_unsigned64(field->data.ptr);
     int error;
 
     if (field->length == XRP_AMOUNT_LEN) {
         error = format_xrp(value, dst);
+    } else if (field->length == MPT_AMOUNT_LEN) {
+        error = format_mpt_amount(field->data.ptr, dst);
     } else if (field->length == ISSUED_CURRENCY_LEN) {
         xrp_currency_t *currency = (xrp_currency_t *) &field->data.ptr[8];
         format_standard_currency(currency, dst->buf, sizeof(dst->buf));

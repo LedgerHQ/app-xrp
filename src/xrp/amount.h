@@ -30,5 +30,6 @@ bool is_all_zeros(const uint8_t* data, uint8_t length);
 
 #define XRP_AMOUNT_LEN      8
 #define ISSUED_CURRENCY_LEN 48
+#define MPT_AMOUNT_LEN      33
 
 #endif  // LEDGER_APP_XRP_AMOUNT_H

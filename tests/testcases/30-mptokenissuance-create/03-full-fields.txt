@@ -1,0 +1,8 @@
+Transaction Type; MPT Issuance Create
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Transfer Fee; 100
+Flags; Can Transfer
+Maximum Amount; 1000000
+Fee; XRP 0.00001
+Token Metadata; 74657374
+Asset Scale; 2

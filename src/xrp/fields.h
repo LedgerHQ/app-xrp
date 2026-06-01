@@ -27,6 +27,7 @@ typedef enum {
     // Normal field types
     STI_UINT16 = 0x01,
     STI_UINT32 = 0x02,
+    STI_UINT64 = 0x03,
     STI_HASH128 = 0x04,
     STI_HASH256 = 0x05,
     STI_AMOUNT = 0x06,
@@ -38,6 +39,7 @@ typedef enum {
     STI_PATHSET = 0x12,
     STI_VECTOR256 = 0x13,
     STI_ISSUE = 0x18,
+    STI_HASH192 = 0x15,
 
     // Custom field types
     STI_CURRENCY = 0xF0,
@@ -46,7 +48,8 @@ typedef enum {
 // Small collection of used field IDs
 
 // UINT8
-#define XRP_UINT8_TICK_SIZE 0x10
+#define XRP_UINT8_TICK_SIZE  0x10
+#define XRP_UINT8_ASSET_SCALE 0x05
 // UINT16
 #define XRP_UINT16_TRANSACTION_TYPE 0x02
 #define XRP_UINT16_SIGNER_WEIGHT    0x03
@@ -93,6 +96,11 @@ typedef enum {
 #define XRP_HASH256_CHECK_ID           0x18
 #define XRP_HASH256_NFTOKEN_BUY_OFFER  0x1C
 #define XRP_HASH256_NFTOKEN_SELL_OFFER 0x1D
+#define XRP_HASH256_DOMAIN_ID          0x22
+// HASH192
+#define XRP_HASH192_MPTOKENISSUANCE_ID 0x01
+// STI_UINT64 (standalone 64-bit integer, type 0x03)
+#define XRP_SFUINT64_MAXIMUM_AMOUNT 0x18  // nth 24
 // AMOUNT
 #define XRP_UINT64_AMOUNT                    0x01
 #define XRP_UINT64_BALANCE                   0x02
@@ -114,20 +122,21 @@ typedef enum {
 #define XRP_UINT64_MIN_ACCOUNT_CREATE_AMOUNT 0x1E
 #define XRP_UINT64_LPTOKEN_BALANCE           0x1F
 // VL (Blob)
-#define XRP_VL_PUBLIC_KEY      0x01
-#define XRP_VL_MESSAGE_KEY     0x02
-#define XRP_VL_SIGNING_PUB_KEY 0x03
-#define XRP_VL_TXN_SIGNATURE   0x04
-#define XRP_VL_URI             0x05
-#define XRP_VL_SIGNATURE       0x06
-#define XRP_VL_DOMAIN          0x07
-#define XRP_VL_MEMO_TYPE       0x0C
-#define XRP_VL_MEMO_DATA       0x0D
-#define XRP_VL_MEMO_FORMAT     0x0E
-#define XRP_VL_FULFILLMENT     0x10
-#define XRP_VL_CONDITION       0x11
-#define XRP_VL_DID_DOCUMENT    0x1A
-#define XRP_VL_DATA            0x1B
+#define XRP_VL_PUBLIC_KEY        0x01
+#define XRP_VL_MESSAGE_KEY       0x02
+#define XRP_VL_SIGNING_PUB_KEY   0x03
+#define XRP_VL_TXN_SIGNATURE     0x04
+#define XRP_VL_URI               0x05
+#define XRP_VL_SIGNATURE         0x06
+#define XRP_VL_DOMAIN            0x07
+#define XRP_VL_MEMO_TYPE         0x0C
+#define XRP_VL_MEMO_DATA         0x0D
+#define XRP_VL_MEMO_FORMAT       0x0E
+#define XRP_VL_FULFILLMENT       0x10
+#define XRP_VL_CONDITION         0x11
+#define XRP_VL_DID_DOCUMENT      0x1A
+#define XRP_VL_DATA              0x1B
+#define XRP_VL_MPTOKEN_METADATA  0x1E
 // AccountID
 #define XRP_ACCOUNT_ACCOUNT                    0x01
 #define XRP_ACCOUNT_OWNER                      0x02
@@ -137,6 +146,7 @@ typedef enum {
 #define XRP_ACCOUNT_UNAUTHORIZE                0x06
 #define XRP_ACCOUNT_REGULAR_KEY                0x08
 #define XRP_ACCOUNT_NFTOKEN_MINTER             0x09
+#define XRP_ACCOUNT_HOLDER                     0x0B
 #define XRP_ACCOUNT_OTHER_CHAIN_SOURCE         0x12
 #define XRP_ACCOUNT_OTHER_CHAIN_DESTINATION    0x13
 #define XRP_ACCOUNT_ATTESTATION_SIGNER_ACCOUNT 0x14
@@ -201,6 +211,10 @@ typedef struct {
 } hash128_t;
 
 typedef struct {
+    uint8_t buf[24];
+} hash192_t;
+
+typedef struct {
     uint8_t buf[32];
 } hash256_t;
 
@@ -213,6 +227,7 @@ typedef struct {
         uint16_t u16;
         uint32_t u32;
         hash128_t *hash128;
+        hash192_t *hash192;
         hash256_t *hash256;
         xrp_account_t *account;
         xrp_currency_t *currency;

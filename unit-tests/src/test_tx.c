@@ -115,6 +115,15 @@ static const char *testcases[] = {
     "../../tests/testcases/28-amm-bid/01-basic.raw",
     "../../tests/testcases/28-amm-bid/02-min-max.raw",
     "../../tests/testcases/29-amm-vote/01-basic.raw",
+    "../../tests/testcases/30-mptokenissuance-create/01-basic.raw",
+    "../../tests/testcases/30-mptokenissuance-create/02-flags.raw",
+    "../../tests/testcases/30-mptokenissuance-create/03-full-fields.raw",
+    "../../tests/testcases/31-mptokenissuance-destroy/01-basic.raw",
+    "../../tests/testcases/32-mptokenissuance-set/01-lock.raw",
+    "../../tests/testcases/32-mptokenissuance-set/02-unlock-with-holder.raw",
+    "../../tests/testcases/33-mptokenauthorize/01-authorize.raw",
+    "../../tests/testcases/33-mptokenauthorize/02-unauthorize.raw",
+    "../../tests/testcases/01-payment/19-mpt-amount.raw",
     NULL,
 };
 

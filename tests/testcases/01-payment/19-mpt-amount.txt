@@ -1,0 +1,6 @@
+Transaction Type; Payment
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Amount; 1000000 MPT
+Issuance ID; 000000010511e17db83bb6f113939d67bc8ea539edc926fc
+Fee; XRP 0.00001
+Destination;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   

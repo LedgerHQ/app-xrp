@@ -1,0 +1,5 @@
+Transaction Type; MPT Issuance Set
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Flags; Lock
+Fee; XRP 0.00001
+Issuance ID; 000000010511e17db83bb6f113939d67bc8ea539edc926fc
