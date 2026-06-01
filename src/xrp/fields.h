@@ -100,7 +100,7 @@ typedef enum {
 // HASH192
 #define XRP_HASH192_MPTOKENISSUANCE_ID 0x01
 // STI_UINT64 (standalone 64-bit integer, type 0x03)
-#define XRP_SFUINT64_MAXIMUM_AMOUNT 0x18  // nth 24
+#define XRP_SFUINT64_MAXIMUM_AMOUNT 0x18
 // AMOUNT
 #define XRP_UINT64_AMOUNT                    0x01
 #define XRP_UINT64_BALANCE                   0x02

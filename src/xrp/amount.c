@@ -39,6 +39,9 @@ static void normalize(uint64_t *mantissa_param, int16_t *exponent_param) {
     }
 }
 
+// len < 2 guard prevents a buffer overrun on tiny buffers. value == 0 is
+// handled explicitly because the loop below produces an empty string for zero
+// (harmless for IOU mantissas, which are never 0, but MPT amounts can be).
 static int print_uint64_t(char *dst, uint16_t len, uint64_t value) {
     if (len < 2) {
         return -1;

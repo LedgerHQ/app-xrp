@@ -3,20 +3,5 @@
         "*.h": "c"
     },
     "C_Cpp.clang_format_path": "/usr/bin/clang-format",
-    "editor.formatOnSave": true,
-    "ledgerDevTools.appSettings": {
-        "selectedDevice": "Nano S Plus",
-        "testsList": [
-            "test_app_configuration",
-            "test_sign_too_large",
-            "test_sign_invalid_tx",
-            "test_path_too_long",
-            "test_get_public_key_no_confirm",
-            "test_get_public_key_confirm",
-            "test_get_public_key_reject",
-            "test_sign_reject",
-            "test_sign_valid_tx"
-        ],
-        "selectedUseCase": "release"
-    }
+    "editor.formatOnSave": true
 }
