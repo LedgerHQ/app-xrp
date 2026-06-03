@@ -5,6 +5,6 @@ Expiration; 2016-12-04 12:59:18 UTC
 Offer Sequence; 4321
 Taker Pays; 8@8 12123
 Issuer;   ruazs5h1qEs     qpke88pcqna     seXdm6od2xc   
-Taker Gets; >.< 234567
+Taker Gets; >?< 234567
 Issuer;   ruazs5h1qEs     qpke88pcqna     seXdm6od2xc   
 Fee; XRP 0.00001

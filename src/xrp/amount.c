@@ -150,17 +150,57 @@ bool is_all_zeros(const uint8_t *data, uint8_t length) {
     return true;
 }
 
+#define XRP_CURRENCY_TICKER_START 12
+#define XRP_CURRENCY_TICKER_END   14
+
+// https://xrpl.org/docs/references/protocol/data-types/currency-formats#standard-currency-codes
+static bool is_valid_ticker_char(uint8_t c) {
+    return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '?' ||
+           c == '!' || c == '@' || c == '#' || c == '$' || c == '%' || c == '^' || c == '&' ||
+           c == '*' || c == '<' || c == '>' || c == '(' || c == ')' || c == '{' || c == '}' ||
+           c == '[' || c == ']' || c == '|';
+}
+
 static bool is_standard_currency_code(const uint8_t *currency_data) {
     for (size_t i = 0; i < XRP_CURRENCY_SIZE; i++) {
-        // Check that bytes 12 to 14 are valid ASCII characters.
-        if (i >= 12 && i <= 14) {
-            if (currency_data[i] < 32 || currency_data[i] > 126) {
+        if (i >= XRP_CURRENCY_TICKER_START && i <= XRP_CURRENCY_TICKER_END) {
+            if (!is_valid_ticker_char(currency_data[i])) {
                 return false;
             }
-            // Check that all other bytes are 0x00.
         } else if (currency_data[i] != 0x00) {
             return false;
         }
+    }
+    // All-uppercase "XRP" is reserved for native XRP (all-zero 20 bytes).
+    if (currency_data[XRP_CURRENCY_TICKER_START] == 'X' &&
+        currency_data[XRP_CURRENCY_TICKER_START + 1] == 'R' &&
+        currency_data[XRP_CURRENCY_TICKER_END] == 'P') {
+        return false;
+    }
+    return true;
+}
+
+// Reject currencies that have standard-code structure (all non-ticker bytes zero,
+// not all-zeros) but use the reserved "XRP" ticker. Any other form — native XRP,
+// valid standard codes, or nonstandard codes — is accepted.
+bool is_valid_currency(const uint8_t *currency_data) {
+    if (is_all_zeros(currency_data, XRP_CURRENCY_SIZE)) {
+        return true;
+    }
+    bool standard_structure = true;
+    for (size_t i = 0; i < XRP_CURRENCY_SIZE; i++) {
+        if (i >= XRP_CURRENCY_TICKER_START && i <= XRP_CURRENCY_TICKER_END) {
+            continue;
+        }
+        if (currency_data[i] != 0x00) {
+            standard_structure = false;
+            break;
+        }
+    }
+    if (standard_structure && currency_data[XRP_CURRENCY_TICKER_START] == 'X' &&
+        currency_data[XRP_CURRENCY_TICKER_START + 1] == 'R' &&
+        currency_data[XRP_CURRENCY_TICKER_END] == 'P') {
+        return false;
     }
     return true;
 }
