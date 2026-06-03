@@ -32,7 +32,9 @@ def test_sign_too_large(backend: BackendInterface, navigator: Navigator):
     payload = DEFAULT_BIP32_PATH + b"a" * (max_size - 4)
     try:
         backend.raise_policy = RaisePolicy.RAISE_ALL_BUT_0x9000
-        xrp.sign(payload)
+        with xrp.sign(payload):
+            pass
+        pytest.fail("Expected SW_WRONG_LENGTH or SW_INTERNAL_3 but exchange succeeded")
     except ExceptionRAPDU as rapdu:
         assert rapdu.status in [Errors.SW_WRONG_LENGTH, Errors.SW_INTERNAL_3]
 
@@ -42,7 +44,9 @@ def test_sign_invalid_tx(backend: BackendInterface, navigator: Navigator):
     payload = DEFAULT_BIP32_PATH + b"a" * (40)
     try:
         backend.raise_policy = RaisePolicy.RAISE_ALL_BUT_0x9000
-        xrp.sign(payload)
+        with xrp.sign(payload):
+            pass
+        pytest.fail("Expected SW_INTERNAL_1 or SW_INTERNAL_2 but exchange succeeded")
     except ExceptionRAPDU as rapdu:
         assert rapdu.status in [Errors.SW_INTERNAL_1, Errors.SW_INTERNAL_2]
 
@@ -52,6 +56,20 @@ def test_path_too_long(backend: BackendInterface, navigator: Navigator):
     path = Bip32Path.build(DEFAULT_PATH + "/0/0/0/0/0/0")
     try:
         xrp.get_pubkey_no_confirm(path)
+        pytest.fail("Expected SW_INVALID_PATH but exchange succeeded")
+    except ExceptionRAPDU as rapdu:
+        assert rapdu.status == Errors.SW_INVALID_PATH
+
+def test_path_buffer_bytes_and_length_consistency(backend: BackendInterface, navigator: Navigator):
+    xrp = XRPClient(backend, navigator)
+    path = Bip32Path.build(DEFAULT_PATH)
+    # Manually construct an APDU with inconsistent path length and byte buffer size
+    # The path length indicates 5 elements, but we only provide bytes for 4 elements
+    payload = path[:-4]  # Remove last 4 bytes to create inconsistency
+    try:
+        backend.raise_policy = RaisePolicy.RAISE_ALL_BUT_0x9000
+        xrp.get_pubkey_no_confirm(path=payload)
+        pytest.fail("Expected SW_INVALID_PATH but exchange succeeded")
     except ExceptionRAPDU as rapdu:
         assert rapdu.status == Errors.SW_INVALID_PATH
 

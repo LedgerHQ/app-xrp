@@ -188,6 +188,10 @@ void handle_first_packet(uint8_t p1,
         THROW(0x6A80);
     }
 
+    if (data_length < 1) {
+        THROW(0x6A80);
+    }
+
     // Reset old transaction data that might still remain
     reset_transaction_context();
     parse_context.data = tmp_ctx.transaction_context.raw_tx + prefix_length;
@@ -197,7 +201,7 @@ void handle_first_packet(uint8_t p1,
 
     work_buffer++;
     data_length--;
-    if (!parse_bip32_path(work_buffer, path_length, path_parsed, MAX_BIP32_PATH)) {
+    if (!parse_bip32_path(work_buffer, path_length, data_length, path_parsed, MAX_BIP32_PATH)) {
         PRINTF("Invalid path\n");
         THROW(0x6a81);
     }

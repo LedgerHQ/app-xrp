@@ -31,10 +31,14 @@ void test_check_address(void **state) {
 
     uint32_t bip32_path_parsed[MAX_BIP32_PATH];
     uint8_t *bip32_path_ptr = params.address_parameters;
+    uint8_t bip32_path_bytes = params.address_parameters_length;
     uint8_t bip32_path_length = *(bip32_path_ptr++);
-    assert_int_equal(
-        parse_bip32_path(bip32_path_ptr, bip32_path_length, bip32_path_parsed, MAX_BIP32_PATH),
-        1);
+    assert_int_equal(parse_bip32_path(bip32_path_ptr,
+                                      bip32_path_length,
+                                      bip32_path_bytes,
+                                      bip32_path_parsed,
+                                      MAX_BIP32_PATH),
+                     1);
 
     xrp_address_t address;
     get_address(&public_key, &address);

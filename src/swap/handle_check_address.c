@@ -20,11 +20,22 @@ int handle_check_address(check_address_parameters_t* params) {
         return 0;
     }
 
+    if (params->address_parameters == NULL || params->address_parameters_length < 1) {
+        PRINTF("Invalid address parameters\n");
+        return 0;
+    }
+
+    size_t params_length = params->address_parameters_length;
     uint8_t* bip32_path_ptr = params->address_parameters;
     uint8_t bip32_path_length = *(bip32_path_ptr++);
+    params_length--;
     cx_ecfp_public_key_t public_key;
-    int error =
-        get_public_key(CX_CURVE_256K1, bip32_path_ptr, bip32_path_length, &public_key, NULL);
+    int error = get_public_key(CX_CURVE_256K1,
+                               bip32_path_ptr,
+                               bip32_path_length,
+                               params_length,
+                               &public_key,
+                               NULL);
     if (error) {
         PRINTF("get_public_key failed\n");
         return 0;
