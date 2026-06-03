@@ -14,7 +14,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  ********************************************************************************/
-#ifdef HAVE_NBGL
 #include <ux.h>
 #include "fmt.h"
 #include "idle_menu.h"
@@ -26,18 +25,35 @@
 
 // Globals
 static field_value_t txFieldValueStrings[MAX_FIELDS_PER_PAGE];
+static field_name_t txFieldNameStrings[MAX_FIELDS_PER_PAGE];
 static nbgl_contentTagValue_t pair;
 static nbgl_contentTagValueList_t pairList;
 static parseResult_t *transaction;
 static resultAction_t approval_menu_callback;
 
+static void build_title(const field_t *field, field_name_t *title) {
+    const char *name = resolve_field_name((field_t *) field);
+    strncpy(title->buf, name, sizeof(title->buf));
+    title->buf[sizeof(title->buf) - 1] = '\0';
+    size_t len = strlen(title->buf);
+    if (field->array_info.type == ARRAY_PATHSET) {
+        snprintf(title->buf + len,
+                 sizeof(title->buf) - len,
+                 " [P%d: S%d]",
+                 field->array_info.index1,
+                 field->array_info.index2);
+    } else if (field->array_info.type != ARRAY_NONE) {
+        snprintf(title->buf + len, sizeof(title->buf) - len, " [%d]", field->array_info.index1);
+    }
+}
+
 // function called by NBGL to get the pair indexed by "index"
 static nbgl_layoutTagValue_t *getPair(uint8_t index) {
     uint8_t arr_idx = index % MAX_FIELDS_PER_PAGE;
     memset(&txFieldValueStrings[arr_idx], 0, sizeof(field_value_t));
-    // Format tag item string.
-    pair.item = (char *) resolve_field_name(&transaction->fields[index]);
-    // Format tag value string.
+    memset(&txFieldNameStrings[arr_idx], 0, sizeof(field_name_t));
+    build_title(&transaction->fields[index], &txFieldNameStrings[arr_idx]);
+    pair.item = txFieldNameStrings[arr_idx].buf;
     format_field(&transaction->fields[index], &txFieldValueStrings[arr_idx]);
     pair.value = txFieldValueStrings[arr_idx].buf;
     PRINTF("Arr idx %d - Tag %d item : %s\nTag %d value : %s\n",
@@ -81,4 +97,3 @@ void display_review_menu(parseResult_t *transaction_param, resultAction_t callba
                        "Sign transaction?",
                        reviewChoice);
 }
-#endif  // HAVE_NBGL
