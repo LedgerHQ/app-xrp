@@ -14,4 +14,4 @@ jobs:
     uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_unit_tests.yml@v1
     secrets: inherit
     with:
-      additional_packages: libssl-dev libclang-rt-21-dev
+      additional_packages: libssl-dev
