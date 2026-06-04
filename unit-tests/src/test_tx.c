@@ -33,6 +33,7 @@ static const char *testcases[] = {
     "../../tests/testcases/01-payment/17-multi-sign-parallel.raw",
     "../../tests/testcases/01-payment/18-multi-sign-serial.raw",
     //"../../tests/testcases/01-payment/19-really-stupid-tx.raw",
+    "../../tests/testcases/01-payment/20-spoofed-xrp-currency.raw",
     "../../tests/testcases/02-set-regular-key/01-basic.raw",
     "../../tests/testcases/02-set-regular-key/02-delete.raw",
     "../../tests/testcases/02-set-regular-key/03-all-common-fields.raw",
@@ -115,6 +116,14 @@ static const char *testcases[] = {
     "../../tests/testcases/28-amm-bid/01-basic.raw",
     "../../tests/testcases/28-amm-bid/02-min-max.raw",
     "../../tests/testcases/29-amm-vote/01-basic.raw",
+    NULL,
+};
+
+// Transactions that must be rejected by the parser (parse_tx returns non-zero).
+static const char *negative_testcases[] = {
+    // Currency with first byte 0x00 and XRP ticker: invalid per spec —
+    // 0x00 prefix is reserved for standard codes and "XRP" is disallowed.
+    "../../tests/testcases/01-payment/22-xrp-reserved-ticker.raw",
     NULL,
 };
 
@@ -251,9 +260,26 @@ void test_transactions(void **state) {
     }
 }
 
+void test_invalid_transactions(void **state) {
+    (void) state;
+
+    for (const char **testcase = negative_testcases; *testcase != NULL; testcase++) {
+        size_t size;
+        uint8_t *data = load_transaction_data(*testcase, &size);
+
+        memset(&parse_context, 0, sizeof(parse_context));
+        parse_context.data = data;
+        parse_context.length = size;
+        assert_int_not_equal(parse_tx(&parse_context), 0);
+
+        free(data);
+    }
+}
+
 int main() {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_transactions),
+        cmocka_unit_test(test_invalid_transactions),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

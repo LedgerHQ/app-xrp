@@ -228,6 +228,11 @@ err_t read_amount(parseContext_t *context, field_t *field) {
     } else {
         CHECK(read_fixed_size_field(context, field, ISSUED_CURRENCY_LEN));
 
+        if (!is_valid_currency(field->data.ptr + 8)) {
+            err.err = INVALID_STATE;
+            return err;
+        }
+
         if (has_non_standard_currency(field)) {
             field_t *currency;
             CHECK(append_new_field(context, &currency));

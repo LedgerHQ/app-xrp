@@ -27,6 +27,7 @@ void currency_formatter(field_t* field, field_value_t* dst);
 
 bool has_non_standard_currency(field_t* field);
 bool is_all_zeros(const uint8_t* data, uint8_t length);
+bool is_valid_currency(const uint8_t* currency_data);
 
 #define XRP_AMOUNT_LEN      8
 #define ISSUED_CURRENCY_LEN 48

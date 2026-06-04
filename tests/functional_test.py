@@ -243,6 +243,8 @@ def test_sign_valid_tx(backend: BackendInterface,
                        raw_tx_path: str):
     if raw_tx_path.endswith("19-really-stupid-tx.raw"):
         pytest.skip(f"skip invalid tx from '{Path(raw_tx_path).stem}'")
+    if raw_tx_path.endswith("22-xrp-reserved-ticker.raw"):
+        pytest.skip(f"skip rejected-currency tx from '{Path(raw_tx_path).stem}'")
 
     xrp = XRPClient(backend, navigator)
 
@@ -265,3 +267,18 @@ def test_sign_valid_tx(backend: BackendInterface,
 
     # Verify signature
     verify_ecdsa_secp256k1(tx, reply.data, raw_tx_path)
+
+
+def test_sign_rejected_currency(backend: BackendInterface, navigator: Navigator):
+    """Currency with standard-code structure but reserved 'XRP' ticker must be rejected."""
+    xrp = XRPClient(backend, navigator)
+
+    tx_path = Path(__file__).parent / "testcases/01-payment/22-xrp-reserved-ticker.raw"
+    with open(tx_path, "rb") as fp:
+        tx = fp.read()
+
+    backend.raise_policy = RaisePolicy.RAISE_ALL_BUT_0x9000
+    with pytest.raises(ExceptionRAPDU) as err:
+        with xrp.sign(DEFAULT_BIP32_PATH + tx):
+            pass  # error is synchronous — returned before yield
+    assert err.value.status != Errors.SW_SUCCESS
