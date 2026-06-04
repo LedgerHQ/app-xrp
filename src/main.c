@@ -22,6 +22,7 @@
 #include "idle_menu.h"
 #include "address_ui.h"
 #include <ux.h>
+#include "globals.h"
 
 #include "swap_lib_calls.h"
 #include "handle_swap_sign_transaction.h"
@@ -32,6 +33,7 @@ unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
 ux_state_t G_ux;
 bolos_ux_params_t G_ux_params;
+const internal_storage_t N_storage_real;
 
 unsigned short io_exchange_al(unsigned char channel, unsigned short tx_len) {
     switch (channel & ~(IO_FLAGS)) {
@@ -62,6 +64,14 @@ void app_main(void) {
     volatile unsigned int rx = 0;
     volatile unsigned int tx = 0;
     volatile unsigned int flags = 0;
+
+    // Initialize the NVM data if required
+    if (N_storage.initialized != 0x01) {
+        internal_storage_t storage;
+        storage.allow_blind_sign = BlindSignDisabled;
+        storage.initialized = 0x01;
+        nvm_write((void *) &N_storage, &storage, sizeof(internal_storage_t));
+    }
 
     // DESIGN NOTE: the bootloader ignores the way APDU are fetched. The only
     // goal is to retrieve APDU.

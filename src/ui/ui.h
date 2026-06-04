@@ -47,11 +47,14 @@
     }
 
 #if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
-#define ICON_APP_HOME C_icon_XRP
+#define ICON_APP_HOME    C_icon_XRP
+#define ICON_APP_WARNING C_icon_warning
 #elif defined(TARGET_STAX) || defined(TARGET_FLEX)
-#define ICON_APP_HOME C_icon_XRP_64px
+#define ICON_APP_HOME    C_icon_XRP_64px
+#define ICON_APP_WARNING LARGE_WARNING_ICON
 #elif defined(TARGET_APEX_P)
-#define ICON_APP_HOME C_icon_XRP_48px
+#define ICON_APP_HOME    C_icon_XRP_48px
+#define ICON_APP_WARNING LARGE_WARNING_ICON
 #endif
 
 #endif  // LEDGER_APP_XRP_UI_H

@@ -30,4 +30,6 @@ void handle_sign(uint8_t p1,
                  uint8_t data_length,
                  volatile unsigned int *flags);
 
+void reject_transaction(void);
+
 #endif  // LEDGER_APP_XRP_SIGNTRANSACTION_H

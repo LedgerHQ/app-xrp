@@ -24,3 +24,4 @@
 #define OPTION_REJECT 1
 
 void display_review_menu(parseResult_t *transaction_param, resultAction_t callback);
+void display_blind_signed_review(parseResult_t *transaction_param, resultAction_t callback);

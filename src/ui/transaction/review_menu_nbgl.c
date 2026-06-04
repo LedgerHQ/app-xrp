@@ -75,12 +75,37 @@ static void reviewChoice(bool confirm) {
     }
 }
 
+void display_blind_signed_review(parseResult_t *transaction_param, resultAction_t callback) {
+    transaction = transaction_param;
+    approval_menu_callback = callback;
+
+    memset(&txFieldValueStrings, 0, sizeof(txFieldValueStrings));
+    memset(&txFieldNameStrings, 0, sizeof(txFieldNameStrings));
+    memset(&pair, 0, sizeof(pair));
+
+    pairList.pairs = NULL;
+    pairList.nbPairs = transaction->num_fields;
+    pairList.nbMaxLinesForValue = 0;
+    pairList.callback = getPair;
+    pairList.startIndex = 0;
+
+    nbgl_useCaseReviewBlindSigning(TYPE_TRANSACTION,
+                                   &pairList,
+                                   &ICON_APP_HOME,
+                                   "Review transaction",
+                                   NULL,
+                                   "Sign transaction?",
+                                   NULL,
+                                   reviewChoice);
+}
+
 void display_review_menu(parseResult_t *transaction_param, resultAction_t callback) {
     transaction = transaction_param;
     approval_menu_callback = callback;
 
     // Reset globals
     memset(&txFieldValueStrings, 0, sizeof(txFieldValueStrings));
+    memset(&txFieldNameStrings, 0, sizeof(txFieldNameStrings));
     memset(&pair, 0, sizeof(pair));
 
     pairList.pairs = NULL;

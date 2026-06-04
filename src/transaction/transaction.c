@@ -21,6 +21,7 @@
 #include "loading.h"
 #endif  // HAVE_BAGL
 #include "global.h"
+#include "globals.h"
 #include "transaction_types.h"
 #include "fields.h"
 #include "amount.h"
@@ -29,6 +30,7 @@
 #include "xrp_helpers.h"
 #include "handle_swap_sign_transaction.h"
 #include <string.h>
+#include "blind_signing.h"
 
 static action_t approval_action;
 static action_t rejection_action;
@@ -174,7 +176,10 @@ bool check_swap_conditions_and_sign(parseResult_t *transaction) {
     return true;
 }
 
-void review_transaction(parseResult_t *transaction, action_t on_approve, action_t on_reject) {
+void review_transaction(parseResult_t *transaction,
+                        action_t on_approve,
+                        action_t on_reject,
+                        bool blind_sign) {
     approval_action = on_approve;
     rejection_action = on_reject;
 
@@ -187,6 +192,14 @@ void review_transaction(parseResult_t *transaction, action_t on_approve, action_
             finalize_exchange_sign_transaction(false);
         }
     } else {
-        display_review_menu(transaction, on_approval_menu_result);
+        if (blind_sign) {
+            if (N_storage.allow_blind_sign == BlindSignDisabled) {
+                ui_error_blind_signing();
+            } else {
+                display_blind_signed_review(transaction, on_approval_menu_result);
+            }
+        } else {
+            display_review_menu(transaction, on_approval_menu_result);
+        }
     }
 }

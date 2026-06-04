@@ -78,6 +78,7 @@ include_directories(
     ../src
     ../src/xrp
     ../src/apdu/messages
+    ../src/apdu
 )
 
 add_executable(fuzz_tx
