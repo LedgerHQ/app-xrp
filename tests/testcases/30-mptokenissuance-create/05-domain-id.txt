@@ -1,0 +1,5 @@
+Transaction Type; MPT Issuance Create
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Flags; Require Auth
+Domain ID; 0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20
+Fee; XRP 0.00001

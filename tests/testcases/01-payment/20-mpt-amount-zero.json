@@ -1,0 +1,12 @@
+{
+    "TransactionType": "Payment",
+    "Account": "OWN_ADDR",
+    "Destination": "rTooLkitCksh5mQa67eaa2JaWHDBnHkpy",
+    "Amount": {
+        "mpt_issuance_id": "000000010511E17DB83BB6F113939D67BC8EA539EDC926FC",
+        "value": "0"
+    },
+    "Fee": "10",
+    "Flags": 0,
+    "SigningPubKey": "OWN_PUBKEY"
+}

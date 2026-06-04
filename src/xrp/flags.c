@@ -348,6 +348,60 @@ static void format_amm_withdraw_flags(uint32_t value, field_value_t *dst) {
     }
 }
 
+static void format_mptokenissuance_create_flags(uint32_t value, field_value_t *dst) {
+// MPTokenIssuanceCreate flags
+#define TF_MPT_CAN_LOCK     0x00000002u
+#define TF_MPT_REQUIRE_AUTH 0x00000004u
+#define TF_MPT_CAN_ESCROW   0x00000008u
+#define TF_MPT_CAN_TRADE    0x00000010u
+#define TF_MPT_CAN_TRANSFER 0x00000020u
+#define TF_MPT_CAN_CLAWBACK 0x00000040u
+
+    size_t offset = 0;
+    if (HAS_FLAG(value, TF_MPT_CAN_LOCK)) {
+        offset = append_item(dst, offset, "Can Lock");
+    }
+    if (HAS_FLAG(value, TF_MPT_REQUIRE_AUTH)) {
+        offset = append_item(dst, offset, "Require Auth");
+    }
+    if (HAS_FLAG(value, TF_MPT_CAN_ESCROW)) {
+        offset = append_item(dst, offset, "Can Escrow");
+    }
+    if (HAS_FLAG(value, TF_MPT_CAN_TRADE)) {
+        offset = append_item(dst, offset, "Can Trade");
+    }
+    if (HAS_FLAG(value, TF_MPT_CAN_TRANSFER)) {
+        offset = append_item(dst, offset, "Can Transfer");
+    }
+    if (HAS_FLAG(value, TF_MPT_CAN_CLAWBACK)) {
+        append_item(dst, offset, "Can Clawback");
+    }
+}
+
+static void format_mptokenissuance_set_flags(uint32_t value, field_value_t *dst) {
+// MPTokenIssuanceSet flags
+#define TF_MPT_LOCK   0x00000001u
+#define TF_MPT_UNLOCK 0x00000002u
+
+    size_t offset = 0;
+    if (HAS_FLAG(value, TF_MPT_LOCK)) {
+        offset = append_item(dst, offset, "Lock");
+    }
+    if (HAS_FLAG(value, TF_MPT_UNLOCK)) {
+        append_item(dst, offset, "Unlock");
+    }
+}
+
+static void format_mptokenauthorize_flags(uint32_t value, field_value_t *dst) {
+// MPTokenAuthorize flags
+#define TF_MPT_UNAUTHORIZE 0x00000001u
+
+    size_t offset = 0;
+    if (HAS_FLAG(value, TF_MPT_UNAUTHORIZE)) {
+        append_item(dst, offset, "Unauthorize");
+    }
+}
+
 void format_flags(field_t *field, field_value_t *dst) {
     uint32_t value = field->data.u32;
     switch (parse_context.transaction_type) {
@@ -377,6 +431,15 @@ void format_flags(field_t *field, field_value_t *dst) {
             break;
         case TRANSACTION_AMM_WITHDRAW:
             format_amm_withdraw_flags(value, dst);
+            break;
+        case TRANSACTION_MPTOKENISSUANCE_CREATE:
+            format_mptokenissuance_create_flags(value, dst);
+            break;
+        case TRANSACTION_MPTOKENISSUANCE_SET:
+            format_mptokenissuance_set_flags(value, dst);
+            break;
+        case TRANSACTION_MPTOKENAUTHORIZE:
+            format_mptokenauthorize_flags(value, dst);
             break;
         default:
             snprintf(dst->buf,

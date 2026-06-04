@@ -104,6 +104,14 @@ static const char* resolve_transaction_name(uint16_t value) {
             return "AMM Bid";
         case TRANSACTION_AMM_DELETE:
             return "AMM Delete";
+        case TRANSACTION_MPTOKENISSUANCE_CREATE:
+            return "MPT Issuance Create";
+        case TRANSACTION_MPTOKENISSUANCE_DESTROY:
+            return "MPT Issuance Destroy";
+        case TRANSACTION_MPTOKENISSUANCE_SET:
+            return "MPT Issuance Set";
+        case TRANSACTION_MPTOKENAUTHORIZE:
+            return "MPToken Authorize";
         default:
             return "Unknown";
     }
@@ -142,11 +150,23 @@ void hash_formatter128(field_t* field, field_value_t* dst) {
              sizeof(field->data.hash128->buf));
 }
 
+void hash_formatter192(field_t* field, field_value_t* dst) {
+    read_hex(dst->buf,
+             sizeof(dst->buf),
+             field->data.hash192->buf,
+             sizeof(field->data.hash192->buf));
+}
+
 void hash_formatter256(field_t* field, field_value_t* dst) {
     read_hex(dst->buf,
              sizeof(dst->buf),
              field->data.hash256->buf,
              sizeof(field->data.hash256->buf));
+}
+
+void uint64_formatter(field_t* field, field_value_t* dst) {
+    uint64_t value = read_unsigned64(field->data.ptr);
+    snprintf(dst->buf, sizeof(dst->buf), "%llu", (unsigned long long) value);
 }
 
 static bool should_format_blob_as_string(field_t* field) {
