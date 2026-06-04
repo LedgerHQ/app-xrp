@@ -7,7 +7,6 @@
 
 #ifdef SCREEN_SIZE_WALLET
 static void ui_error_blind_signing_choice(bool confirm) {
-    reject_transaction();
     if (confirm) {
         display_settings_menu();
     } else {
@@ -16,7 +15,6 @@ static void ui_error_blind_signing_choice(bool confirm) {
 }
 #else
 static void ui_error_blind_signing_ack(void) {
-    reject_transaction();
     display_idle_menu();
 }
 #endif
@@ -35,6 +33,7 @@ int ui_error_blind_signing(void) {
                        NULL,
                        ui_error_blind_signing_ack);
 #endif
+    reject_transaction();
     return 0;
 }
 #endif

@@ -193,16 +193,11 @@ void review_transaction(parseResult_t *transaction,
         }
     } else {
         if (blind_sign) {
-#ifdef HAVE_BAGL
-            display_review_menu(transaction, on_approval_menu_result);
-#endif  // HAVE_BAGL
-#ifdef HAVE_NBGL
             if (N_storage.allow_blind_sign == BlindSignDisabled) {
                 ui_error_blind_signing();
             } else {
                 display_blind_signed_review(transaction, on_approval_menu_result);
             }
-#endif  // HAVE_NBGL
         } else {
             display_review_menu(transaction, on_approval_menu_result);
         }

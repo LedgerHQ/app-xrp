@@ -156,6 +156,14 @@ def _enable_blind_signing(device: Device, navigator: Navigator) -> None:
     _blind_signing_on[0] = True
 
 
+def _check_blind_sign_rejection(backend: BackendInterface, xrp: XRPClient, message: bytes) -> None:
+    backend.raise_policy = RaisePolicy.RAISE_ALL_BUT_0x9000
+    with pytest.raises(ExceptionRAPDU) as e:
+        with xrp.sign(DEFAULT_BIP32_PATH + message):
+            pass  # error APDU sent synchronously from ui_error_blind_signing()
+    assert e.value.status == Errors.SW_WRONG_ADDRESS
+
+
 def test_blind_signing_disabled_go_to_settings(
         backend: BackendInterface, navigator: Navigator,
         test_name: str, default_screenshot_path: Path) -> None:
@@ -166,18 +174,39 @@ def test_blind_signing_disabled_go_to_settings(
     with open(Path(__file__).parent / "testcases/blind-sign/02-unknown-tx-type.raw", "rb") as f:
         message = f.read()
 
-    backend.raise_policy = RaisePolicy.RAISE_ALL_BUT_0x9000
-    with pytest.raises(ExceptionRAPDU) as e:
-        with xrp.sign(DEFAULT_BIP32_PATH + message):
-            navigator.navigate_until_text_and_compare(
-                navigate_instruction=NavInsID.USE_CASE_CHOICE_CONFIRM,
-                validation_instructions=[NavInsID.USE_CASE_SETTINGS_MULTI_PAGE_EXIT],
-                text="^Blind signing$",
-                path=default_screenshot_path,
-                test_case_name=test_name,
-            )
-            print("Blind signing is disabled, user should be prompted to go to settings")
-    assert e.value.status == Errors.SW_WRONG_ADDRESS
+    _check_blind_sign_rejection(backend, xrp, message)
+    navigator.navigate_until_text_and_compare(
+        navigate_instruction=NavInsID.USE_CASE_CHOICE_CONFIRM,
+        validation_instructions=[NavInsID.USE_CASE_SETTINGS_MULTI_PAGE_EXIT],
+        text="^Blind signing$",
+        path=default_screenshot_path,
+        test_case_name=test_name,
+    )
+
+
+def test_blind_signing_disabled_go_to_menu(
+        backend: BackendInterface, navigator: Navigator,
+        test_name: str, default_screenshot_path: Path) -> None:
+    xrp = XRPClient(backend, navigator)
+    with open(Path(__file__).parent / "testcases/blind-sign/02-unknown-tx-type.raw", "rb") as f:
+        message = f.read()
+
+    if backend.device.is_nano:
+        validation_instructions = [NavInsID.BOTH_CLICK]
+        pattern = "Blind signing"
+    else:
+        validation_instructions = [NavInsID.USE_CASE_CHOICE_REJECT]
+        pattern = "Enable blind signing"
+
+    _check_blind_sign_rejection(backend, xrp, message)
+    navigator.navigate_until_text_and_compare(
+        navigate_instruction=NavInsID.USE_CASE_CHOICE_CONFIRM,
+        validation_instructions=validation_instructions,
+        text=pattern,
+        path=default_screenshot_path,
+        test_case_name=test_name,
+    )
+    backend.wait_for_home_screen()
 
 def test_blind_sign_enabled(backend: BackendInterface,
                             device: Device,
