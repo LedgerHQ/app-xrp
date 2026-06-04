@@ -20,7 +20,6 @@
 #include <ux.h>
 #include "address_ui.h"
 #include "idle_menu.h"
-#include "nbgl_page.h"
 #include "nbgl_use_case.h"
 #include "ui.h"
 

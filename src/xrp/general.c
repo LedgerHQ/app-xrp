@@ -154,7 +154,6 @@ static bool should_format_blob_as_string(field_t* field) {
         case XRP_VL_DOMAIN:
         case XRP_VL_MEMO_TYPE:
         case XRP_VL_MEMO_FORMAT:
-            return true;
         case XRP_VL_MEMO_DATA:
         case XRP_VL_URI:
             return is_purely_ascii(field->data.ptr, field->length, false);

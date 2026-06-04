@@ -153,7 +153,7 @@ def test_sign_valid_tx(backend: BackendInterface,
 
     backend.wait_for_home_screen()
     if not device.touchable:
-        text = "^Sign transaction$"
+        text = "^Sign transaction?"
     else:
         text = "^Hold to sign$"
     with xrp.sign(DEFAULT_BIP32_PATH + tx):

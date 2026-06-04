@@ -19,7 +19,7 @@ ifeq ($(BOLOS_SDK),)
 $(error Environment variable BOLOS_SDK is not set)
 endif
 
-include $(BOLOS_SDK)/Makefile.defines
+include $(BOLOS_SDK)/Makefile.target
 
 ########################################
 #        Mandatory configuration       #
@@ -87,6 +87,7 @@ HAVE_APPLICATION_FLAG_LIBRARY = 1
 ########################################
 ENABLE_BLUETOOTH = 1
 #ENABLE_NFC = 1
+ENABLE_NBGL_FOR_NANO_DEVICES = 1
 
 ########################################
 #         NBGL custom features         #
@@ -106,7 +107,7 @@ DISABLE_STANDARD_APP_FILES = 1
 #DISABLE_STANDARD_SNPRINTF = 1
 #DISABLE_STANDARD_USB = 1
 #DISABLE_STANDARD_WEBUSB = 1
-#DISABLE_STANDARD_BAGL_UX_FLOW = 1
+# DISABLE_STANDARD_BAGL_UX_FLOW = 1
 
 ########################################
 #        Main app configuration        #

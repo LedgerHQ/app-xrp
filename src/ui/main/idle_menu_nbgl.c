@@ -14,7 +14,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  ********************************************************************************/
-#ifdef HAVE_NBGL
 #include <os_io_seproxyhal.h>
 #include <ux.h>
 #include "glyphs.h"
@@ -45,4 +44,3 @@ void display_idle_menu() {
                                 NULL,
                                 on_quit_clbk);
 }
-#endif  // HAVE_NBGL
