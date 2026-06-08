@@ -34,6 +34,7 @@ static const char *testcases[] = {
     "../../tests/testcases/01-payment/18-multi-sign-serial.raw",
     //"../../tests/testcases/01-payment/19-really-stupid-tx.raw",
     "../../tests/testcases/01-payment/20-spoofed-xrp-currency.raw",
+    "../../tests/testcases/01-payment/23-xrp-nonstandard-spoof.raw",
     "../../tests/testcases/02-set-regular-key/01-basic.raw",
     "../../tests/testcases/02-set-regular-key/02-delete.raw",
     "../../tests/testcases/02-set-regular-key/03-all-common-fields.raw",

@@ -230,7 +230,7 @@ static void format_non_standard_currency(xrp_currency_t *currency, field_value_t
         // Nonstandard currency code
         bool contains_only_ascii = is_purely_ascii(currency->buf, sizeof(currency->buf), true);
         if (contains_only_ascii && currency->buf[sizeof(currency->buf) - 1] == '\x00' &&
-            strstr((char *) currency->buf, "XRP")) {
+            !strstr((char *) currency->buf, "XRP")) {
             memcpy(dst->buf, currency->buf, XRP_CURRENCY_SIZE);
         } else {
             read_hex(dst->buf, sizeof(dst->buf), currency->buf, sizeof(currency->buf));
