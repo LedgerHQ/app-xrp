@@ -16,18 +16,18 @@
  *  limitations under the License.
  ********************************************************************************/
 
-#include "os_io_seproxyhal.h"
+#include <ux.h>
+
+#include "address_ui.h"
 #include "entry.h"
 #include "global.h"
-#include "idle_menu.h"
-#include "address_ui.h"
-#include <ux.h>
 #include "globals.h"
-
-#include "swap_lib_calls.h"
-#include "handle_swap_sign_transaction.h"
-#include "handle_get_printable_amount.h"
 #include "handle_check_address.h"
+#include "handle_get_printable_amount.h"
+#include "handle_swap_sign_transaction.h"
+#include "idle_menu.h"
+#include "os_io_seproxyhal.h"
+#include "swap_lib_calls.h"
 
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
@@ -40,7 +40,8 @@ unsigned short io_exchange_al(unsigned char channel, unsigned short tx_len) {
         case CHANNEL_KEYBOARD:
             break;
 
-        // multiplexed io exchange over a SPI channel and TLV encapsulated protocol
+        // multiplexed io exchange over a SPI channel and TLV encapsulated
+        // protocol
         case CHANNEL_SPI:
             if (tx_len) {
                 io_seproxyhal_spi_send(G_io_apdu_buffer, tx_len);
@@ -51,7 +52,8 @@ unsigned short io_exchange_al(unsigned char channel, unsigned short tx_len) {
                 return 0;  // nothing received from the master so far (it's a tx
                            // transaction)
             } else {
-                return io_seproxyhal_spi_recv(G_io_apdu_buffer, sizeof(G_io_apdu_buffer), 0);
+                return io_seproxyhal_spi_recv(G_io_apdu_buffer,
+                                              sizeof(G_io_apdu_buffer), 0);
             }
 
         default:
@@ -70,7 +72,7 @@ void app_main(void) {
         internal_storage_t storage;
         storage.allow_blind_sign = BlindSignDisabled;
         storage.initialized = 0x01;
-        nvm_write((void *) &N_storage, &storage, sizeof(internal_storage_t));
+        nvm_write((void*)&N_storage, &storage, sizeof(internal_storage_t));
     }
 
     // DESIGN NOTE: the bootloader ignores the way APDU are fetched. The only
@@ -100,9 +102,7 @@ void app_main(void) {
 
                 handle_apdu(&flags, &tx);
             }
-            CATCH(EXCEPTION_IO_RESET) {
-                THROW(EXCEPTION_IO_RESET);
-            }
+            CATCH(EXCEPTION_IO_RESET) { THROW(EXCEPTION_IO_RESET); }
             CATCH_OTHER(e) {
                 switch (e & 0xF000u) {
                     case 0x6000:
@@ -125,8 +125,7 @@ void app_main(void) {
                 G_io_apdu_buffer[tx + 1] = sw;
                 tx += 2;
             }
-            FINALLY {
-            }
+            FINALLY {}
         }
         END_TRY;
     }
@@ -138,14 +137,13 @@ void handle_seproxyhal_tag_finger_event() {
 
 void handle_seproxyhal_tag_status_event() {
     if (G_io_apdu_media == IO_APDU_MEDIA_USB_HID &&
-        !(U4BE(G_io_seproxyhal_spi_buffer, 3) & SEPROXYHAL_TAG_STATUS_EVENT_FLAG_USB_POWERED)) {
+        !(U4BE(G_io_seproxyhal_spi_buffer, 3) &
+          SEPROXYHAL_TAG_STATUS_EVENT_FLAG_USB_POWERED)) {
         THROW(EXCEPTION_IO_RESET);
     }
 }
 
-void handle_default() {
-    UX_DEFAULT_EVENT();
-}
+void handle_default() { UX_DEFAULT_EVENT(); }
 
 void handle_seproxyhal_tag_ticker_event() {
     UX_TICKER_EVENT(G_io_seproxyhal_spi_buffer, {
@@ -200,11 +198,8 @@ unsigned char io_event(unsigned char channel) {
 
 void app_exit(void) {
     BEGIN_TRY_L(exit) {
-        TRY_L(exit) {
-            os_sched_exit(1);
-        }
-        FINALLY_L(exit) {
-        }
+        TRY_L(exit) { os_sched_exit(1); }
+        FINALLY_L(exit) {}
     }
     END_TRY_L(exit);
 }
@@ -222,7 +217,8 @@ void coin_main() {
 
 #ifdef TARGET_NANOX
                 // grab the current plane mode setting
-                G_io_app.plane_mode = os_setting_get(OS_SETTING_PLANEMODE, NULL, 0);
+                G_io_app.plane_mode =
+                    os_setting_get(OS_SETTING_PLANEMODE, NULL, 0);
 #endif  // TARGET_NANOX
 
                 USB_power(0);
@@ -246,21 +242,21 @@ void coin_main() {
                 CLOSE_TRY;
                 break;
             }
-            FINALLY {
-            }
+            FINALLY {}
         }
         END_TRY;
     }
     app_exit();
 }
 
-static void library_main_helper(libargs_t *args) {
+static void library_main_helper(libargs_t* args) {
     PRINTF("Inside a library \n");
     switch (args->command) {
         case CHECK_ADDRESS:
             // ensure result is zero if an exception is thrown
             args->check_address->result = 0;
-            args->check_address->result = handle_check_address(args->check_address);
+            args->check_address->result =
+                handle_check_address(args->check_address);
             break;
         case SIGN_TRANSACTION:
             if (copy_transaction_parameters(args->create_transaction)) {
@@ -269,8 +265,8 @@ static void library_main_helper(libargs_t *args) {
             }
             break;
         case GET_PRINTABLE_AMOUNT:
-            // ensure result is zero if an exception is thrown (compatibility breaking, disabled
-            // until LL is ready)
+            // ensure result is zero if an exception is thrown (compatibility
+            // breaking, disabled until LL is ready)
             // args->get_printable_amount->result = 0;
             // args->get_printable_amount->result =
             handle_get_printable_amount(args->get_printable_amount);
@@ -280,7 +276,7 @@ static void library_main_helper(libargs_t *args) {
     }
 }
 
-void library_main(libargs_t *args) {
+void library_main(libargs_t* args) {
     bool end = false;
     /* This loop ensures that library_main_helper and os_lib_end are called
      * within a try context, even if an exception is thrown */
@@ -292,9 +288,7 @@ void library_main(libargs_t *args) {
                 }
                 os_lib_end();
             }
-            FINALLY {
-                end = true;
-            }
+            FINALLY { end = true; }
         }
         END_TRY;
     }
@@ -312,7 +306,7 @@ __attribute__((section(".boot"))) int main(int arg0) {
         coin_main();
     } else {
         // Called as library from another app
-        libargs_t *args = (libargs_t *) arg0;
+        libargs_t* args = (libargs_t*)arg0;
         if (args->id == 0x100) {
             library_main(args);
         } else {

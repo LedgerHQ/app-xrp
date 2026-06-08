@@ -21,7 +21,7 @@
 #include <stdbool.h>
 #include "fields.h"
 
-bool is_percentage(field_t* field);
-void format_percentage(field_t* field, field_value_t* dst);
+bool is_percentage(field_t *field);
+void format_percentage(field_t *field, field_value_t *dst);
 
 #endif  // LEDGER_APP_XRP_PERCENTAGE_H

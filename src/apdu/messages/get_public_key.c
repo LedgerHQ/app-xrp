@@ -16,18 +16,19 @@
  *  limitations under the License.
  ********************************************************************************/
 
+#include "get_public_key.h"
+
 #include <os.h>
 #include <string.h>
 
-#include "os_io_usb.h"
-#include "get_public_key.h"
+#include "address_ui.h"
 #include "constants.h"
 #include "global.h"
-#include "xrp_helpers.h"
-#include "xrp_pub_key.h"
-#include "xrp_parse.h"
-#include "address_ui.h"
 #include "idle_menu.h"
+#include "os_io_usb.h"
+#include "xrp_helpers.h"
+#include "xrp_parse.h"
+#include "xrp_pub_key.h"
 
 static bool pubkey_confirmation_pending = false;
 static publicKeyContext_t pending_pubkey_ctx;
@@ -36,14 +37,16 @@ uint32_t set_result_get_public_key() {
     uint32_t tx = 0;
     uint32_t address_length = strlen(tmp_ctx.public_key_context.address.buf);
     G_io_apdu_buffer[tx++] = XRP_PUBKEY_SIZE;
-    xrp_pubkey_t *pubkey = (xrp_pubkey_t *) (G_io_apdu_buffer + tx);
+    xrp_pubkey_t* pubkey = (xrp_pubkey_t*)(G_io_apdu_buffer + tx);
     xrp_compress_public_key(&tmp_ctx.public_key_context.public_key, pubkey);
     tx += XRP_PUBKEY_SIZE;
     G_io_apdu_buffer[tx++] = address_length;
-    memmove(G_io_apdu_buffer + tx, tmp_ctx.public_key_context.address.buf, address_length);
+    memmove(G_io_apdu_buffer + tx, tmp_ctx.public_key_context.address.buf,
+            address_length);
     tx += address_length;
     if (tmp_ctx.public_key_context.get_chaincode) {
-        memmove(G_io_apdu_buffer + tx, tmp_ctx.public_key_context.chain_code, 32);
+        memmove(G_io_apdu_buffer + tx, tmp_ctx.public_key_context.chain_code,
+                32);
         tx += 32;
     }
     return tx;
@@ -51,7 +54,8 @@ uint32_t set_result_get_public_key() {
 
 void on_address_confirmed() {
     pubkey_confirmation_pending = false;
-    memcpy(&tmp_ctx.public_key_context, &pending_pubkey_ctx, sizeof(publicKeyContext_t));
+    memcpy(&tmp_ctx.public_key_context, &pending_pubkey_ctx,
+           sizeof(publicKeyContext_t));
     uint32_t tx = set_result_get_public_key();
     G_io_apdu_buffer[tx++] = 0x90;
     G_io_apdu_buffer[tx++] = 0x00;
@@ -75,12 +79,9 @@ void on_address_rejected() {
 #endif
 }
 
-void handle_get_public_key(uint8_t p1,
-                           uint8_t p2,
-                           uint8_t *data_buffer,
-                           uint16_t data_length,
-                           volatile unsigned int *flags,
-                           volatile unsigned int *tx) {
+void handle_get_public_key(uint8_t p1, uint8_t p2, uint8_t* data_buffer,
+                           uint16_t data_length, volatile unsigned int* flags,
+                           volatile unsigned int* tx) {
     if (data_length < 1) {
         THROW(0x6a80);
     }
@@ -110,16 +111,13 @@ void handle_get_public_key(uint8_t p1,
     curve = (((p2 & P2_ED25519) != 0) ? CX_CURVE_Ed25519 : CX_CURVE_256K1);
     memset(&pending_pubkey_ctx, 0, sizeof(pending_pubkey_ctx));
     pending_pubkey_ctx.get_chaincode = (p2_chain == P2_CHAINCODE);
-    uint8_t *chain_code = pending_pubkey_ctx.get_chaincode ? pending_pubkey_ctx.chain_code : NULL;
+    uint8_t* chain_code =
+        pending_pubkey_ctx.get_chaincode ? pending_pubkey_ctx.chain_code : NULL;
 
     io_seproxyhal_io_heartbeat();
     int error;
-    error = get_public_key(curve,
-                           data_buffer,
-                           bip32_path_length,
-                           data_length,
-                           &pending_pubkey_ctx.public_key,
-                           chain_code);
+    error = get_public_key(curve, data_buffer, bip32_path_length, data_length,
+                           &pending_pubkey_ctx.public_key, chain_code);
     if (error != 0) {
         THROW(error);
     }
@@ -128,7 +126,8 @@ void handle_get_public_key(uint8_t p1,
     get_address(&pending_pubkey_ctx.public_key, &pending_pubkey_ctx.address);
 
     if (p1 == P1_NON_CONFIRM) {
-        memcpy(&tmp_ctx.public_key_context, &pending_pubkey_ctx, sizeof(publicKeyContext_t));
+        memcpy(&tmp_ctx.public_key_context, &pending_pubkey_ctx,
+               sizeof(publicKeyContext_t));
         *tx = set_result_get_public_key();
         THROW(0x9000);
     } else {

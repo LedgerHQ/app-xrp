@@ -16,11 +16,13 @@
  ********************************************************************************/
 #ifdef HAVE_BAGL
 #include "loading.h"
+
 #include <os.h>
 #include <os_io_seproxyhal.h>
-#include <ux.h>
-#include "ui.h"
 #include <string.h>
+#include <ux.h>
+
+#include "ui.h"
 
 /**
  * This file implements a loading screen that can be displayed while performing
@@ -52,19 +54,19 @@
  */
 
 #define STATE_WAITING 0
-#define STATE_READY   1
-#define STATE_DONE    2
+#define STATE_READY 1
+#define STATE_DONE 2
 
 #define UID_DUMMY 1
 static uint8_t loading_state;
 static action_t pending_action;
 static char loading_message[18];
 
-static const bagl_element_t loading_ui[] = {UI_BACKGROUND(),
-                                            UI_SINGLE_TEXT(loading_message),
-                                            UI_DUMMY(UID_DUMMY)};
+static const bagl_element_t loading_ui[] = {
+    UI_BACKGROUND(), UI_SINGLE_TEXT(loading_message), UI_DUMMY(UID_DUMMY)};
 
-static unsigned int loading_ui_button(unsigned int button_mask, unsigned int button_mask_counter) {
+static unsigned int loading_ui_button(unsigned int button_mask,
+                                      unsigned int button_mask_counter) {
     // It is not possible to omit this function
     UNUSED(button_mask);
     UNUSED(button_mask_counter);
@@ -72,7 +74,8 @@ static unsigned int loading_ui_button(unsigned int button_mask, unsigned int but
     return 0;
 }
 
-static const bagl_element_t* loading_ui_button_prepro(const bagl_element_t* element) {
+static const bagl_element_t* loading_ui_button_prepro(
+    const bagl_element_t* element) {
     if (element->component.userid == UID_DUMMY) {
         if (loading_state == STATE_WAITING) {
             loading_state = STATE_READY;
@@ -95,7 +98,8 @@ void execute_async(action_t action_to_load, const char* message) {
     pending_action = action_to_load;
 
     memset(loading_message, 0, sizeof(loading_message));
-    memmove(loading_message, message, MIN(sizeof(loading_message) - 1, strlen(message)));
+    memmove(loading_message, message,
+            MIN(sizeof(loading_message) - 1, strlen(message)));
     UX_DISPLAY(loading_ui, loading_ui_button_prepro)
 }
 #endif  // HAVE_BAGL

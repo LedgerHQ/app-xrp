@@ -1,18 +1,17 @@
+#include <cmocka.h>
 #include <setjmp.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <string.h>
 
-#include <cmocka.h>
-
-#include "cx.h"
-#include "../src/xrp/xrp_parse.h"
 #include "../src/xrp/xrp_helpers.h"
+#include "../src/xrp/xrp_parse.h"
+#include "cx.h"
 
 parseContext_t parse_context;
 
-void test_address(void **state) {
-    (void) state;
+void test_address(void** state) {
+    (void)state;
 
     xrp_address_t address;
 
@@ -31,14 +30,15 @@ void test_address(void **state) {
     assert_string_equal(address.buf, "r3wi8h8ZYuJDm4TwYaAFAwR8ZwnPSiN3CC");
 }
 
-void test_print_amount(void **state) {
-    (void) state;
+void test_print_amount(void** state) {
+    (void)state;
 
     char buf[128];
     assert_int_equal(xrp_print_amount(123456, buf, sizeof(buf)), 0);
     assert_string_equal(buf, "XRP 0.123456");
 
-    assert_int_equal(xrp_print_amount(0xffffffffffffffff, buf, sizeof(buf)), -1);
+    assert_int_equal(xrp_print_amount(0xffffffffffffffff, buf, sizeof(buf)),
+                     -1);
 
     uint64_t amount = 0x8ac7230489e7ffff;
     assert_int_equal(xrp_print_amount(amount, buf, sizeof(buf)), 0);

@@ -16,8 +16,10 @@
  *  limitations under the License.
  ********************************************************************************/
 
-#include <string.h>
 #include "global.h"
+
+#include <string.h>
+
 #include "sign_transaction.h"
 
 tmpCtx_t tmp_ctx;

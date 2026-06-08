@@ -16,10 +16,11 @@
  *  limitations under the License.
  ********************************************************************************/
 
-#include <os.h>
 #include "get_app_configuration.h"
 
-void handle_get_app_configuration(volatile unsigned int *tx) {
+#include <os.h>
+
+void handle_get_app_configuration(volatile unsigned int* tx) {
     G_io_apdu_buffer[0] = 0x00;
     G_io_apdu_buffer[1] = MAJOR_VERSION;
     G_io_apdu_buffer[2] = MINOR_VERSION;

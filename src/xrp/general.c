@@ -16,20 +16,21 @@
  *  limitations under the License.
  ********************************************************************************/
 
+#include "general.h"
+
 #include <string.h>
 
-#include "general.h"
-#include "readers.h"
-#include "fmt.h"
-#include "flags.h"
-#include "xrp_helpers.h"
-#include "time.h"
 #include "ascii_strings.h"
+#include "flags.h"
+#include "fmt.h"
 #include "limitations.h"
-#include "transaction_types.h"
 #include "percentage.h"
+#include "readers.h"
+#include "time.h"
+#include "transaction_types.h"
+#include "xrp_helpers.h"
 
-#define PAGE_W          16
+#define PAGE_W 16
 #define ADDR_DST_OFFSET (PAGE_W * 3 + 2)
 
 void uint8_formatter(field_t* field, field_value_t* dst) {
@@ -136,16 +137,12 @@ void uint32_formatter(field_t* field, field_value_t* dst) {
 }
 
 void hash_formatter128(field_t* field, field_value_t* dst) {
-    read_hex(dst->buf,
-             sizeof(dst->buf),
-             field->data.hash128->buf,
+    read_hex(dst->buf, sizeof(dst->buf), field->data.hash128->buf,
              sizeof(field->data.hash128->buf));
 }
 
 void hash_formatter256(field_t* field, field_value_t* dst) {
-    read_hex(dst->buf,
-             sizeof(dst->buf),
-             field->data.hash256->buf,
+    read_hex(dst->buf, sizeof(dst->buf), field->data.hash256->buf,
              sizeof(field->data.hash256->buf));
 }
 
@@ -172,7 +169,8 @@ void blob_formatter(field_t* field, field_value_t* dst) {
             too_long = true;
         }
     } else {
-        too_long = !read_hex(dst->buf, max_size, field->data.ptr, field->length);
+        too_long =
+            !read_hex(dst->buf, max_size, field->data.ptr, field->length);
     }
     dst->buf[max_size] = '\x00';
 
@@ -194,8 +192,9 @@ void account_formatter(field_t* field, field_value_t* dst) {
 
     // Write full address to dst + ADDR_DST_OFFSET
     xrp_account_t* account = field->data.account;
-    xrp_address_t* address = (xrp_address_t*) (dst->buf + ADDR_DST_OFFSET);
-    uint16_t addr_length = xrp_public_key_to_encoded_base58(NULL, account, address, 0);
+    xrp_address_t* address = (xrp_address_t*)(dst->buf + ADDR_DST_OFFSET);
+    uint16_t addr_length =
+        xrp_public_key_to_encoded_base58(NULL, account, address, 0);
 
     if (DISPLAY_SEGMENTED_ADDR && addr_length <= PAGE_W * 3) {
         // If the application is configured to split addresses on the target
@@ -215,7 +214,7 @@ void account_formatter(field_t* field, field_value_t* dst) {
 
         // 3. Fill all three pages with spaces and copy the every segment
         //    to their corresponding position
-        uint8_t* p = (uint8_t*) address;
+        uint8_t* p = (uint8_t*)address;
         memset(dst->buf, ' ', PAGE_W * 3);
         memmove(dst->buf + PAGE_W * 0 + long_padding, p, long_segment_len);
         p += long_segment_len;
