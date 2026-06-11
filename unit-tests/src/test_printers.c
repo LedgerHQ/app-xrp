@@ -1,7 +1,7 @@
-#include <cmocka.h>
 #include <setjmp.h>
 #include <stdarg.h>
 #include <stddef.h>
+#include <cmocka.h>
 #include <string.h>
 
 #include "../src/xrp/xrp_helpers.h"

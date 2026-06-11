@@ -361,7 +361,7 @@ err_t handle_path_step(parseContext_t* context, field_t* field,
             field->id = XRP_CURRENCY_CURRENCY;
             break;
         default:
-            field->data_type = STI_PATHSET;
+            err.err = INVALID_STATE;
             break;
     }
 
