@@ -22,7 +22,7 @@
 #include "review_menu.h"
 #include "ui.h"
 
-#define MAX_FIELDS_PER_PAGE 5
+#define MAX_FIELDS_PER_PAGE 8
 
 // Globals
 static field_value_t txFieldValueStrings[MAX_FIELDS_PER_PAGE];
