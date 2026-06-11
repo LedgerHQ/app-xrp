@@ -11,5 +11,5 @@
   "Flags": 0,
   "Sequence": 7,
   "SigningPubKey": "OWN_PUBKEY",
-  "_comment": "Non-standard currency code with bytes 0-2 = 'XRP' (0x58, 0x52, 0x50) and bytes 3-19 = 0x00. First byte is 0x58 (not 0x00) so it is non-standard. Before fix: format_non_standard_currency() strstr('XRP') branch copied bytes to UI buffer, displaying as 'XRP' (spoofing native XRP). After fix: is_valid_currency() rejects it at parse time; format_non_standard_currency() also negated strstr guard as defense in depth."
+  "_comment": "Non-standard currency code with bytes 0-2 = 'XRP' (0x58, 0x52, 0x50) and bytes 3-19 = 0x00. First byte is 0x58 (not 0x00) so it is non-standard. Before fix: format_non_standard_currency() strstr('XRP') branch copied bytes to UI buffer, displaying as 'XRP' (spoofing native XRP). After fix; ticker is not formatted and full currency code is displayed as hex string."
 }

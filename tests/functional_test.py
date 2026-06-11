@@ -245,6 +245,8 @@ def test_sign_valid_tx(backend: BackendInterface,
         pytest.skip(f"skip invalid tx from '{Path(raw_tx_path).stem}'")
     if raw_tx_path.endswith("22-xrp-reserved-ticker.raw"):
         pytest.skip(f"skip rejected-currency tx from '{Path(raw_tx_path).stem}'")
+    if raw_tx_path.endswith("24-invalid-path-step-type.raw"):
+        pytest.skip(f"skip invalid-path-step tx from '{Path(raw_tx_path).stem}'")
 
     xrp = XRPClient(backend, navigator)
 
@@ -274,6 +276,22 @@ def test_sign_rejected_currency(backend: BackendInterface, navigator: Navigator)
     xrp = XRPClient(backend, navigator)
 
     tx_path = Path(__file__).parent / "testcases/01-payment/22-xrp-reserved-ticker.raw"
+    with open(tx_path, "rb") as fp:
+        tx = fp.read()
+
+    backend.raise_policy = RaisePolicy.RAISE_ALL_BUT_0x9000
+    with pytest.raises(ExceptionRAPDU) as err:
+        with xrp.sign(DEFAULT_BIP32_PATH + tx):
+            pass  # error is synchronous — returned before yield
+    assert err.value.status != Errors.SW_SUCCESS
+
+
+def test_sign_invalid_path_step_type(backend: BackendInterface, navigator: Navigator):
+    """Composite path step type 0x11 (account|currency bitmask) is forbidden by the XRPL
+    spec; only 0x01, 0x10, 0x20, 0x30 are valid. The parser must reject it."""
+    xrp = XRPClient(backend, navigator)
+
+    tx_path = Path(__file__).parent / "testcases/01-payment/24-invalid-path-step-type.raw"
     with open(tx_path, "rb") as fp:
         tx = fp.read()
 

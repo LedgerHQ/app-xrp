@@ -124,6 +124,9 @@ static const char* negative_testcases[] = {
     // Currency with first byte 0x00 and XRP ticker: invalid per spec —
     // 0x00 prefix is reserved for standard codes and "XRP" is disallowed.
     "../../tests/testcases/01-payment/22-xrp-reserved-ticker.raw",
+    // Composite path step type 0x11 (account|currency bitmask) is explicitly
+    // forbidden by the XRPL spec; only 0x01, 0x10, 0x20, 0x30 are valid.
+    "../../tests/testcases/01-payment/24-invalid-path-step-type.raw",
     NULL,
 };
 
