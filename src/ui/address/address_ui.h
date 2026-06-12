@@ -19,4 +19,4 @@
 
 #pragma once
 
-void display_address_confirmation_ui(char* address, action_t on_approve, action_t on_reject);
+void display_address_confirmation_ui(char *address, action_t on_approve, action_t on_reject);

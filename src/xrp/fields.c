@@ -15,21 +15,24 @@
  *  limitations under the License.
  ********************************************************************************/
 
+#include "fields.h"
+
 #include <string.h>
 
-#include "fields.h"
-#include "flags.h"
 #include "common.h"
+#include "flags.h"
 
-#define HIDE(t, i) \
-    if (field->data_type == (t) && field->id == (i) && field->array_info.type == 0) return true
+#define HIDE(t, i)                                     \
+    if (field->data_type == (t) && field->id == (i) && \
+        field->array_info.type == 0)                   \
+    return true
 
-bool is_normal_account_field(field_t *field) {
-    return field->data_type == STI_ACCOUNT && field->id == XRP_ACCOUNT_ACCOUNT &&
-           field->array_info.type == 0;
+bool is_normal_account_field(field_t* field) {
+    return field->data_type == STI_ACCOUNT &&
+           field->id == XRP_ACCOUNT_ACCOUNT && field->array_info.type == 0;
 }
 
-const char *resolve_field_name(field_t *field) {
+const char* resolve_field_name(field_t* field) {
     if (field->data_type == STI_UINT16) {
         switch (field->id) {
             case 2:
@@ -304,14 +307,15 @@ const char *resolve_field_name(field_t *field) {
     return "Unknown";
 }
 
-bool is_field_hidden(field_t *field) {
+bool is_field_hidden(field_t* field) {
     HIDE(STI_UINT32, XRP_UINT32_SEQUENCE);
     HIDE(STI_UINT32, XRP_UINT32_LAST_LEDGER_SEQUENCE);
     HIDE(STI_VL, XRP_VL_SIGNING_PUB_KEY);
 
     if (field->data_type == STI_ARRAY || field->data_type == STI_OBJECT ||
         field->data_type == STI_PATHSET) {
-        // Field is only used to instruct parsing code how to handle following fields: don't show
+        // Field is only used to instruct parsing code how to handle following
+        // fields: don't show
         return true;
     }
 

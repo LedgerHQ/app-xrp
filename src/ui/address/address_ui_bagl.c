@@ -18,6 +18,7 @@
 #include <os_io_seproxyhal.h>
 #include <string.h>
 #include <ux.h>
+
 #include "address_ui.h"
 #include "ui.h"
 
@@ -59,13 +60,12 @@ UX_STEP_CB(
         });
 // clang-format on
 
-UX_FLOW(ux_display_address_flow,
-        &ux_display_address_flow_1_step,
-        &ux_display_address_flow_2_step,
-        &ux_display_address_flow_3_step,
+UX_FLOW(ux_display_address_flow, &ux_display_address_flow_1_step,
+        &ux_display_address_flow_2_step, &ux_display_address_flow_3_step,
         &ux_display_address_flow_4_step);
 
-void display_address_confirmation_ui(char* address, action_t on_approve, action_t on_reject) {
+void display_address_confirmation_ui(char* address, action_t on_approve,
+                                     action_t on_reject) {
     approval_action = on_approve;
     rejection_action = on_reject;
     memset(full_address, 0, sizeof(full_address));

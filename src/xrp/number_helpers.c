@@ -22,5 +22,5 @@ char int_to_number_char(uint64_t value) {
         return '?';
     }
 
-    return (char) ('0' + value);
+    return (char)('0' + value);
 }

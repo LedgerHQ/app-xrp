@@ -16,21 +16,23 @@
  ********************************************************************************/
 
 #include "transaction.h"
+
 #include "review_menu.h"
 #ifdef HAVE_BAGL
 #include "loading.h"
 #endif  // HAVE_BAGL
+#include <string.h>
+
+#include "amount.h"
+#include "blind_signing.h"
+#include "fields.h"
+#include "fmt.h"
 #include "global.h"
 #include "globals.h"
-#include "transaction_types.h"
-#include "fields.h"
-#include "amount.h"
-#include "fmt.h"
-#include "readers.h"
-#include "xrp_helpers.h"
 #include "handle_swap_sign_transaction.h"
-#include <string.h>
-#include "blind_signing.h"
+#include "readers.h"
+#include "transaction_types.h"
+#include "xrp_helpers.h"
 
 static action_t approval_action;
 static action_t rejection_action;
@@ -54,11 +56,8 @@ void on_approval_menu_result(unsigned int result) {
     }
 }
 
-static bool check_field(const field_t *field,
-                        field_type_t data_type,
-                        uint8_t id,
-                        bool compare_value,
-                        uint64_t value) {
+static bool check_field(const field_t* field, field_type_t data_type,
+                        uint8_t id, bool compare_value, uint64_t value) {
     if (field->data_type != data_type || field->id != id) {
         return false;
     }
@@ -70,13 +69,14 @@ static bool check_field(const field_t *field,
     bool ret;
     switch (data_type) {
         case STI_UINT16:
-            ret = (field->data.u16 == (uint16_t) value);
+            ret = (field->data.u16 == (uint16_t)value);
             break;
         case STI_UINT32:
-            ret = (field->data.u32 == (uint32_t) value);
+            ret = (field->data.u32 == (uint32_t)value);
             break;
         case STI_AMOUNT:
-            ret = (field->length == XRP_AMOUNT_LEN && read_unsigned64(field->data.ptr) == value);
+            ret = (field->length == XRP_AMOUNT_LEN &&
+                   read_unsigned64(field->data.ptr) == value);
             break;
         default:
             ret = false;
@@ -87,9 +87,9 @@ static bool check_field(const field_t *field,
 }
 
 /*
-Check that a previously parsed TX has the right shape/content for the app to sign it without user
-approval.
-Example of such a swappable TX (as it would be displayed with the approval flow):
+Check that a previously parsed TX has the right shape/content for the app to
+sign it without user approval. Example of such a swappable TX (as it would be
+displayed with the approval flow):
 {
     "TransactionType" : "Payment",
     "Account" : "ra7Zr8ddy9tB88RaXL8B87YkqhEJG2vkAJ",
@@ -99,7 +99,7 @@ Example of such a swappable TX (as it would be displayed with the approval flow)
     "Destination" : "rhBuYom8agWA4s7DFoM7AvsDA9XGkVCJz4"
 }
  */
-bool check_swap_conditions_and_sign(parseResult_t *transaction) {
+bool check_swap_conditions_and_sign(parseResult_t* transaction) {
     if (!called_from_swap) {
         PRINTF("Not called from swap!\n");
         return false;
@@ -111,9 +111,10 @@ bool check_swap_conditions_and_sign(parseResult_t *transaction) {
     }
 
     size_t step_index = 0;
-    field_t *field = &transaction->fields[step_index++];
+    field_t* field = &transaction->fields[step_index++];
     // "Transaction Type" field
-    if (!check_field(field, STI_UINT16, XRP_UINT16_TRANSACTION_TYPE, true, TRANSACTION_PAYMENT)) {
+    if (!check_field(field, STI_UINT16, XRP_UINT16_TRANSACTION_TYPE, true,
+                     TRANSACTION_PAYMENT)) {
         return false;
     }
 
@@ -129,7 +130,8 @@ bool check_swap_conditions_and_sign(parseResult_t *transaction) {
         return false;
     }
 
-    snprintf(approval_strings.swap.tmp, sizeof(approval_strings.swap.tmp), "%u", field->data.u32);
+    snprintf(approval_strings.swap.tmp, sizeof(approval_strings.swap.tmp), "%u",
+             field->data.u32);
     if (strncmp(approval_strings.swap.tmp,
                 approval_strings.swap.destination_tag,
                 sizeof(approval_strings.swap.destination_tag)) != 0) {
@@ -165,9 +167,11 @@ bool check_swap_conditions_and_sign(parseResult_t *transaction) {
 
     // "Destination" field
     xrp_address_t destination;
-    xrp_account_t *account = (xrp_account_t *) field->data.account;
-    size_t addr_length = xrp_public_key_to_encoded_base58(NULL, account, &destination, 0);
-    if (strncmp(destination.buf, approval_strings.swap.address, addr_length) != 0) {
+    xrp_account_t* account = (xrp_account_t*)field->data.account;
+    size_t addr_length =
+        xrp_public_key_to_encoded_base58(NULL, account, &destination, 0);
+    if (strncmp(destination.buf, approval_strings.swap.address, addr_length) !=
+        0) {
         return false;
     }
 
@@ -176,10 +180,8 @@ bool check_swap_conditions_and_sign(parseResult_t *transaction) {
     return true;
 }
 
-void review_transaction(parseResult_t *transaction,
-                        action_t on_approve,
-                        action_t on_reject,
-                        bool blind_sign) {
+void review_transaction(parseResult_t* transaction, action_t on_approve,
+                        action_t on_reject, bool blind_sign) {
     approval_action = on_approve;
     rejection_action = on_reject;
 
@@ -196,7 +198,8 @@ void review_transaction(parseResult_t *transaction,
             if (N_storage.allow_blind_sign == BlindSignDisabled) {
                 ui_error_blind_signing();
             } else {
-                display_blind_signed_review(transaction, on_approval_menu_result);
+                display_blind_signed_review(transaction,
+                                            on_approval_menu_result);
             }
         } else {
             display_review_menu(transaction, on_approval_menu_result);

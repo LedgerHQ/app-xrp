@@ -2,18 +2,17 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <cmocka.h>
 #include <string.h>
 
-#include <cmocka.h>
-
-#include "cx.h"
-#include "../src/xrp/xrp_parse.h"
-#include "../src/xrp/xrp_helpers.h"
 #include "../src/xrp/fmt.h"
+#include "../src/xrp/xrp_helpers.h"
+#include "../src/xrp/xrp_parse.h"
+#include "cx.h"
 
 parseContext_t parse_context;
 
-static const char *testcases[] = {
+static const char* testcases[] = {
     "../../tests/testcases/01-payment/01-basic.raw",
     "../../tests/testcases/01-payment/02-destination-tag.raw",
     "../../tests/testcases/01-payment/03-source-tag.raw",
@@ -34,6 +33,7 @@ static const char *testcases[] = {
     "../../tests/testcases/01-payment/18-multi-sign-serial.raw",
     //"../../tests/testcases/01-payment/19-really-stupid-tx.raw",
     "../../tests/testcases/01-payment/20-spoofed-xrp-currency.raw",
+    "../../tests/testcases/01-payment/23-xrp-nonstandard-spoof.raw",
     "../../tests/testcases/02-set-regular-key/01-basic.raw",
     "../../tests/testcases/02-set-regular-key/02-delete.raw",
     "../../tests/testcases/02-set-regular-key/03-all-common-fields.raw",
@@ -120,17 +120,20 @@ static const char *testcases[] = {
 };
 
 // Transactions that must be rejected by the parser (parse_tx returns non-zero).
-static const char *negative_testcases[] = {
+static const char* negative_testcases[] = {
     // Currency with first byte 0x00 and XRP ticker: invalid per spec —
     // 0x00 prefix is reserved for standard codes and "XRP" is disallowed.
     "../../tests/testcases/01-payment/22-xrp-reserved-ticker.raw",
+    // Composite path step type 0x11 (account|currency bitmask) is explicitly
+    // forbidden by the XRPL spec; only 0x01, 0x10, 0x20, 0x30 are valid.
+    "../../tests/testcases/01-payment/24-invalid-path-step-type.raw",
     NULL,
 };
 
-static uint8_t *load_transaction_data(const char *filename, size_t *size) {
-    uint8_t *data = NULL;
+static uint8_t* load_transaction_data(const char* filename, size_t* size) {
+    uint8_t* data = NULL;
 
-    FILE *f = fopen(filename, "rb");
+    FILE* f = fopen(filename, "rb");
     assert_non_null(f);
 
     assert_int_equal(fseek(f, 0, SEEK_END), 0);
@@ -138,7 +141,7 @@ static uint8_t *load_transaction_data(const char *filename, size_t *size) {
     assert_true(filesize_long >= 0);
     assert_int_equal(fseek(f, 0, SEEK_SET), 0);
 
-    size_t filesize = (size_t) filesize_long;
+    size_t filesize = (size_t)filesize_long;
     if (filesize > 0) {
         data = malloc(filesize);
         assert_non_null(data);
@@ -150,44 +153,43 @@ static uint8_t *load_transaction_data(const char *filename, size_t *size) {
     return data;
 }
 
-static void update_title(field_t *field, field_name_t *title) {
-    const char *name = resolve_field_name(field);
+static void update_title(field_t* field, field_name_t* title) {
+    const char* name = resolve_field_name(field);
     strncpy(title->buf, name, sizeof(title->buf));
     title->buf[sizeof(title->buf) - 1] = '\x00';
 
     size_t len = strlen(title->buf);
     if (field->array_info.type == ARRAY_PATHSET) {
-        snprintf(title->buf + len,
-                 sizeof(title->buf) - len,
-                 " [P%d: S%d]",
-                 field->array_info.index1,
-                 field->array_info.index2);
+        snprintf(title->buf + len, sizeof(title->buf) - len, " [P%d: S%d]",
+                 field->array_info.index1, field->array_info.index2);
     } else if (field->array_info.type != ARRAY_NONE) {
-        snprintf(title->buf + len, sizeof(title->buf) - len, " [%d]", field->array_info.index1);
+        snprintf(title->buf + len, sizeof(title->buf) - len, " [%d]",
+                 field->array_info.index1);
     }
 }
 
-static void update_value(field_t *field, field_value_t *value) {
+static void update_value(field_t* field, field_value_t* value) {
     format_field(field, value);
 }
 
-static void get_result_filename(const char *filename, char *path, size_t size) {
+static void get_result_filename(const char* filename, char* path, size_t size) {
     strncpy(path, filename, size);
 
-    char *ext = strstr(path, ".raw");
+    char* ext = strstr(path, ".raw");
     assert_non_null(ext);
     memcpy(ext, ".txt", 4);
 }
 
-static void generate_expected_result(const char *filename, parseResult_t *transaction) {
+static void generate_expected_result(const char* filename,
+                                     parseResult_t* transaction) {
     char path[1024];
     get_result_filename(filename, path, sizeof(path));
 
-    FILE *fp = fopen(path, "w");
+    FILE* fp = fopen(path, "w");
     assert_non_null(fp);
 
     for (int i = 0; i < transaction->num_fields; ++i) {
-        field_t *field = &transaction->fields[i];
+        field_t* field = &transaction->fields[i];
         field_name_t field_name;
         field_value_t field_value;
         update_title(field, &field_name);
@@ -198,16 +200,17 @@ static void generate_expected_result(const char *filename, parseResult_t *transa
     fclose(fp);
 }
 
-static void check_transaction_results(const char *filename, parseResult_t *transaction) {
+static void check_transaction_results(const char* filename,
+                                      parseResult_t* transaction) {
     printf("[*] %s\n", filename);
     char path[1024];
     get_result_filename(filename, path, sizeof(path));
 
-    FILE *fp = fopen(path, "r");
+    FILE* fp = fopen(path, "r");
     assert_non_null(fp);
 
     for (int i = 0; i < transaction->num_fields; ++i) {
-        field_t *field = &transaction->fields[i];
+        field_t* field = &transaction->fields[i];
         field_name_t field_name;
         field_value_t field_value;
         update_title(field, &field_name);
@@ -216,15 +219,15 @@ static void check_transaction_results(const char *filename, parseResult_t *trans
         char line[4096];
         assert_non_null(fgets(line, sizeof(line), fp));
 
-        char *expected_title = line;
-        char *expected_value = strstr(line, "; ");
+        char* expected_title = line;
+        char* expected_value = strstr(line, "; ");
         assert_non_null(expected_value);
 
         *expected_value = '\x00';
         assert_string_equal(expected_title, field_name.buf);
 
         expected_value += 2;
-        char *p = strchr(expected_value, '\n');
+        char* p = strchr(expected_value, '\n');
         if (p != NULL) {
             *p = '\x00';
         }
@@ -234,16 +237,16 @@ static void check_transaction_results(const char *filename, parseResult_t *trans
     fclose(fp);
 }
 
-static void test_tx(const char *filename) {
+static void test_tx(const char* filename) {
     size_t size;
-    uint8_t *data = load_transaction_data(filename, &size);
+    uint8_t* data = load_transaction_data(filename, &size);
 
     memset(&parse_context, 0, sizeof(parse_context));
     parse_context.data = data;
     parse_context.length = size;
     assert_int_equal(parse_tx(&parse_context), 0);
 
-    parseResult_t *transaction = &parse_context.result;
+    parseResult_t* transaction = &parse_context.result;
     if (false) {
         generate_expected_result(filename, transaction);
     }
@@ -252,20 +255,21 @@ static void test_tx(const char *filename) {
     free(data);
 }
 
-void test_transactions(void **state) {
-    (void) state;
+void test_transactions(void** state) {
+    (void)state;
 
-    for (const char **testcase = testcases; *testcase != NULL; testcase++) {
+    for (const char** testcase = testcases; *testcase != NULL; testcase++) {
         test_tx(*testcase);
     }
 }
 
-void test_invalid_transactions(void **state) {
-    (void) state;
+void test_invalid_transactions(void** state) {
+    (void)state;
 
-    for (const char **testcase = negative_testcases; *testcase != NULL; testcase++) {
+    for (const char** testcase = negative_testcases; *testcase != NULL;
+         testcase++) {
         size_t size;
-        uint8_t *data = load_transaction_data(*testcase, &size);
+        uint8_t* data = load_transaction_data(*testcase, &size);
 
         memset(&parse_context, 0, sizeof(parse_context));
         parse_context.data = data;

@@ -16,9 +16,10 @@
  *  limitations under the License.
  ********************************************************************************/
 
+#include "fmt.h"
+
 #include <string.h>
 
-#include "fmt.h"
 #include "amount.h"
 #include "general.h"
 

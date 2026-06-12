@@ -16,17 +16,19 @@
  *  limitations under the License.
  ********************************************************************************/
 
-#include <os.h>
-#include <string.h>
-#include <os_io_usb.h>
 #include "sign_transaction.h"
+
+#include <os.h>
+#include <os_io_usb.h>
+#include <string.h>
+
 #include "constants.h"
-#include "global.h"
-#include "transaction.h"
-#include "idle_menu.h"
-#include "xrp_helpers.h"
 #include "crypto_helpers.h"
+#include "global.h"
 #include "globals.h"
+#include "idle_menu.h"
+#include "transaction.h"
+#include "xrp_helpers.h"
 
 static const uint8_t prefix_length = 4;
 static const uint8_t suffix_length = 20;
@@ -36,11 +38,8 @@ static const uint8_t sign_prefix_multi[] = {0x53, 0x4D, 0x54, 0x00};
 
 parseContext_t parse_context;
 
-void handle_packet_content(uint8_t p1,
-                           uint8_t p2,
-                           uint8_t *work_buffer,
-                           uint8_t data_length,
-                           volatile unsigned int *flags);
+void handle_packet_content(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
+                           uint8_t data_length, volatile unsigned int* flags);
 
 void sign_transaction() {
     uint8_t key_buffer[64];
@@ -53,7 +52,8 @@ void sign_transaction() {
         return;
     }
 
-    // Abort if we accidentally end up here again after the transaction has already been signed
+    // Abort if we accidentally end up here again after the transaction has
+    // already been signed
     if (parse_context.data == NULL) {
         display_idle_menu();
         return;
@@ -62,11 +62,10 @@ void sign_transaction() {
     io_seproxyhal_io_heartbeat();
 
     cx_err_t error = CX_INTERNAL_ERROR;
-    CX_CHECK(bip32_derive_init_privkey_256(tmp_ctx.transaction_context.curve,
-                                           tmp_ctx.transaction_context.bip32_path,
-                                           tmp_ctx.transaction_context.path_length,
-                                           &private_key,
-                                           NULL));
+    CX_CHECK(bip32_derive_init_privkey_256(
+        tmp_ctx.transaction_context.curve,
+        tmp_ctx.transaction_context.bip32_path,
+        tmp_ctx.transaction_context.path_length, &private_key, NULL));
 
     io_seproxyhal_io_heartbeat();
 
@@ -74,19 +73,17 @@ void sign_transaction() {
     if (parse_context.has_empty_pub_key) {
         cx_ecfp_public_key_t public_key;
 
-        xrp_pubkey_t *public_key_data = (xrp_pubkey_t *) key_buffer;
-        uint8_t *suffix_data = key_buffer + XRP_PUBKEY_SIZE;
+        xrp_pubkey_t* public_key_data = (xrp_pubkey_t*)key_buffer;
+        uint8_t* suffix_data = key_buffer + XRP_PUBKEY_SIZE;
 
-        CX_CHECK(cx_ecfp_generate_pair_no_throw(tmp_ctx.transaction_context.curve,
-                                                &public_key,
-                                                &private_key,
-                                                1));
+        CX_CHECK(cx_ecfp_generate_pair_no_throw(
+            tmp_ctx.transaction_context.curve, &public_key, &private_key, 1));
         xrp_compress_public_key(&public_key, public_key_data);
         CX_CHECK(xrp_public_key_hash160(public_key_data, suffix_data));
 
-        memmove(tmp_ctx.transaction_context.raw_tx + tmp_ctx.transaction_context.raw_tx_length,
-                suffix_data,
-                suffix_length);
+        memmove(tmp_ctx.transaction_context.raw_tx +
+                    tmp_ctx.transaction_context.raw_tx_length,
+                suffix_data, suffix_length);
         tmp_ctx.transaction_context.raw_tx_length += suffix_length;
 
         explicit_bzero(key_buffer, sizeof(key_buffer));
@@ -94,29 +91,21 @@ void sign_transaction() {
 
     if (tmp_ctx.transaction_context.curve == CX_CURVE_256K1) {
         cx_hash_sha512(tmp_ctx.transaction_context.raw_tx,
-                       tmp_ctx.transaction_context.raw_tx_length,
-                       key_buffer,
+                       tmp_ctx.transaction_context.raw_tx_length, key_buffer,
                        64);
         PRINTF("Hash to sign:\n%.*H\n", 32, key_buffer);
         io_seproxyhal_io_heartbeat();
 
         tx = sizeof(G_io_apdu_buffer);
-        CX_CHECK(cx_ecdsa_sign_no_throw(&private_key,
-                                        CX_RND_RFC6979 | CX_LAST,
-                                        CX_SHA256,
-                                        key_buffer,
-                                        32,
-                                        G_io_apdu_buffer,
-                                        &tx,
-                                        &info));
+        CX_CHECK(cx_ecdsa_sign_no_throw(&private_key, CX_RND_RFC6979 | CX_LAST,
+                                        CX_SHA256, key_buffer, 32,
+                                        G_io_apdu_buffer, &tx, &info));
     } else {
         size_t size;
-        CX_CHECK(cx_eddsa_sign_no_throw(&private_key,
-                                        CX_SHA512,
-                                        tmp_ctx.transaction_context.raw_tx,
-                                        tmp_ctx.transaction_context.raw_tx_length,
-                                        G_io_apdu_buffer,
-                                        sizeof(G_io_apdu_buffer)));
+        CX_CHECK(cx_eddsa_sign_no_throw(
+            &private_key, CX_SHA512, tmp_ctx.transaction_context.raw_tx,
+            tmp_ctx.transaction_context.raw_tx_length, G_io_apdu_buffer,
+            sizeof(G_io_apdu_buffer)));
         CX_CHECK(cx_ecdomain_parameters_length(private_key.curve, &size));
         tx = size * 2;
     }
@@ -172,19 +161,12 @@ void reject_transaction() {
 #endif
 }
 
-bool is_first(uint8_t p1) {
-    return (p1 & P1_MASK_ORDER) == 0;
-}
+bool is_first(uint8_t p1) { return (p1 & P1_MASK_ORDER) == 0; }
 
-bool has_more(uint8_t p1) {
-    return (p1 & P1_MASK_MORE) != 0;
-}
+bool has_more(uint8_t p1) { return (p1 & P1_MASK_MORE) != 0; }
 
-void handle_first_packet(uint8_t p1,
-                         uint8_t p2,
-                         uint8_t *work_buffer,
-                         uint8_t data_length,
-                         volatile unsigned int *flags) {
+void handle_first_packet(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
+                         uint8_t data_length, volatile unsigned int* flags) {
     if (!is_first(p1)) {
         THROW(0x6A80);
     }
@@ -198,11 +180,12 @@ void handle_first_packet(uint8_t p1,
     parse_context.data = tmp_ctx.transaction_context.raw_tx + prefix_length;
 
     size_t path_length = work_buffer[0];
-    uint32_t *path_parsed = tmp_ctx.transaction_context.bip32_path;
+    uint32_t* path_parsed = tmp_ctx.transaction_context.bip32_path;
 
     work_buffer++;
     data_length--;
-    if (!parse_bip32_path(work_buffer, path_length, data_length, path_parsed, MAX_BIP32_PATH)) {
+    if (!parse_bip32_path(work_buffer, path_length, data_length, path_parsed,
+                          MAX_BIP32_PATH)) {
         PRINTF("Invalid path\n");
         THROW(0x6a81);
     }
@@ -223,11 +206,9 @@ void handle_first_packet(uint8_t p1,
     handle_packet_content(p1, p2, work_buffer, data_length, flags);
 }
 
-void handle_subsequent_packet(uint8_t p1,
-                              uint8_t p2,
-                              uint8_t *work_buffer,
+void handle_subsequent_packet(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
                               uint8_t data_length,
-                              volatile unsigned int *flags) {
+                              volatile unsigned int* flags) {
     if (is_first(p1)) {
         THROW(0x6A80);
     }
@@ -235,11 +216,8 @@ void handle_subsequent_packet(uint8_t p1,
     handle_packet_content(p1, p2, work_buffer, data_length, flags);
 }
 
-void handle_packet_content(uint8_t p1,
-                           uint8_t p2,
-                           uint8_t *work_buffer,
-                           uint8_t data_length,
-                           volatile unsigned int *flags) {
+void handle_packet_content(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
+                           uint8_t data_length, volatile unsigned int* flags) {
     UNUSED(p2);
 
     uint16_t total_length = prefix_length + parse_context.length + data_length;
@@ -249,7 +227,8 @@ void handle_packet_content(uint8_t p1,
     }
 
     // Append received data to stored transaction data
-    memmove(parse_context.data + parse_context.length, work_buffer, data_length);
+    memmove(parse_context.data + parse_context.length, work_buffer,
+            data_length);
     parse_context.length += data_length;
 
     if (has_more(p1)) {
@@ -260,10 +239,12 @@ void handle_packet_content(uint8_t p1,
         // No more data to receive, finish up and present transaction to user
         sign_state = PENDING_REVIEW;
 
-        tmp_ctx.transaction_context.raw_tx_length = prefix_length + parse_context.length;
+        tmp_ctx.transaction_context.raw_tx_length =
+            prefix_length + parse_context.length;
 
-        // Try to parse the transaction. If the parsing fails an exception is thrown,
-        // causing the processing to abort and the transaction context to be reset.
+        // Try to parse the transaction. If the parsing fails an exception is
+        // thrown, causing the processing to abort and the transaction context
+        // to be reset.
         int exception = parse_tx(&parse_context);
         if (exception && exception != BLIND_SIGN_REQUIRED) {
             THROW(exception);
@@ -271,28 +252,30 @@ void handle_packet_content(uint8_t p1,
 
         // Set transaction prefix (space has been reserved earlier)
         if (parse_context.has_empty_pub_key) {
-            if (tmp_ctx.transaction_context.raw_tx_length + suffix_length > MAX_RAW_TX) {
-                // Abort if the added account ID suffix causes the transaction to be too large
+            if (tmp_ctx.transaction_context.raw_tx_length + suffix_length >
+                MAX_RAW_TX) {
+                // Abort if the added account ID suffix causes the transaction
+                // to be too large
                 THROW(0x6700);
             }
 
-            memmove(tmp_ctx.transaction_context.raw_tx, sign_prefix_multi, prefix_length);
+            memmove(tmp_ctx.transaction_context.raw_tx, sign_prefix_multi,
+                    prefix_length);
         } else {
-            memmove(tmp_ctx.transaction_context.raw_tx, sign_prefix, prefix_length);
+            memmove(tmp_ctx.transaction_context.raw_tx, sign_prefix,
+                    prefix_length);
         }
 
         bool blind_sign = (exception == BLIND_SIGN_REQUIRED);
-        review_transaction(&parse_context.result, sign_transaction, reject_transaction, blind_sign);
+        review_transaction(&parse_context.result, sign_transaction,
+                           reject_transaction, blind_sign);
 
         *flags |= IO_ASYNCH_REPLY;
     }
 }
 
-void handle_sign(uint8_t p1,
-                 uint8_t p2,
-                 uint8_t *work_buffer,
-                 uint8_t data_length,
-                 volatile unsigned int *flags) {
+void handle_sign(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
+                 uint8_t data_length, volatile unsigned int* flags) {
     switch (sign_state) {
         case IDLE:
             handle_first_packet(p1, p2, work_buffer, data_length, flags);

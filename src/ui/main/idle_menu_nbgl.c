@@ -16,19 +16,21 @@
  ********************************************************************************/
 #include <os_io_seproxyhal.h>
 #include <ux.h>
+
+#include "globals.h"
 #include "glyphs.h"
 #include "idle_menu.h"
 #include "nbgl_use_case.h"
-#include "ui.h"
-#include "globals.h"
 #include "os.h"
+#include "ui.h"
 
 //  -----------------------------------------------------------
 //  --------------------- SETTINGS MENU -----------------------
 //  -----------------------------------------------------------
 #define SETTING_INFO_NB 2
 static const char* const INFO_TYPES[SETTING_INFO_NB] = {"Version", "Developer"};
-static const char* const INFO_CONTENTS[SETTING_INFO_NB] = {APPVERSION, "Ledger"};
+static const char* const INFO_CONTENTS[SETTING_INFO_NB] = {APPVERSION,
+                                                           "Ledger"};
 
 static const nbgl_contentInfoList_t infoList = {
     .nbInfos = SETTING_INFO_NB,
@@ -56,20 +58,22 @@ static const nbgl_content_t contents[SETTING_CONTENTS_NB] = {
      .content.switchesList.switches = G_switches,
      .contentActionCallback = settings_controls_callback}};
 
-static const nbgl_genericContents_t settingContents = {.callbackCallNeeded = false,
-                                                       .contentsList = contents,
-                                                       .nbContents = SETTING_CONTENTS_NB};
+static const nbgl_genericContents_t settingContents = {
+    .callbackCallNeeded = false,
+    .contentsList = contents,
+    .nbContents = SETTING_CONTENTS_NB};
 
 static void settings_controls_callback(int token, uint8_t index, int page) {
-    (void) index;
-    (void) page;
+    (void)index;
+    (void)page;
     uint8_t new_setting;
     switch (token) {
         case BLIND_SIGNING_TOKEN:
             // Write in NVM the opposite of what the current toggle is
             new_setting = (G_switches[BLIND_SIGNING_IDX].initState != ON_STATE);
-            G_switches[BLIND_SIGNING_IDX].initState = (nbgl_state_t) new_setting;
-            nvm_write((void*) &N_storage.allow_blind_sign, &new_setting, sizeof(new_setting));
+            G_switches[BLIND_SIGNING_IDX].initState = (nbgl_state_t)new_setting;
+            nvm_write((void*)&N_storage.allow_blind_sign, &new_setting,
+                      sizeof(new_setting));
             break;
         default:
             PRINTF("Unreachable\n");
@@ -91,31 +95,19 @@ void set_switches_states(void) {
     }
 }
 
-static void on_quit_clbk(void) {
-    os_sched_exit(-1);
-}
+static void on_quit_clbk(void) { os_sched_exit(-1); }
 
 // home page definition
 void display_idle_menu(void) {
     set_switches_states();
-    nbgl_useCaseHomeAndSettings(APPNAME,
-                                &ICON_APP_HOME,
-                                NULL,
-                                INIT_HOME_PAGE,
-                                &settingContents,
-                                &infoList,
-                                NULL,
+    nbgl_useCaseHomeAndSettings(APPNAME, &ICON_APP_HOME, NULL, INIT_HOME_PAGE,
+                                &settingContents, &infoList, NULL,
                                 on_quit_clbk);
 }
 
 void display_settings_menu(void) {
     set_switches_states();
-    nbgl_useCaseHomeAndSettings(APPNAME,
-                                &ICON_APP_HOME,
-                                NULL,
-                                0,
-                                &settingContents,
-                                &infoList,
-                                NULL,
+    nbgl_useCaseHomeAndSettings(APPNAME, &ICON_APP_HOME, NULL, 0,
+                                &settingContents, &infoList, NULL,
                                 on_quit_clbk);
 }
