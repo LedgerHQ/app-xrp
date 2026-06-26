@@ -21,11 +21,7 @@
 
 #include <stdint.h>
 
-void handle_get_public_key(uint8_t p1,
-                           uint8_t p2,
-                           uint8_t *data_buffer,
-                           uint16_t data_length,
-                           volatile unsigned int *flags,
-                           volatile unsigned int *tx);
+int handle_get_public_key(uint8_t p1, uint8_t p2, uint8_t* data_buffer,
+                          uint16_t data_length);
 
 #endif  // LEDGER_APP_XRP_GETPUBLICKEY_H

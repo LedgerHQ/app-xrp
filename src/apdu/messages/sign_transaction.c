@@ -29,6 +29,7 @@
 #include "idle_menu.h"
 #include "transaction.h"
 #include "xrp_helpers.h"
+#include "io.h"
 
 static const uint8_t prefix_length = 4;
 static const uint8_t suffix_length = 20;
@@ -38,8 +39,8 @@ static const uint8_t sign_prefix_multi[] = {0x53, 0x4D, 0x54, 0x00};
 
 parseContext_t parse_context;
 
-void handle_packet_content(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
-                           uint8_t data_length, volatile unsigned int* flags);
+int handle_packet_content(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
+                          uint8_t data_length);
 
 void sign_transaction() {
     uint8_t key_buffer[64];
@@ -121,11 +122,7 @@ end:
         THROW(error);
     }
 
-    G_io_apdu_buffer[tx++] = 0x90;
-    G_io_apdu_buffer[tx++] = 0x00;
-
-    // Send back the response, do not restart the event loop
-    io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
+    io_send_sw(0x9000);
 
     if (called_from_swap) {
         return;
@@ -144,11 +141,7 @@ void reject_transaction() {
         return;
     }
 
-    G_io_apdu_buffer[0] = 0x69;
-    G_io_apdu_buffer[1] = 0x85;
-
-    // Send back the response, do not restart the event loop
-    io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, 2);
+    io_send_sw(0x6985);
 
     if (called_from_swap) {
         return;
@@ -165,14 +158,14 @@ bool is_first(uint8_t p1) { return (p1 & P1_MASK_ORDER) == 0; }
 
 bool has_more(uint8_t p1) { return (p1 & P1_MASK_MORE) != 0; }
 
-void handle_first_packet(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
-                         uint8_t data_length, volatile unsigned int* flags) {
+int handle_first_packet(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
+                        uint8_t data_length) {
     if (!is_first(p1)) {
-        THROW(0x6A80);
+        return io_send_sw(0x6A80);
     }
 
     if (data_length < 1) {
-        THROW(0x6A80);
+        return io_send_sw(0x6A80);
     }
 
     // Reset old transaction data that might still remain
@@ -187,7 +180,7 @@ void handle_first_packet(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
     if (!parse_bip32_path(work_buffer, path_length, data_length, path_parsed,
                           MAX_BIP32_PATH)) {
         PRINTF("Invalid path\n");
-        THROW(0x6a81);
+        return io_send_sw(0x6a81);
     }
 
     tmp_ctx.transaction_context.path_length = path_length;
@@ -195,35 +188,34 @@ void handle_first_packet(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
     data_length -= sizeof(uint32_t) * tmp_ctx.transaction_context.path_length;
 
     if (((p2 & P2_SECP256K1) == 0) && ((p2 & P2_ED25519) == 0)) {
-        THROW(0x6B00);
+        return io_send_sw(0x6B00);
     }
     if (((p2 & P2_SECP256K1) != 0) && ((p2 & P2_ED25519) != 0)) {
-        THROW(0x6B00);
+        return io_send_sw(0x6B00);
     }
     tmp_ctx.transaction_context.curve =
         (((p2 & P2_ED25519) != 0) ? CX_CURVE_Ed25519 : CX_CURVE_256K1);
 
-    handle_packet_content(p1, p2, work_buffer, data_length, flags);
+    return handle_packet_content(p1, p2, work_buffer, data_length);
 }
 
-void handle_subsequent_packet(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
-                              uint8_t data_length,
-                              volatile unsigned int* flags) {
+int handle_subsequent_packet(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
+                             uint8_t data_length) {
     if (is_first(p1)) {
-        THROW(0x6A80);
+        return io_send_sw(0x6A80);
     }
 
-    handle_packet_content(p1, p2, work_buffer, data_length, flags);
+    return handle_packet_content(p1, p2, work_buffer, data_length);
 }
 
-void handle_packet_content(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
-                           uint8_t data_length, volatile unsigned int* flags) {
+int handle_packet_content(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
+                          uint8_t data_length) {
     UNUSED(p2);
 
     uint16_t total_length = prefix_length + parse_context.length + data_length;
     if (total_length > MAX_RAW_TX) {
         // Abort if the user is trying to sign a too large transaction
-        THROW(0x6700);
+        return io_send_sw(0x6700);
     }
 
     // Append received data to stored transaction data
@@ -234,7 +226,7 @@ void handle_packet_content(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
     if (has_more(p1)) {
         // Reply to sender with status OK
         sign_state = WAITING_FOR_MORE;
-        THROW(0x9000);
+        return io_send_sw(0x9000);
     } else {
         // No more data to receive, finish up and present transaction to user
         sign_state = PENDING_REVIEW;
@@ -247,7 +239,7 @@ void handle_packet_content(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
         // to be reset.
         int exception = parse_tx(&parse_context);
         if (exception && exception != BLIND_SIGN_REQUIRED) {
-            THROW(exception);
+            return io_send_sw(exception);
         }
 
         // Set transaction prefix (space has been reserved earlier)
@@ -256,7 +248,7 @@ void handle_packet_content(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
                 MAX_RAW_TX) {
                 // Abort if the added account ID suffix causes the transaction
                 // to be too large
-                THROW(0x6700);
+                return io_send_sw(0x6700);
             }
 
             memmove(tmp_ctx.transaction_context.raw_tx, sign_prefix_multi,
@@ -270,20 +262,20 @@ void handle_packet_content(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
         review_transaction(&parse_context.result, sign_transaction,
                            reject_transaction, blind_sign);
 
-        *flags |= IO_ASYNCH_REPLY;
+        return 0;
     }
 }
 
-void handle_sign(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
-                 uint8_t data_length, volatile unsigned int* flags) {
+int handle_sign(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
+                uint8_t data_length) {
     switch (sign_state) {
         case IDLE:
-            handle_first_packet(p1, p2, work_buffer, data_length, flags);
+            return handle_first_packet(p1, p2, work_buffer, data_length);
             break;
         case WAITING_FOR_MORE:
-            handle_subsequent_packet(p1, p2, work_buffer, data_length, flags);
+            return handle_subsequent_packet(p1, p2, work_buffer, data_length);
             break;
         default:
-            THROW(0x6A80);
+            return io_send_sw(0x6A80);
     }
 }

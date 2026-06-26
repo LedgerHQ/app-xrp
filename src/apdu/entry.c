@@ -25,16 +25,17 @@
 #include "get_public_key.h"
 #include "global.h"
 #include "sign_transaction.h"
+#include "io.h"
 
 static unsigned char last_ins = 0;
 
-void handle_apdu(volatile unsigned int* flags, volatile unsigned int* tx) {
+int handle_apdu(void) {
     unsigned short sw = 0;
 
     BEGIN_TRY {
         TRY {
             if (G_io_apdu_buffer[OFFSET_CLA] != CLA) {
-                THROW(0x6E00);
+                return io_send_sw(0x6E00);
             }
 
             // Reset transaction context before starting to parse a new APDU
@@ -48,26 +49,26 @@ void handle_apdu(volatile unsigned int* flags, volatile unsigned int* tx) {
 
             switch (G_io_apdu_buffer[OFFSET_INS]) {
                 case INS_GET_PUBLIC_KEY:
-                    handle_get_public_key(G_io_apdu_buffer[OFFSET_P1],
-                                          G_io_apdu_buffer[OFFSET_P2],
-                                          G_io_apdu_buffer + OFFSET_CDATA,
-                                          G_io_apdu_buffer[OFFSET_LC], flags,
-                                          tx);
+                    return handle_get_public_key(
+                        G_io_apdu_buffer[OFFSET_P1],
+                        G_io_apdu_buffer[OFFSET_P2],
+                        G_io_apdu_buffer + OFFSET_CDATA,
+                        G_io_apdu_buffer[OFFSET_LC]);
                     break;
 
                 case INS_SIGN:
-                    handle_sign(G_io_apdu_buffer[OFFSET_P1],
-                                G_io_apdu_buffer[OFFSET_P2],
-                                G_io_apdu_buffer + OFFSET_CDATA,
-                                G_io_apdu_buffer[OFFSET_LC], flags);
+                    return handle_sign(G_io_apdu_buffer[OFFSET_P1],
+                                       G_io_apdu_buffer[OFFSET_P2],
+                                       G_io_apdu_buffer + OFFSET_CDATA,
+                                       G_io_apdu_buffer[OFFSET_LC]);
                     break;
 
                 case INS_GET_APP_CONFIGURATION:
-                    handle_get_app_configuration(tx);
+                    return handle_get_app_configuration();
                     break;
 
                 default:
-                    THROW(0x6D00);
+                    return io_send_sw(0x6D00);
                     break;
             }
         }
@@ -89,10 +90,7 @@ void handle_apdu(volatile unsigned int* flags, volatile unsigned int* tx) {
                     reset_transaction_context();
                     break;
             }
-            // Unexpected exception => report
-            G_io_apdu_buffer[*tx] = sw >> 8u;
-            G_io_apdu_buffer[*tx + 1] = sw;
-            *tx += 2;
+            return io_send_sw(sw);
         }
         FINALLY {}
     }

@@ -5,13 +5,14 @@
 #include "os.h"
 #include "xrp_helpers.h"
 #include "xrp_pub_key.h"
+#include "swap_lib_calls.h"
 
 static int os_strcmp(const char* s1, const char* s2) {
     size_t size = strlen(s1) + 1;
     return memcmp(s1, s2, size);
 }
 
-int handle_check_address(check_address_parameters_t* params) {
+int swap_handle_check_address(check_address_parameters_t* params) {
     PRINTF("Params on the address %d\n", (unsigned int)params);
     PRINTF("Address to check %s\n", params->address_to_check);
     PRINTF("Inside handle_check_address\n");

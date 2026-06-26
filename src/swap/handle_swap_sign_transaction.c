@@ -14,7 +14,7 @@
 // Save the BSS address where we will write the return value when finished
 static uint8_t* G_swap_sign_return_value_address;
 
-bool copy_transaction_parameters(create_transaction_parameters_t* params) {
+bool swap_copy_transaction_parameters(create_transaction_parameters_t* params) {
     // first copy parameters to stack, and then to global data.
     // We need this "trick" as the input data position can overlap with btc-app
     // globals

@@ -4,9 +4,10 @@
 
 #include "swap_utils.h"
 #include "xrp_helpers.h"
+#include "swap_lib_calls.h"
 
 /* return 0 on error, 1 otherwise */
-int handle_get_printable_amount(get_printable_amount_parameters_t* params) {
+int swap_handle_get_printable_amount(get_printable_amount_parameters_t* params) {
     uint64_t amount;
 
     params->printable_amount[0] = '\x00';

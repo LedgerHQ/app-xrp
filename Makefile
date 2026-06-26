@@ -90,6 +90,12 @@ ENABLE_BLUETOOTH = 1
 ENABLE_NBGL_FOR_NANO_DEVICES = 1
 
 ########################################
+#            Swap features             #
+########################################
+ENABLE_SWAP = 1
+
+
+########################################
 #         NBGL custom features         #
 ########################################
 ENABLE_NBGL_QRCODE = 1
@@ -101,7 +107,7 @@ ENABLE_NBGL_QRCODE = 1
 ########################################
 # These advanced settings allow to disable some feature that are by
 # default enabled in the SDK `Makefile.standard_app`.
-DISABLE_STANDARD_APP_FILES = 1
+#DISABLE_STANDARD_APP_FILES = 1
 #DISABLE_DEFAULT_IO_SEPROXY_BUFFER_SIZE = 1 # To allow custom size declaration
 #DISABLE_STANDARD_APP_DEFINES = 1 # Will set all the following disablers
 #DISABLE_STANDARD_SNPRINTF = 1
@@ -112,6 +118,14 @@ DISABLE_STANDARD_APP_FILES = 1
 ########################################
 #        Main app configuration        #
 ########################################
+
+# Allow usage of function from lib_standard_app/crypto_helpers.c
+APP_SOURCE_FILES += ${BOLOS_SDK}/lib_standard_app/crypto_helpers.c
+APP_SOURCE_FILES += ${BOLOS_SDK}/lib_standard_app/swap_utils.c
+APP_SOURCE_FILES += ${BOLOS_SDK}/lib_standard_app/base58.c
+APP_SOURCE_FILES += ${BOLOS_SDK}/lib_standard_app/io.c
+
+CFLAGS           += -I${BOLOS_SDK}/lib_standard_app/
 
 # U2F
 DEFINES   += HAVE_IO_U2F
