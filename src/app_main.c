@@ -18,20 +18,8 @@
 #include <stdint.h>  // uint*_t
 #include <string.h>  // memset, explicit_bzero
 
-// #include "os.h"
-// #include "ux.h"
-// #include "swap.h"
-
-// // #include "types.h"
-#include "io.h"
-// #include "sw.h"
-// #include "menu.h"
-// #include "dispatcher.h"
-// #include "dynamic_token_info.h"
-
-
 #include <ux.h>
-
+#include "io.h"
 #include "address_ui.h"
 #include "entry.h"
 #include "global.h"
@@ -41,8 +29,6 @@
 #include "handle_swap_sign_transaction.h"
 #include "idle_menu.h"
 #include "swap.h"
-// #include "os_io_seproxyhal.h"
-// #include "swap_lib_calls.h"
 
 const internal_storage_t N_storage_real;
 

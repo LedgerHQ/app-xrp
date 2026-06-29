@@ -30,69 +30,30 @@
 static unsigned char last_ins = 0;
 
 int handle_apdu(void) {
-    unsigned short sw = 0;
-
-    BEGIN_TRY {
-        TRY {
-            if (G_io_apdu_buffer[OFFSET_CLA] != CLA) {
-                return io_send_sw(0x6E00);
-            }
-
-            // Reset transaction context before starting to parse a new APDU
-            // message type. This helps protect against "Instruction Change"
-            // attacks
-            if (G_io_apdu_buffer[OFFSET_INS] != last_ins) {
-                reset_transaction_context();
-            }
-
-            last_ins = G_io_apdu_buffer[OFFSET_INS];
-
-            switch (G_io_apdu_buffer[OFFSET_INS]) {
-                case INS_GET_PUBLIC_KEY:
-                    return handle_get_public_key(
-                        G_io_apdu_buffer[OFFSET_P1],
-                        G_io_apdu_buffer[OFFSET_P2],
-                        G_io_apdu_buffer + OFFSET_CDATA,
-                        G_io_apdu_buffer[OFFSET_LC]);
-                    break;
-
-                case INS_SIGN:
-                    return handle_sign(G_io_apdu_buffer[OFFSET_P1],
-                                       G_io_apdu_buffer[OFFSET_P2],
-                                       G_io_apdu_buffer + OFFSET_CDATA,
-                                       G_io_apdu_buffer[OFFSET_LC]);
-                    break;
-
-                case INS_GET_APP_CONFIGURATION:
-                    return handle_get_app_configuration();
-                    break;
-
-                default:
-                    return io_send_sw(0x6D00);
-                    break;
-            }
-        }
-        CATCH_OTHER(e) {
-            switch (e & 0xF000u) {
-                case 0x6000:
-                    // Wipe the transaction context and report the exception
-                    sw = e;
-                    reset_transaction_context();
-                    break;
-                case 0x9000:
-                    // All is well
-                    sw = e;
-                    break;
-                default:
-                    // Internal error, wipe the transaction context and report
-                    // the exception
-                    sw = 0x6800u | (e & 0x7FFu);
-                    reset_transaction_context();
-                    break;
-            }
-            return io_send_sw(sw);
-        }
-        FINALLY {}
+    if (G_io_apdu_buffer[OFFSET_CLA] != CLA) {
+        return io_send_sw(0x6E00);
     }
-    END_TRY;
+
+    if (G_io_apdu_buffer[OFFSET_INS] != last_ins) {
+        reset_transaction_context();
+    }
+
+    last_ins = G_io_apdu_buffer[OFFSET_INS];
+
+    switch (G_io_apdu_buffer[OFFSET_INS]) {
+        case INS_GET_PUBLIC_KEY:
+            return handle_get_public_key(G_io_apdu_buffer[OFFSET_P1],
+                                         G_io_apdu_buffer[OFFSET_P2],
+                                         G_io_apdu_buffer + OFFSET_CDATA,
+                                         G_io_apdu_buffer[OFFSET_LC]);
+        case INS_SIGN:
+            return handle_sign(G_io_apdu_buffer[OFFSET_P1],
+                               G_io_apdu_buffer[OFFSET_P2],
+                               G_io_apdu_buffer + OFFSET_CDATA,
+                               G_io_apdu_buffer[OFFSET_LC]);
+        case INS_GET_APP_CONFIGURATION:
+            return handle_get_app_configuration();
+        default:
+            return io_send_sw(0x6D00);
+    }
 }
