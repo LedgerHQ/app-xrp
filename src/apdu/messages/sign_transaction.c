@@ -19,6 +19,7 @@
 #include "sign_transaction.h"
 
 #include <os.h>
+#include "ledger_assert.h"
 #include <os_io_usb.h>
 #include <string.h>
 
@@ -123,9 +124,7 @@ end:
     // Always reset transaction context after a transaction has been signed
     reset_transaction_context();
 
-    if (error != CX_OK) {
-        THROW(error);
-    }
+    LEDGER_ASSERT(error == CX_OK, "signing failed");
 
     io_send_response_pointer(G_io_apdu_buffer, tx, 0x9000);
 
