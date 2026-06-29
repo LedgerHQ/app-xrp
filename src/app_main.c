@@ -36,9 +36,6 @@ const internal_storage_t N_storage_real;
  * Handle APDU command received and send back APDU response using handlers.
  */
 void app_main() {
-    // Length of APDU command received in G_io_apdu_buffer
-    int input_len = 0;
-
     io_init();
 
     // When called in swap context as a library, we don't want to show the menu
@@ -48,13 +45,12 @@ void app_main() {
 
     for (;;) {
         // Receive command bytes in G_io_apdu_buffer
-        if ((input_len = io_recv_command()) < 0) {
+        if (io_recv_command() < 0) {
             PRINTF("=> io_recv_command failure\n");
             return;
         }
 
         // Parse APDU command from G_io_apdu_buffer
-
         if (handle_apdu() < 0) {
             PRINTF("=> FATAL handle_apdu failure\n");
             return;
