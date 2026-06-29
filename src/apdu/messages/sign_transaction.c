@@ -39,6 +39,11 @@ static const uint8_t sign_prefix_multi[] = {0x53, 0x4D, 0x54, 0x00};
 
 parseContext_t parse_context;
 
+static int send_error(uint16_t sw) {
+    reset_transaction_context();
+    return io_send_sw(sw);
+}
+
 int handle_packet_content(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
                           uint8_t data_length);
 
@@ -122,7 +127,7 @@ end:
         THROW(error);
     }
 
-    io_send_sw(0x9000);
+    io_send_response_pointer(G_io_apdu_buffer, tx, 0x9000);
 
     if (called_from_swap) {
         return;
@@ -214,8 +219,7 @@ int handle_packet_content(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
 
     uint16_t total_length = prefix_length + parse_context.length + data_length;
     if (total_length > MAX_RAW_TX) {
-        // Abort if the user is trying to sign a too large transaction
-        return io_send_sw(0x6700);
+        return send_error(0x6700);
     }
 
     // Append received data to stored transaction data
@@ -239,16 +243,14 @@ int handle_packet_content(uint8_t p1, uint8_t p2, uint8_t* work_buffer,
         // to be reset.
         int exception = parse_tx(&parse_context);
         if (exception && exception != BLIND_SIGN_REQUIRED) {
-            return io_send_sw(exception);
+            return send_error(0x6800 | (exception & 0x7FF));
         }
 
         // Set transaction prefix (space has been reserved earlier)
         if (parse_context.has_empty_pub_key) {
             if (tmp_ctx.transaction_context.raw_tx_length + suffix_length >
                 MAX_RAW_TX) {
-                // Abort if the added account ID suffix causes the transaction
-                // to be too large
-                return io_send_sw(0x6700);
+                return send_error(0x6700);
             }
 
             memmove(tmp_ctx.transaction_context.raw_tx, sign_prefix_multi,
