@@ -64,9 +64,6 @@ add_executable(test_printers
 add_executable(test_swap
   src/test_swap.c
   src/cx.c
-  ../src/swap/handle_check_address.h
-  ../src/swap/swap_utils.c
-  ../src/swap/swap_utils.h
   include/bolos_target.h
   include/cx.h
   include/os.h

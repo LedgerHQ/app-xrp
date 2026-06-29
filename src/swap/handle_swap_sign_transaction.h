@@ -4,6 +4,5 @@
 #include "swap_lib_calls.h"
 
 void __attribute__((noreturn)) finalize_exchange_sign_transaction(bool is_success);
-void handle_swap_sign_transaction(void);
 
 #endif  // _HANDLE_SWAP_SIGN_TRANSACTION_H_

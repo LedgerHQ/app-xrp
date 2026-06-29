@@ -29,6 +29,7 @@
 #include "idle_menu.h"
 #include "io.h"
 #include "ledger_assert.h"
+#include "swap.h"
 #include "transaction.h"
 #include "xrp_helpers.h"
 
@@ -128,7 +129,7 @@ end:
 
     io_send_response_pointer(G_io_apdu_buffer, tx, 0x9000);
 
-    if (called_from_swap) {
+    if (G_called_from_swap) {
         return;
     }
 
@@ -147,7 +148,7 @@ void reject_transaction() {
 
     io_send_sw(0x6985);
 
-    if (called_from_swap) {
+    if (G_called_from_swap) {
         return;
     }
 
