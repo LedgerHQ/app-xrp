@@ -23,6 +23,9 @@
 
 typedef void (*resultAction_t)(unsigned int result);
 
-void review_transaction(parseResult_t *transaction, action_t on_approve, action_t on_reject);
+void review_transaction(parseResult_t *transaction,
+                        action_t on_approve,
+                        action_t on_reject,
+                        bool blind_sign);
 
 #endif  // LEDGER_APP_XRP_TRANSACTION_H

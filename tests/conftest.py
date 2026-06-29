@@ -11,14 +11,17 @@ configuration.OPTIONAL.BACKEND_SCOPE = "session"
 
 # Retrieve all test cases
 def pytest_generate_tests(metafunc):
-    # retrieve the list of .raw files in the testcases directory
     testcases_dir = os.path.join(SCRIPT_DIR, "testcases")
-    paths = Path(testcases_dir).rglob("*.raw")
-    paths = [str(path) for path in paths]
-    # if a test function has a raw_tx_path parameter, give the list of raw tx
-    # paths
+
     if "raw_tx_path" in metafunc.fixturenames:
-        metafunc.parametrize("raw_tx_path", sorted(paths), scope="function")
+        paths = [str(p) for p in sorted(Path(testcases_dir).rglob("*.raw"))
+                 if "/blind-sign/" not in str(p)]
+        metafunc.parametrize("raw_tx_path", paths, scope="function")
+
+    if "blind_sign_raw_tx_path" in metafunc.fixturenames:
+        paths = [str(p) for p in sorted(
+            (Path(testcases_dir) / "blind-sign").glob("*.raw"))]
+        metafunc.parametrize("blind_sign_raw_tx_path", paths, scope="function")
 
 #########################
 ### CONFIGURATION END ###

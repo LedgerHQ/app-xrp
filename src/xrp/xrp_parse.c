@@ -16,17 +16,19 @@
  *  limitations under the License.
  ********************************************************************************/
 
+#include "xrp_parse.h"
+
 #include <string.h>
 
-#include "xrp_parse.h"
-#include "xrp_helpers.h"
 #include "amount.h"
 #include "array.h"
+#include "field_sort.h"
 #include "fields.h"
+#include "flags.h"
+#include "globals.h"
 #include "readers.h"
 #include "transaction_types.h"
-#include "field_sort.h"
-#include "flags.h"
+#include "xrp_helpers.h"
 
 #define SUCCESS 0
 #define CHECK(x)                  \
@@ -37,13 +39,14 @@
         }                         \
     } while (0)
 
-static bool has_data(parseContext_t *context, uint32_t num_bytes) {
+static bool has_data(parseContext_t* context, uint32_t num_bytes) {
     return context->offset + num_bytes - 1 < context->length;
 }
 
-static bool has_field(parseContext_t *context, field_type_t data_type, uint8_t id) {
+static bool has_field(parseContext_t* context, field_type_t data_type,
+                      uint8_t id) {
     for (uint8_t i = 0; i < context->result.num_fields; ++i) {
-        field_t *field = &context->result.fields[i];
+        field_t* field = &context->result.fields[i];
         if (field->data_type == data_type && field->id == id) {
             return true;
         }
@@ -52,7 +55,47 @@ static bool has_field(parseContext_t *context, field_type_t data_type, uint8_t i
     return false;
 }
 
-uint8_t *current_position(parseContext_t *context) {
+static bool is_supported_transaction_type(uint16_t t) {
+    switch (t) {
+        case TRANSACTION_PAYMENT:
+        case TRANSACTION_ESCROW_CREATE:
+        case TRANSACTION_ESCROW_FINISH:
+        case TRANSACTION_ACCOUNT_SET:
+        case TRANSACTION_ESCROW_CANCEL:
+        case TRANSACTION_SET_REGULAR_KEY:
+        case TRANSACTION_OFFER_CREATE:
+        case TRANSACTION_OFFER_CANCEL:
+        case TRANSACTION_TICKET_CREATE:
+        case TRANSACTION_TICKET_CANCEL:
+        case TRANSACTION_SIGNER_LIST_SET:
+        case TRANSACTION_PAYMENT_CHANNEL_CREATE:
+        case TRANSACTION_PAYMENT_CHANNEL_FUND:
+        case TRANSACTION_PAYMENT_CHANNEL_CLAIM:
+        case TRANSACTION_CHECK_CREATE:
+        case TRANSACTION_CHECK_CASH:
+        case TRANSACTION_CHECK_CANCEL:
+        case TRANSACTION_DEPOSIT_PREAUTH:
+        case TRANSACTION_TRUST_SET:
+        case TRANSACTION_ACCOUNT_DELETE:
+        case TRANSACTION_NFTOKEN_MINT:
+        case TRANSACTION_NFTOKEN_BURN:
+        case TRANSACTION_NFTOKEN_CREATE_OFFER:
+        case TRANSACTION_NFTOKEN_CANCEL_OFFER:
+        case TRANSACTION_NFTOKEN_ACCEPT_OFFER:
+        case TRANSACTION_CLAWBACK:
+        case TRANSACTION_AMM_CREATE:
+        case TRANSACTION_AMM_DEPOSIT:
+        case TRANSACTION_AMM_WITHDRAW:
+        case TRANSACTION_AMM_VOTE:
+        case TRANSACTION_AMM_BID:
+        case TRANSACTION_AMM_DELETE:
+            return true;
+        default:
+            return false;
+    }
+}
+
+uint8_t* current_position(parseContext_t* context) {
     return context->data + context->offset;
 }
 
@@ -60,7 +103,7 @@ typedef struct err_s {
     int err;
 } err_t;
 
-err_t advance_position(parseContext_t *context, uint32_t num_bytes) {
+err_t advance_position(parseContext_t* context, uint32_t num_bytes) {
     err_t err;
 
     if (has_data(context, num_bytes)) {
@@ -73,7 +116,7 @@ err_t advance_position(parseContext_t *context, uint32_t num_bytes) {
     return err;
 }
 
-err_t read_next_byte(parseContext_t *context, uint8_t *result) {
+err_t read_next_byte(parseContext_t* context, uint8_t* result) {
     err_t err;
 
     if (has_data(context, 1)) {
@@ -86,7 +129,7 @@ err_t read_next_byte(parseContext_t *context, uint8_t *result) {
     return err;
 }
 
-err_t peak_next_byte(parseContext_t *context, uint8_t *result) {
+err_t peak_next_byte(parseContext_t* context, uint8_t* result) {
     err_t err;
 
     if (has_data(context, 1)) {
@@ -99,7 +142,7 @@ err_t peak_next_byte(parseContext_t *context, uint8_t *result) {
     return err;
 }
 
-void append_array_info(parseContext_t *context, field_t *field) {
+void append_array_info(parseContext_t* context, field_t* field) {
     if (context->current_array != 0) {
         field->array_info.type = context->current_array;
         field->array_info.index1 = context->array_index1;
@@ -107,7 +150,7 @@ void append_array_info(parseContext_t *context, field_t *field) {
     }
 }
 
-err_t append_new_field(parseContext_t *context, field_t **field) {
+err_t append_new_field(parseContext_t* context, field_t** field) {
     err_t err;
 
     if (context->result.num_fields >= MAX_FIELD_COUNT) {
@@ -122,7 +165,7 @@ err_t append_new_field(parseContext_t *context, field_t **field) {
     return err;
 }
 
-err_t remove_last_field(parseContext_t *context, field_t *last_field) {
+err_t remove_last_field(parseContext_t* context, field_t* last_field) {
     err_t err;
 
     if (context->result.num_fields == 0) {
@@ -146,14 +189,15 @@ err_t remove_last_field(parseContext_t *context, field_t *last_field) {
     return err;
 }
 
-err_t read_fixed_size_field(parseContext_t *context, field_t *field, uint16_t length) {
+err_t read_fixed_size_field(parseContext_t* context, field_t* field,
+                            uint16_t length) {
     field->data.ptr = current_position(context);
     field->length = length;
 
     return advance_position(context, length);
 }
 
-err_t read_variable_length_field(parseContext_t *context, field_t *field) {
+err_t read_variable_length_field(parseContext_t* context, field_t* field) {
     uint8_t value;
     err_t err;
 
@@ -177,7 +221,7 @@ err_t read_variable_length_field(parseContext_t *context, field_t *field) {
     return read_fixed_size_field(context, field, data_length);
 }
 
-err_t read_amount(parseContext_t *context, field_t *field) {
+err_t read_amount(parseContext_t* context, field_t* field) {
     uint8_t first_byte;
     err_t err;
 
@@ -187,27 +231,32 @@ err_t read_amount(parseContext_t *context, field_t *field) {
     } else {
         CHECK(read_fixed_size_field(context, field, ISSUED_CURRENCY_LEN));
 
+        if (!is_valid_currency(field->data.ptr + 8)) {
+            err.err = INVALID_STATE;
+            return err;
+        }
+
         if (has_non_standard_currency(field)) {
-            field_t *currency;
+            field_t* currency;
             CHECK(append_new_field(context, &currency));
             currency->data_type = STI_CURRENCY;
             currency->id = XRP_CURRENCY_CURRENCY;
-            currency->data.currency = (xrp_currency_t *) (field->data.ptr + 8);
+            currency->data.currency = (xrp_currency_t*)(field->data.ptr + 8);
             currency->length = XRP_CURRENCY_SIZE;
         }
 
-        field_t *issuer;
+        field_t* issuer;
         CHECK(append_new_field(context, &issuer));
         issuer->data_type = STI_ACCOUNT;
         issuer->id = XRP_ACCOUNT_ISSUER;
-        issuer->data.account = (xrp_account_t *) (field->data.ptr + 28);
+        issuer->data.account = (xrp_account_t*)(field->data.ptr + 28);
         issuer->length = XRP_ACCOUNT_SIZE;
     }
 
     return err;
 }
 
-err_t read_vector256_field(parseContext_t *context, field_t *field) {
+err_t read_vector256_field(parseContext_t* context, field_t* field) {
     field->data_type = STI_VECTOR256;
 
     err_t err;
@@ -218,27 +267,33 @@ err_t read_vector256_field(parseContext_t *context, field_t *field) {
     uint16_t count = value / XRP_VECTOR256_SIZE;
     CHECK(read_fixed_size_field(context, field, XRP_VECTOR256_SIZE * count));
     for (size_t i = 0; i < count; i++) {
-        field_t *hash256;
+        field_t* hash256;
         CHECK(append_new_field(context, &hash256));
         hash256->data_type = STI_HASH256;
         hash256->id = XRP_HASH256_NFTOKEN_BUY_OFFER;
-        hash256->data.hash256 = (hash256_t *) (field->data.ptr + (i * XRP_VECTOR256_SIZE));
+        hash256->data.hash256 =
+            (hash256_t*)(field->data.ptr + (i * XRP_VECTOR256_SIZE));
         hash256->length = XRP_VECTOR256_SIZE;
     }
 
     return err;
 }
 
-err_t read_issue(parseContext_t *context, field_t *field) {
+err_t read_issue(parseContext_t* context, field_t* field) {
     err_t err;
+
+    if (!has_data(context, 20)) {
+        err.err = EXCEPTION_OVERFLOW;
+        return err;
+    }
 
     if (!is_all_zeros(context->data + context->offset, 20)) {
         CHECK(read_fixed_size_field(context, field, XRP_ISSUE_SIZE));
-        field_t *issuer;
+        field_t* issuer;
         CHECK(append_new_field(context, &issuer));
         issuer->data_type = STI_ACCOUNT;
         issuer->id = XRP_ACCOUNT_ISSUER;
-        issuer->data.account = (xrp_account_t *) (field->data.ptr + 20);
+        issuer->data.account = (xrp_account_t*)(field->data.ptr + 20);
         issuer->length = XRP_ACCOUNT_SIZE;
     } else {
         CHECK(read_fixed_size_field(context, field, XRP_CURRENCY_SIZE));
@@ -247,7 +302,7 @@ err_t read_issue(parseContext_t *context, field_t *field) {
     return err;
 }
 
-void handle_array_field(parseContext_t *context, field_t *field) {
+void handle_array_field(parseContext_t* context, field_t* field) {
     if (field->id != ARR_END) {
         // Begin array
         context->current_array = field->id;
@@ -259,7 +314,7 @@ void handle_array_field(parseContext_t *context, field_t *field) {
     }
 }
 
-err_t handle_object_field(parseContext_t *context, field_t *field) {
+err_t handle_object_field(parseContext_t* context, field_t* field) {
     err_t err;
 
     if (field->id != OBJ_END) {
@@ -277,8 +332,9 @@ err_t handle_object_field(parseContext_t *context, field_t *field) {
     return err;
 }
 
-err_t handle_path_step(parseContext_t *context, field_t *field, uint8_t step_type) {
-    field_t *new_field;
+err_t handle_path_step(parseContext_t* context, field_t* field,
+                       uint8_t step_type) {
+    field_t* new_field;
     err_t err;
 
     CHECK(read_fixed_size_field(context, field, 20));
@@ -305,14 +361,14 @@ err_t handle_path_step(parseContext_t *context, field_t *field, uint8_t step_typ
             field->id = XRP_CURRENCY_CURRENCY;
             break;
         default:
-            field->data_type = STI_PATHSET;
+            err.err = INVALID_STATE;
             break;
     }
 
     return err;
 }
 
-err_t handle_path_field(parseContext_t *context, field_t *field) {
+err_t handle_path_field(parseContext_t* context, field_t* field) {
     // Set default type to STI_PATHSET, which is hidden
     field->data_type = STI_PATHSET;
 
@@ -356,7 +412,7 @@ err_t handle_path_field(parseContext_t *context, field_t *field) {
     return err;
 }
 
-void handle_path_set_field(parseContext_t *context) {
+void handle_path_set_field(parseContext_t* context) {
     context->current_array = ARRAY_PATHSET;
 
     // The code for handling path set fields becomes easier if we
@@ -366,7 +422,7 @@ void handle_path_set_field(parseContext_t *context) {
     context->array_index2 = 1;
 }
 
-err_t read_field_value(parseContext_t *context, field_t *field) {
+err_t read_field_value(parseContext_t* context, field_t* field) {
     err_t err;
     err.err = SUCCESS;
 
@@ -381,8 +437,10 @@ err_t read_field_value(parseContext_t *context, field_t *field) {
             break;
         case STI_UINT32:
             CHECK(read_fixed_size_field(context, field, 4));
-            field->data.u32 = field->data.ptr[3] | (field->data.ptr[2] << 8) |
-                              (field->data.ptr[1] << 16) | (field->data.ptr[0] << 24);
+            field->data.u32 = (uint32_t)field->data.ptr[3] |
+                              ((uint32_t)field->data.ptr[2] << 8) |
+                              ((uint32_t)field->data.ptr[1] << 16) |
+                              ((uint32_t)field->data.ptr[0] << 24);
             break;
         case STI_HASH128:
             err = read_fixed_size_field(context, field, sizeof(hash128_t));
@@ -421,7 +479,7 @@ err_t read_field_value(parseContext_t *context, field_t *field) {
     return err;
 }
 
-err_t read_field_header(parseContext_t *context, field_t *field) {
+err_t read_field_header(parseContext_t* context, field_t* field) {
     uint8_t first_byte;
     err_t err;
 
@@ -454,7 +512,7 @@ err_t read_field_header(parseContext_t *context, field_t *field) {
     return err;
 }
 
-err_t post_process_field(parseContext_t *context, field_t *field) {
+err_t post_process_field(parseContext_t* context, field_t* field) {
     err_t err;
     err.err = SUCCESS;
 
@@ -490,14 +548,14 @@ err_t post_process_field(parseContext_t *context, field_t *field) {
     return err;
 }
 
-err_t post_process_transaction(parseContext_t *context) {
+err_t post_process_transaction(parseContext_t* context) {
     err_t err;
     err.err = SUCCESS;
 
     // Append "empty" regular key field when clearing it
     if (context->transaction_type == TRANSACTION_SET_REGULAR_KEY &&
         !has_field(context, STI_ACCOUNT, 8)) {
-        field_t *field;
+        field_t* field;
         CHECK(append_new_field(context, &field));
         field->data_type = STI_ACCOUNT;
         field->id = XRP_ACCOUNT_REGULAR_KEY;
@@ -507,7 +565,7 @@ err_t post_process_transaction(parseContext_t *context) {
     return err;
 }
 
-err_t read_field(parseContext_t *context, field_t *field) {
+err_t read_field(parseContext_t* context, field_t* field) {
     err_t err;
 
     if (context->current_array == ARRAY_PATHSET) {
@@ -520,7 +578,7 @@ err_t read_field(parseContext_t *context, field_t *field) {
     return post_process_field(context, field);
 }
 
-err_t parse_tx_internal(parseContext_t *context) {
+err_t parse_tx_internal(parseContext_t* context) {
     err_t err;
 
     context->transaction_type = TRANSACTION_INVALID;
@@ -532,7 +590,7 @@ err_t parse_tx_internal(parseContext_t *context) {
             return err;
         }
 
-        field_t *field;
+        field_t* field;
         CHECK(append_new_field(context, &field));
         CHECK(read_field(context, field));
 
@@ -544,13 +602,26 @@ err_t parse_tx_internal(parseContext_t *context) {
     }
 
     CHECK(post_process_transaction(context));
+
+    if (!has_field(context, STI_UINT16, XRP_UINT16_TRANSACTION_TYPE) ||
+        !has_field(context, STI_ACCOUNT, XRP_ACCOUNT_ACCOUNT)) {
+        err.err = NOT_SUPPORTED;
+        return err;
+    }
+
     sort_fields(&context->result);
+
+    if (context->transaction_type == TRANSACTION_INVALID ||
+        !is_supported_transaction_type(context->transaction_type)) {
+        err.err = BLIND_SIGN_REQUIRED;
+        return err;
+    }
 
     err.err = SUCCESS;
     return err;
 }
 
-int parse_tx(parseContext_t *context) {
+int parse_tx(parseContext_t* context) {
     err_t err = parse_tx_internal(context);
     return err.err;
 }

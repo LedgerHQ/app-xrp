@@ -15,17 +15,18 @@
  *  limitations under the License.
  ********************************************************************************/
 
+#include "percentage.h"
+
 #include <stdio.h>
 #include <string.h>
 
-#include "percentage.h"
-#include "readers.h"
 #include "fmt.h"
 #include "limitations.h"
+#include "readers.h"
 
 #define DENOMINATOR 10000000
 
-bool is_percentage(field_t *field) {
+bool is_percentage(field_t* field) {
     if (field->data_type == STI_UINT32) {
         switch (field->id) {
             case XRP_UINT32_TRANSFER_RATE:
@@ -40,7 +41,7 @@ bool is_percentage(field_t *field) {
     }
 }
 
-void remove_redundant_decimals(field_value_t *dst) {
+void remove_redundant_decimals(field_value_t* dst) {
     size_t end = strlen(dst->buf);
     while (end > 0) {
         char c = dst->buf[end];
@@ -61,7 +62,7 @@ void remove_redundant_decimals(field_value_t *dst) {
     dst->buf[end + 1] = '\0';
 }
 
-static void format_percentage_internal(field_value_t *dst, uint32_t value) {
+static void format_percentage_internal(field_value_t* dst, uint32_t value) {
     unsigned int decimal_part = value % DENOMINATOR;
     unsigned int integer_part = (value - decimal_part) / DENOMINATOR;
 
@@ -72,7 +73,7 @@ static void format_percentage_internal(field_value_t *dst, uint32_t value) {
     strncpy(dst->buf + total_length, " %", sizeof(dst->buf) - total_length);
 }
 
-static void format_transfer_rate(field_value_t *dst, uint32_t value) {
+static void format_transfer_rate(field_value_t* dst, uint32_t value) {
     if (value == 0) {
         strncpy(dst->buf, "0 %", sizeof(dst->buf));
     } else if (value < 1000000000) {
@@ -82,7 +83,7 @@ static void format_transfer_rate(field_value_t *dst, uint32_t value) {
     }
 }
 
-static void format_quality(field_value_t *dst, uint32_t value) {
+static void format_quality(field_value_t* dst, uint32_t value) {
     if (value == 0) {
         strncpy(dst->buf, "100 %", sizeof(dst->buf));
     } else {
@@ -90,7 +91,7 @@ static void format_quality(field_value_t *dst, uint32_t value) {
     }
 }
 
-void format_percentage(field_t *field, field_value_t *dst) {
+void format_percentage(field_t* field, field_value_t* dst) {
     uint32_t value = field->data.u32;
 
     if (field->id == XRP_UINT32_TRANSFER_RATE) {

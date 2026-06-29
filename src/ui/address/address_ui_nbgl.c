@@ -18,9 +18,9 @@
 #include <os_io_seproxyhal.h>
 #include <string.h>
 #include <ux.h>
+
 #include "address_ui.h"
 #include "idle_menu.h"
-#include "nbgl_page.h"
 #include "nbgl_use_case.h"
 #include "ui.h"
 
@@ -31,23 +31,23 @@ static action_t rejection_action;
 static void confirmationChoiceClbk(bool confirm) {
     if (confirm) {
         approval_action();
-        nbgl_useCaseReviewStatus(STATUS_TYPE_ADDRESS_VERIFIED, display_idle_menu);
+        nbgl_useCaseReviewStatus(STATUS_TYPE_ADDRESS_VERIFIED,
+                                 display_idle_menu);
     } else {
         rejection_action();
-        nbgl_useCaseReviewStatus(STATUS_TYPE_ADDRESS_REJECTED, display_idle_menu);
+        nbgl_useCaseReviewStatus(STATUS_TYPE_ADDRESS_REJECTED,
+                                 display_idle_menu);
     }
 }
 
-void display_address_confirmation_ui(char* address, action_t on_approve, action_t on_reject) {
+void display_address_confirmation_ui(char* address, action_t on_approve,
+                                     action_t on_reject) {
     approval_action = on_approve;
     rejection_action = on_reject;
     memset(full_address, 0, sizeof(full_address));
     strncpy(full_address, address, sizeof(full_address));
-    nbgl_useCaseAddressReview((char*) full_address,
-                              NULL,
-                              &ICON_APP_HOME,
-                              "Verify XRP Address",
-                              NULL,
+    nbgl_useCaseAddressReview((char*)full_address, NULL, &ICON_APP_HOME,
+                              "Verify XRP Address", NULL,
                               confirmationChoiceClbk);
 }
 #endif  // HAVE_NBGL

@@ -1,6 +1,7 @@
+#include "handle_check_address.h"
+
 #include <string.h>
 
-#include "handle_check_address.h"
 #include "os.h"
 #include "xrp_helpers.h"
 #include "xrp_pub_key.h"
@@ -11,7 +12,7 @@ static int os_strcmp(const char* s1, const char* s2) {
 }
 
 int handle_check_address(check_address_parameters_t* params) {
-    PRINTF("Params on the address %d\n", (unsigned int) params);
+    PRINTF("Params on the address %d\n", (unsigned int)params);
     PRINTF("Address to check %s\n", params->address_to_check);
     PRINTF("Inside handle_check_address\n");
 
@@ -20,11 +21,20 @@ int handle_check_address(check_address_parameters_t* params) {
         return 0;
     }
 
+    if (params->address_parameters == NULL ||
+        params->address_parameters_length < 1) {
+        PRINTF("Invalid address parameters\n");
+        return 0;
+    }
+
+    size_t params_length = params->address_parameters_length;
     uint8_t* bip32_path_ptr = params->address_parameters;
     uint8_t bip32_path_length = *(bip32_path_ptr++);
+    params_length--;
     cx_ecfp_public_key_t public_key;
     int error =
-        get_public_key(CX_CURVE_256K1, bip32_path_ptr, bip32_path_length, &public_key, NULL);
+        get_public_key(CX_CURVE_256K1, bip32_path_ptr, bip32_path_length,
+                       params_length, &public_key, NULL);
     if (error) {
         PRINTF("get_public_key failed\n");
         return 0;

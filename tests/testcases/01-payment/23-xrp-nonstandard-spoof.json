@@ -1,0 +1,15 @@
+{
+  "TransactionType": "Payment",
+  "Account": "OWN_ADDR",
+  "Destination": "rTooLkitCksh5mQa67eaa2JaWHDBnHkpy",
+  "Amount": {
+    "value": "123.45",
+    "currency": "5852500000000000000000000000000000000000",
+    "issuer": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B"
+  },
+  "Fee": "15",
+  "Flags": 0,
+  "Sequence": 7,
+  "SigningPubKey": "OWN_PUBKEY",
+  "_comment": "Non-standard currency code with bytes 0-2 = 'XRP' (0x58, 0x52, 0x50) and bytes 3-19 = 0x00. First byte is 0x58 (not 0x00) so it is non-standard. Before fix: format_non_standard_currency() strstr('XRP') branch copied bytes to UI buffer, displaying as 'XRP' (spoofing native XRP). After fix; ticker is not formatted and full currency code is displayed as hex string."
+}

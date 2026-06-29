@@ -25,33 +25,34 @@
 #endif
 
 #define UI_BACKGROUND() \
-    { {BAGL_RECTANGLE, 0, 0, 0, 128, DEV_SCREEN_H, 0, 0, BAGL_FILL, 0, 0xFFFFFF, 0, 0}, NULL }
+    {{BAGL_RECTANGLE, 0, 0, 0, 128, DEV_SCREEN_H, 0, 0, BAGL_FILL, 0, 0xFFFFFF, 0, 0}, NULL}
 #define UI_DUMMY(userid) \
-    { {BAGL_RECTANGLE, userid, 0, 0, 0, 0, 0, 0, BAGL_FILL, 0, 0xFFFFFF, 0, 0}, NULL }
-#define UI_SINGLE_TEXT(text)                                              \
-    {                                                                     \
-        {BAGL_LABELINE,                                                   \
-         0,                                                               \
-         0,                                                               \
-         DEV_SCREEN_H / 2 + 2,                                            \
-         128,                                                             \
-         12,                                                              \
-         0,                                                               \
-         0,                                                               \
-         0,                                                               \
-         0xFFFFFF,                                                        \
-         0,                                                               \
-         BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER, \
-         0},                                                              \
-            (char *) (text)                                               \
-    }
+    {{BAGL_RECTANGLE, userid, 0, 0, 0, 0, 0, 0, BAGL_FILL, 0, 0xFFFFFF, 0, 0}, NULL}
+#define UI_SINGLE_TEXT(text)                                           \
+    {{BAGL_LABELINE,                                                   \
+      0,                                                               \
+      0,                                                               \
+      DEV_SCREEN_H / 2 + 2,                                            \
+      128,                                                             \
+      12,                                                              \
+      0,                                                               \
+      0,                                                               \
+      0,                                                               \
+      0xFFFFFF,                                                        \
+      0,                                                               \
+      BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER, \
+      0},                                                              \
+     (char *) (text)}
 
 #if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
-#define ICON_APP_HOME C_icon_XRP
+#define ICON_APP_HOME    C_icon_XRP
+#define ICON_APP_WARNING C_icon_warning
 #elif defined(TARGET_STAX) || defined(TARGET_FLEX)
-#define ICON_APP_HOME C_icon_XRP_64px
+#define ICON_APP_HOME    C_icon_XRP_64px
+#define ICON_APP_WARNING LARGE_WARNING_ICON
 #elif defined(TARGET_APEX_P)
-#define ICON_APP_HOME C_icon_XRP_48px
+#define ICON_APP_HOME    C_icon_XRP_48px
+#define ICON_APP_WARNING LARGE_WARNING_ICON
 #endif
 
 #endif  // LEDGER_APP_XRP_UI_H

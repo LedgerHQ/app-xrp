@@ -15,23 +15,23 @@
  *  limitations under the License.
  ********************************************************************************/
 
+#include "time.h"
+
 #include <limits.h>
 
-#include "os.h"
-
-#include "time.h"
-#include "readers.h"
 #include "fmt.h"
 #include "limitations.h"
+#include "os.h"
+#include "readers.h"
 
 /* 2000-03-01 (mod 400 year, immediately after feb29 */
-#define LEAPOCH             (946684800LL + 86400 * (31 + 29))
+#define LEAPOCH (946684800LL + 86400 * (31 + 29))
 #define RIPPLE_EPOCH_OFFSET 946684800LL
-#define FINAL_EPOCH_OFFSET  (RIPPLE_EPOCH_OFFSET - LEAPOCH)
+#define FINAL_EPOCH_OFFSET (RIPPLE_EPOCH_OFFSET - LEAPOCH)
 
 #define DAYS_PER_400Y (365 * 400 + 97)
 #define DAYS_PER_100Y (365 * 100 + 24)
-#define DAYS_PER_4Y   (365 * 4 + 1)
+#define DAYS_PER_4Y (365 * 4 + 1)
 
 typedef struct {
     int tm_sec;  /* seconds after the minute [0-60] */
@@ -42,7 +42,7 @@ typedef struct {
     int tm_year; /* years since 1900 */
 } tm_mini_t;
 
-bool is_time(field_t *field) {
+bool is_time(field_t* field) {
     if (field->data_type == STI_UINT32) {
         switch (field->id) {
             case XRP_UINT32_EXPIRATION:
@@ -57,17 +57,20 @@ bool is_time(field_t *field) {
     }
 }
 
-bool is_time_delta(field_t *field) {
-    return field->data_type == STI_UINT32 && field->id == XRP_UINT32_SETTLE_DELAY;
+bool is_time_delta(field_t* field) {
+    return field->data_type == STI_UINT32 &&
+           field->id == XRP_UINT32_SETTLE_DELAY;
 }
 
-// Inspired from http://git.musl-libc.org/cgit/musl/tree/src/time/__secs_to_tm.c?h=v0.9.15
-static int ripple_epoch_to_tm(long long t, tm_mini_t *tm) {
+// Inspired from
+// http://git.musl-libc.org/cgit/musl/tree/src/time/__secs_to_tm.c?h=v0.9.15
+static int ripple_epoch_to_tm(long long t, tm_mini_t* tm) {
     long long days, secs;
     int remdays, remsecs, remyears;
     int qc_cycles, c_cycles, q_cycles;
     int years, months;
-    static const char days_in_month[] = {31, 30, 31, 30, 31, 31, 30, 31, 30, 31, 31, 29};
+    static const char days_in_month[] = {31, 30, 31, 30, 31, 31,
+                                         30, 31, 30, 31, 31, 29};
 
     /* Reject time_t values whose year would overflow int */
     if (t < INT_MIN * 31622400LL || t > INT_MAX * 31622400LL) return -1;
@@ -101,7 +104,8 @@ static int ripple_epoch_to_tm(long long t, tm_mini_t *tm) {
 
     years = remyears + 4 * q_cycles + 100 * c_cycles + 400 * qc_cycles;
 
-    for (months = 0; days_in_month[months] <= remdays; months++) remdays -= days_in_month[months];
+    for (months = 0; days_in_month[months] <= remdays; months++)
+        remdays -= days_in_month[months];
 
     if (years + 100 > INT_MAX || years + 100 < INT_MIN) return -1;
 
@@ -120,19 +124,13 @@ static int ripple_epoch_to_tm(long long t, tm_mini_t *tm) {
     return 0;
 }
 
-static void print_time(tm_mini_t *tm, field_value_t *dst) {
-    snprintf(dst->buf,
-             sizeof(dst->buf),
-             "%u-%02u-%02u %02u:%02u:%02u UTC",
-             tm->tm_year + 1900,
-             tm->tm_mon + 1,
-             tm->tm_mday,
-             tm->tm_hour,
-             tm->tm_min,
-             tm->tm_sec);
+static void print_time(tm_mini_t* tm, field_value_t* dst) {
+    snprintf(dst->buf, sizeof(dst->buf), "%u-%02u-%02u %02u:%02u:%02u UTC",
+             tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour,
+             tm->tm_min, tm->tm_sec);
 }
 
-void format_time(field_t *field, field_value_t *dst) {
+void format_time(field_t* field, field_value_t* dst) {
     uint32_t value = field->data.u32;
 
     tm_mini_t tm;
@@ -141,7 +139,7 @@ void format_time(field_t *field, field_value_t *dst) {
     print_time(&tm, dst);
 }
 
-void format_time_delta(field_t *field, field_value_t *dst) {
+void format_time_delta(field_t* field, field_value_t* dst) {
     uint32_t value = field->data.u32;
     snprintf(dst->buf, sizeof(dst->buf), "%u s", value);
 }

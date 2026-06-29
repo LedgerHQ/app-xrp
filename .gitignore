@@ -6,3 +6,12 @@ tests/build/
 build/
 tests/snapshots-tmp
 venv/
+unit-tests/build*
+unit-tests/coverage*
+fuzzing/build*/
+fuzzing/crash*
+
+# Runtime-discovered corpus inputs from libFuzzer (SHA-1-named, no extension).
+# Curated seed inputs (*.raw) remain tracked.
+fuzzing/corpus/*/*
+!fuzzing/corpus/*/*.raw

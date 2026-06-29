@@ -54,5 +54,6 @@ int xrp_print_amount(uint64_t amount, char *out, size_t outlen);
 
 bool parse_bip32_path(uint8_t *path,
                       size_t path_length,
+                      size_t path_bytes,
                       uint32_t *path_parsed,
                       size_t path_parsed_length);

@@ -1,0 +1,15 @@
+{
+  "TransactionType": "Payment",
+  "Account": "OWN_ADDR",
+  "Destination": "rTooLkitCksh5mQa67eaa2JaWHDBnHkpy",
+  "Amount": {
+    "value": "123.45",
+    "currency": "0000000000000000000000005852500102030405",
+    "issuer": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B"
+  },
+  "Fee": "15",
+  "Flags": 0,
+  "Sequence": 7,
+  "SigningPubKey": "OWN_PUBKEY",
+  "_comment": "Spoofed currency code. byte 0 is 0x00 (old has_non_standard_currency_internal misclassifies as standard), bytes 12-14 spell 'XRP' (old code would render the Amount as 'XRP 123.45'), bytes 15-19 are nonzero garbage so it is not a valid ISO standard code. After the fix, has_non_standard_currency() returns true: the Amount line drops the ticker and a separate Currency review row displays the full 20 bytes in hex."
+}
