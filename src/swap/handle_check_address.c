@@ -3,9 +3,9 @@
 #include <string.h>
 
 #include "os.h"
+#include "swap_lib_calls.h"
 #include "xrp_helpers.h"
 #include "xrp_pub_key.h"
-#include "swap_lib_calls.h"
 
 static int os_strcmp(const char* s1, const char* s2) {
     size_t size = strlen(s1) + 1;

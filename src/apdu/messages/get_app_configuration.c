@@ -19,6 +19,7 @@
 #include "get_app_configuration.h"
 
 #include <os.h>
+
 #include "io.h"
 
 int handle_get_app_configuration(void) {

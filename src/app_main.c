@@ -17,9 +17,8 @@
 
 #include <stdint.h>  // uint*_t
 #include <string.h>  // memset, explicit_bzero
-
 #include <ux.h>
-#include "io.h"
+
 #include "address_ui.h"
 #include "entry.h"
 #include "global.h"
@@ -28,6 +27,7 @@
 #include "handle_get_printable_amount.h"
 #include "handle_swap_sign_transaction.h"
 #include "idle_menu.h"
+#include "io.h"
 #include "swap.h"
 
 const internal_storage_t N_storage_real;
@@ -40,7 +40,6 @@ void app_main() {
     int input_len = 0;
 
     io_init();
-
 
     // When called in swap context as a library, we don't want to show the menu
     if (!G_called_from_swap) {
@@ -55,7 +54,7 @@ void app_main() {
         }
 
         // Parse APDU command from G_io_apdu_buffer
-        
+
         if (handle_apdu() < 0) {
             PRINTF("=> FATAL handle_apdu failure\n");
             return;

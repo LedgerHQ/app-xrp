@@ -25,11 +25,11 @@
 #include "constants.h"
 #include "global.h"
 #include "idle_menu.h"
+#include "io.h"
 #include "os_io_usb.h"
 #include "xrp_helpers.h"
 #include "xrp_parse.h"
 #include "xrp_pub_key.h"
-#include "io.h"
 
 static bool pubkey_confirmation_pending = false;
 static publicKeyContext_t pending_pubkey_ctx;

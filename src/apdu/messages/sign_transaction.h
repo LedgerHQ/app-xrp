@@ -24,10 +24,7 @@
 
 extern parseContext_t parse_context;
 
-int handle_sign(uint8_t p1,
-                 uint8_t p2,
-                 uint8_t *work_buffer,
-                 uint8_t data_length);
+int handle_sign(uint8_t p1, uint8_t p2, uint8_t *work_buffer, uint8_t data_length);
 
 void reject_transaction(void);
 

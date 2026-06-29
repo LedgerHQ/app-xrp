@@ -24,8 +24,8 @@
 #include "get_app_configuration.h"
 #include "get_public_key.h"
 #include "global.h"
-#include "sign_transaction.h"
 #include "io.h"
+#include "sign_transaction.h"
 
 static unsigned char last_ins = 0;
 
@@ -42,15 +42,13 @@ int handle_apdu(void) {
 
     switch (G_io_apdu_buffer[OFFSET_INS]) {
         case INS_GET_PUBLIC_KEY:
-            return handle_get_public_key(G_io_apdu_buffer[OFFSET_P1],
-                                         G_io_apdu_buffer[OFFSET_P2],
-                                         G_io_apdu_buffer + OFFSET_CDATA,
-                                         G_io_apdu_buffer[OFFSET_LC]);
+            return handle_get_public_key(
+                G_io_apdu_buffer[OFFSET_P1], G_io_apdu_buffer[OFFSET_P2],
+                G_io_apdu_buffer + OFFSET_CDATA, G_io_apdu_buffer[OFFSET_LC]);
         case INS_SIGN:
-            return handle_sign(G_io_apdu_buffer[OFFSET_P1],
-                               G_io_apdu_buffer[OFFSET_P2],
-                               G_io_apdu_buffer + OFFSET_CDATA,
-                               G_io_apdu_buffer[OFFSET_LC]);
+            return handle_sign(
+                G_io_apdu_buffer[OFFSET_P1], G_io_apdu_buffer[OFFSET_P2],
+                G_io_apdu_buffer + OFFSET_CDATA, G_io_apdu_buffer[OFFSET_LC]);
         case INS_GET_APP_CONFIGURATION:
             return handle_get_app_configuration();
         default:

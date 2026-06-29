@@ -19,7 +19,6 @@
 #include "sign_transaction.h"
 
 #include <os.h>
-#include "ledger_assert.h"
 #include <os_io_usb.h>
 #include <string.h>
 
@@ -28,9 +27,10 @@
 #include "global.h"
 #include "globals.h"
 #include "idle_menu.h"
+#include "io.h"
+#include "ledger_assert.h"
 #include "transaction.h"
 #include "xrp_helpers.h"
-#include "io.h"
 
 static const uint8_t prefix_length = 4;
 static const uint8_t suffix_length = 20;
