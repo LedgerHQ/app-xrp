@@ -4,6 +4,7 @@
 export LEDGER_PROXY_ADDRESS=127.0.0.1 LEDGER_PROXY_PORT=9999
 pytest-3 -v -s
 """
+
 from pathlib import Path
 import pytest
 from ledgerwallet.params import Bip32Path  # type: ignore [import]
@@ -18,9 +19,9 @@ from .utils import DEFAULT_PATH, DEFAULT_BIP32_PATH
 from .utils import verify_ecdsa_secp256k1, verify_version
 
 
-def test_app_configuration(backend: BackendInterface,
-                           navigator: Navigator,
-                           default_screenshot_path: Path):
+def test_app_configuration(
+    backend: BackendInterface, navigator: Navigator, default_screenshot_path: Path
+):
     xrp = XRPClient(backend, navigator)
     version = xrp.get_configuration()
     verify_version(default_screenshot_path, version)
@@ -60,7 +61,10 @@ def test_path_too_long(backend: BackendInterface, navigator: Navigator):
     except ExceptionRAPDU as rapdu:
         assert rapdu.status == Errors.SW_INVALID_PATH
 
-def test_path_buffer_bytes_and_length_consistency(backend: BackendInterface, navigator: Navigator):
+
+def test_path_buffer_bytes_and_length_consistency(
+    backend: BackendInterface, navigator: Navigator
+):
     xrp = XRPClient(backend, navigator)
     path = Bip32Path.build(DEFAULT_PATH)
     # Manually construct an APDU with inconsistent path length and byte buffer size
@@ -74,21 +78,25 @@ def test_path_buffer_bytes_and_length_consistency(backend: BackendInterface, nav
         assert rapdu.status == Errors.SW_INVALID_PATH
 
 
-def test_get_public_key_no_confirm(backend: BackendInterface,
-                                   navigator: Navigator):
+def test_get_public_key_no_confirm(backend: BackendInterface, navigator: Navigator):
     xrp = XRPClient(backend, navigator)
-    key_len, key_data, chain_len, chain_data = xrp.get_pubkey_no_confirm(chain_code=True)
+    key_len, key_data, chain_len, chain_data = xrp.get_pubkey_no_confirm(
+        chain_code=True
+    )
     ref_public_key, ref_chain_code = calculate_public_key_and_chaincode(
-        CurveChoice.Secp256k1, DEFAULT_PATH, compress_public_key=True)
+        CurveChoice.Secp256k1, DEFAULT_PATH, compress_public_key=True
+    )
     assert key_data == ref_public_key
     assert chain_data == ref_chain_code
     print(f"   Pub Key[{key_len}]: {key_data}")
     print(f"Chain code[{chain_len}]: {ref_chain_code}")
 
 
-def test_get_public_key_confirm(backend: BackendInterface,
-                                navigator: Navigator,
-                                scenario_navigator: NavigateWithScenario):
+def test_get_public_key_confirm(
+    backend: BackendInterface,
+    navigator: Navigator,
+    scenario_navigator: NavigateWithScenario,
+):
     xrp = XRPClient(backend, navigator)
     with xrp.get_pubkey_confirm():
         scenario_navigator.address_review_approve()
@@ -98,9 +106,11 @@ def test_get_public_key_confirm(backend: BackendInterface,
     assert reply and reply.status == Errors.SW_SUCCESS
 
 
-def test_get_public_key_reject(backend: BackendInterface,
-                               navigator: Navigator,
-                               scenario_navigator: NavigateWithScenario):
+def test_get_public_key_reject(
+    backend: BackendInterface,
+    navigator: Navigator,
+    scenario_navigator: NavigateWithScenario,
+):
     xrp = XRPClient(backend, navigator)
 
     with pytest.raises(ExceptionRAPDU) as err:
@@ -112,9 +122,11 @@ def test_get_public_key_reject(backend: BackendInterface,
     assert len(err.value.data) == 0
 
 
-def test_sign_reject(backend: BackendInterface,
-                     navigator: Navigator,
-                     scenario_navigator: NavigateWithScenario):
+def test_sign_reject(
+    backend: BackendInterface,
+    navigator: Navigator,
+    scenario_navigator: NavigateWithScenario,
+):
     xrp = XRPClient(backend, navigator)
 
     # pragma pylint: disable=line-too-long
@@ -156,7 +168,9 @@ def _enable_blind_signing(device: Device, navigator: Navigator) -> None:
     _blind_signing_on[0] = True
 
 
-def _check_blind_sign_rejection(backend: BackendInterface, xrp: XRPClient, message: bytes) -> None:
+def _check_blind_sign_rejection(
+    backend: BackendInterface, xrp: XRPClient, message: bytes
+) -> None:
     backend.raise_policy = RaisePolicy.RAISE_ALL_BUT_0x9000
     with pytest.raises(ExceptionRAPDU) as e:
         with xrp.sign(DEFAULT_BIP32_PATH + message):
@@ -165,13 +179,18 @@ def _check_blind_sign_rejection(backend: BackendInterface, xrp: XRPClient, messa
 
 
 def test_blind_signing_disabled_go_to_settings(
-        backend: BackendInterface, navigator: Navigator,
-        test_name: str, default_screenshot_path: Path) -> None:
+    backend: BackendInterface,
+    navigator: Navigator,
+    test_name: str,
+    default_screenshot_path: Path,
+) -> None:
     if backend.device.is_nano:
         pytest.skip("This feature does not exist on Nano devices")
 
     xrp = XRPClient(backend, navigator)
-    with open(Path(__file__).parent / "testcases/blind-sign/02-unknown-tx-type.raw", "rb") as f:
+    with open(
+        Path(__file__).parent / "testcases/blind-sign/02-unknown-tx-type.raw", "rb"
+    ) as f:
         message = f.read()
 
     _check_blind_sign_rejection(backend, xrp, message)
@@ -185,10 +204,15 @@ def test_blind_signing_disabled_go_to_settings(
 
 
 def test_blind_signing_disabled_go_to_menu(
-        backend: BackendInterface, navigator: Navigator,
-        test_name: str, default_screenshot_path: Path) -> None:
+    backend: BackendInterface,
+    navigator: Navigator,
+    test_name: str,
+    default_screenshot_path: Path,
+) -> None:
     xrp = XRPClient(backend, navigator)
-    with open(Path(__file__).parent / "testcases/blind-sign/02-unknown-tx-type.raw", "rb") as f:
+    with open(
+        Path(__file__).parent / "testcases/blind-sign/02-unknown-tx-type.raw", "rb"
+    ) as f:
         message = f.read()
 
     if backend.device.is_nano:
@@ -208,11 +232,14 @@ def test_blind_signing_disabled_go_to_menu(
     )
     backend.wait_for_home_screen()
 
-def test_blind_sign_enabled(backend: BackendInterface,
-                            device: Device,
-                            navigator: Navigator,
-                            scenario_navigator: NavigateWithScenario,
-                            blind_sign_raw_tx_path: str):
+
+def test_blind_sign_enabled(
+    backend: BackendInterface,
+    device: Device,
+    navigator: Navigator,
+    scenario_navigator: NavigateWithScenario,
+    blind_sign_raw_tx_path: str,
+):
     """Blind signing enabled: review and approve any blind-sign tx."""
     if backend.device.is_nano:
         pytest.skip("This feature does not exist on Nano devices")
@@ -230,17 +257,21 @@ def test_blind_sign_enabled(backend: BackendInterface,
             test_name=f"blind-sign/{snapname}",
         )
 
-    print("Blind signing enabled, user should be able to review and approve the transaction")
+    print(
+        "Blind signing enabled, user should be able to review and approve the transaction"
+    )
     reply = xrp.get_async_response()
     print(f"Received reply: {reply}")
     assert reply and reply.status == Errors.SW_SUCCESS
 
 
-def test_sign_valid_tx(backend: BackendInterface,
-                       device: Device,
-                       navigator: Navigator,
-                       scenario_navigator: NavigateWithScenario,
-                       raw_tx_path: str):
+def test_sign_valid_tx(
+    backend: BackendInterface,
+    device: Device,
+    navigator: Navigator,
+    scenario_navigator: NavigateWithScenario,
+    raw_tx_path: str,
+):
     if raw_tx_path.endswith("19-really-stupid-tx.raw"):
         pytest.skip(f"skip invalid tx from '{Path(raw_tx_path).stem}'")
     if raw_tx_path.endswith("22-xrp-reserved-ticker.raw"):
@@ -254,7 +285,7 @@ def test_sign_valid_tx(backend: BackendInterface,
         tx = fp.read()
 
     index = raw_tx_path.index("/testcases/") + len("/testcases/")
-    snapdir = str(Path(raw_tx_path[index :]).with_suffix(""))
+    snapdir = str(Path(raw_tx_path[index:]).with_suffix(""))
 
     backend.wait_for_home_screen()
     if not device.touchable:
@@ -291,7 +322,9 @@ def test_sign_invalid_path_step_type(backend: BackendInterface, navigator: Navig
     spec; only 0x01, 0x10, 0x20, 0x30 are valid. The parser must reject it."""
     xrp = XRPClient(backend, navigator)
 
-    tx_path = Path(__file__).parent / "testcases/01-payment/24-invalid-path-step-type.raw"
+    tx_path = (
+        Path(__file__).parent / "testcases/01-payment/24-invalid-path-step-type.raw"
+    )
     with open(tx_path, "rb") as fp:
         tx = fp.read()
 

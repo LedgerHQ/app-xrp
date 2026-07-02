@@ -17,7 +17,6 @@ jobs:
     name: Call Ledger Python linters
     uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_python_checks.yml@v1
     with:
-      run_linter: pylint
       run_type_check: true
       src_directory: .
       setup_directory: tests
