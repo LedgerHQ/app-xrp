@@ -1,16 +1,15 @@
 from contextlib import contextmanager
-from typing import Optional, Tuple
 from enum import IntEnum
-from ragger.backend.interface import BackendInterface, RAPDU
+
+from ragger.backend.interface import RAPDU, BackendInterface
 from ragger.navigator import Navigator
 from ragger.utils.misc import split_message
 
 from .utils import (
     DEFAULT_BIP32_PATH,
-    unpack_get_public_key_response,
     unpack_configuration_response,
+    unpack_get_public_key_response,
 )
-
 
 MAX_APDU_LEN: int = 255
 
@@ -94,9 +93,7 @@ class XRPClient:
 
         return unpack_configuration_response(reply.data)
 
-    def get_pubkey_no_confirm(
-        self, path: bytes = DEFAULT_BIP32_PATH, chain_code: bool = False
-    ) -> Tuple[int, str, int, str]:
+    def get_pubkey_no_confirm(self, path: bytes = DEFAULT_BIP32_PATH, chain_code: bool = False) -> tuple[int, str, int, str]:
         p2 = P2.CURVE_SECP256K1
         if chain_code:
             p2 |= P2.CHAIN_CODE  # type: ignore[assignment]
@@ -130,11 +127,9 @@ class XRPClient:
                 p1 = P1.INTER
             # Send the last message
             p1 = P1.LAST
-        with self._exchange_async(
-            Ins.SIGN, p1, P2.CURVE_SECP256K1, messages[-1]
-        ) as reply:
+        with self._exchange_async(Ins.SIGN, p1, P2.CURVE_SECP256K1, messages[-1]) as reply:
             yield reply
 
-    def get_async_response(self) -> Optional[RAPDU]:
+    def get_async_response(self) -> RAPDU | None:
         """Asynchronous APDU reply"""
         return self._client.last_async_response
