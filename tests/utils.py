@@ -1,19 +1,14 @@
-from pathlib import Path
 import json
 import re
-from typing import Tuple
+from hashlib import sha256, sha512
+from pathlib import Path
 from struct import unpack
 
-from hashlib import sha256, sha512
 from Crypto.Hash import RIPEMD160
-
-from ledgerwallet.params import Bip32Path  # type: ignore [import]
-
+from ecdsa import SECP256k1, VerifyingKey  # type: ignore [import]
 from ecdsa.util import sigdecode_der  # type: ignore [import]
-from ecdsa import VerifyingKey, SECP256k1  # type: ignore [import]
-
-from ragger.bip import calculate_public_key_and_chaincode, CurveChoice
-
+from ledgerwallet.params import Bip32Path  # type: ignore [import]
+from ragger.bip import CurveChoice, calculate_public_key_and_chaincode
 
 DEFAULT_PATH = "44'/144'/0'/0'/0"
 DEFAULT_BIP32_PATH = Bip32Path.build(DEFAULT_PATH)
@@ -21,7 +16,7 @@ TX_PREFIX_SINGLE = [0x53, 0x54, 0x58, 0x00]
 TX_PREFIX_MULTI = [0x53, 0x4D, 0x54, 0x00]
 
 
-def pop_size_prefixed_buf_from_buf(buffer: bytes) -> Tuple[bytes, int, bytes]:
+def pop_size_prefixed_buf_from_buf(buffer: bytes) -> tuple[bytes, int, bytes]:
     """Returns remainder, data_len, data"""
 
     data_len = buffer[0]
@@ -43,7 +38,7 @@ def unpack_configuration_response(reply: bytes) -> str:
     return version
 
 
-def unpack_get_public_key_response(reply: bytes) -> Tuple[int, str, int, str]:
+def unpack_get_public_key_response(reply: bytes) -> tuple[int, str, int, str]:
     """Unpack reply for 'get_public_key' APDU:
     pub_key (65)
     pub_key_str (65 * 2)
@@ -60,7 +55,7 @@ def verify_version(root_path: Path, version: str) -> None:
     print(f"version: {version}")
     makefile = f"{root_path.parent.resolve()}/Makefile"
     print(f"{makefile}")
-    with open(makefile, "r", encoding="utf-8") as f_p:
+    with open(makefile, encoding="utf-8") as f_p:
         lines = f_p.readlines()
 
     version_re = re.compile(r"^APPVERSION_(?P<part>\w)=(?P<val>\d)", re.I)
@@ -82,14 +77,12 @@ def verify_ecdsa_secp256k1(tx: bytes, sig: bytes, raw_tx_path: str) -> bool:
     """Verify the transaction signature"""
 
     # Get Public key
-    key_data, _ = calculate_public_key_and_chaincode(
-        CurveChoice.Secp256k1, DEFAULT_PATH, compress_public_key=True
-    )
+    key_data, _ = calculate_public_key_and_chaincode(CurveChoice.Secp256k1, DEFAULT_PATH, compress_public_key=True)
     pub_key = bytearray.fromhex(key_data)
 
     # Check single/multi signature
     test_config = Path(raw_tx_path.replace(".raw", ".json"))
-    with open(test_config, "r", encoding="utf-8") as fp:
+    with open(test_config, encoding="utf-8") as fp:
         cfg_data = json.load(fp)
     if "SigningPubKey" in cfg_data and cfg_data["SigningPubKey"] == "":
         hdr = bytes(TX_PREFIX_MULTI)
@@ -104,7 +97,7 @@ def verify_ecdsa_secp256k1(tx: bytes, sig: bytes, raw_tx_path: str) -> bool:
         key_hash = key_hash[:20]
     else:
         hdr = bytes(TX_PREFIX_SINGLE)
-        key_hash = bytes()
+        key_hash = b""
 
     # Computes the payload with fixed prefix and suffix
     _hash = sha512()
