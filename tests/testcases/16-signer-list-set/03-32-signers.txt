@@ -1,0 +1,68 @@
+Transaction Type; Set Signer List
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Signer Quorum; 11
+Fee; XRP 0.00001
+Signer Weight [1]; 1
+Account [1];   rMRFD5eRj78p    DR2LT261iVK     UPXGNHYC9zK   
+Signer Weight [2]; 3
+Account [2];   rgQxSyLzRwf     ktHpozmt4o3     U3gcGDXPp13   
+Signer Weight [3]; 5
+Account [3];   rn2i8bgJ798Q    p4Ynv6xhyu9     K2cneVaRw8g   
+Signer Weight [4]; 1
+Account [4];   rn3s1S6Lz9tp    EB7MAGqRKc2     z7hYnHGY7SX   
+Signer Weight [5]; 6
+Account [5];   rwT6kYyAkuAn    1YxEeDVCDxb     h3bUi87AbpU   
+Signer Weight [6]; 2
+Account [6];   rJCQqXWAyfUM    uCjXgZcuBGq     CDkDhhQN4jV   
+Signer Weight [7]; 3
+Account [7];   ra9hSnoYV1ck    ycXZyrJo8BW     dXvtaajqVbk   
+Signer Weight [8]; 4
+Account [8];   rhXNJ4hYYcN2    2A4tMvySDoP     hHzVesYFzXx   
+Signer Weight [9]; 1
+Account [9];   rMRFD5eRj78p    DR2LT261iVK     UPXGNHYC9zK   
+Signer Weight [10]; 3
+Account [10];   rgQxSyLzRwf     ktHpozmt4o3     U3gcGDXPp13   
+Signer Weight [11]; 5
+Account [11];   rn2i8bgJ798Q    p4Ynv6xhyu9     K2cneVaRw8g   
+Signer Weight [12]; 1
+Account [12];   rn3s1S6Lz9tp    EB7MAGqRKc2     z7hYnHGY7SX   
+Signer Weight [13]; 6
+Account [13];   rwT6kYyAkuAn    1YxEeDVCDxb     h3bUi87AbpU   
+Signer Weight [14]; 2
+Account [14];   rJCQqXWAyfUM    uCjXgZcuBGq     CDkDhhQN4jV   
+Signer Weight [15]; 3
+Account [15];   ra9hSnoYV1ck    ycXZyrJo8BW     dXvtaajqVbk   
+Signer Weight [16]; 4
+Account [16];   rhXNJ4hYYcN2    2A4tMvySDoP     hHzVesYFzXx   
+Signer Weight [17]; 1
+Account [17];   rMRFD5eRj78p    DR2LT261iVK     UPXGNHYC9zK   
+Signer Weight [18]; 3
+Account [18];   rgQxSyLzRwf     ktHpozmt4o3     U3gcGDXPp13   
+Signer Weight [19]; 5
+Account [19];   rn2i8bgJ798Q    p4Ynv6xhyu9     K2cneVaRw8g   
+Signer Weight [20]; 1
+Account [20];   rn3s1S6Lz9tp    EB7MAGqRKc2     z7hYnHGY7SX   
+Signer Weight [21]; 6
+Account [21];   rwT6kYyAkuAn    1YxEeDVCDxb     h3bUi87AbpU   
+Signer Weight [22]; 2
+Account [22];   rJCQqXWAyfUM    uCjXgZcuBGq     CDkDhhQN4jV   
+Signer Weight [23]; 3
+Account [23];   ra9hSnoYV1ck    ycXZyrJo8BW     dXvtaajqVbk   
+Signer Weight [24]; 4
+Account [24];   rhXNJ4hYYcN2    2A4tMvySDoP     hHzVesYFzXx   
+Signer Weight [25]; 1
+Account [25];   rMRFD5eRj78p    DR2LT261iVK     UPXGNHYC9zK   
+Signer Weight [26]; 3
+Account [26];   rgQxSyLzRwf     ktHpozmt4o3     U3gcGDXPp13   
+Signer Weight [27]; 5
+Account [27];   rn2i8bgJ798Q    p4Ynv6xhyu9     K2cneVaRw8g   
+Signer Weight [28]; 1
+Account [28];   rn3s1S6Lz9tp    EB7MAGqRKc2     z7hYnHGY7SX   
+Signer Weight [29]; 6
+Account [29];   rwT6kYyAkuAn    1YxEeDVCDxb     h3bUi87AbpU   
+Signer Weight [30]; 2
+Account [30];   rJCQqXWAyfUM    uCjXgZcuBGq     CDkDhhQN4jV   
+Signer Weight [31]; 3
+Account [31];   ra9hSnoYV1ck    ycXZyrJo8BW     dXvtaajqVbk   
+Signer Weight [32]; 4
+Account [32];   rhXNJ4hYYcN2    2A4tMvySDoP     hHzVesYFzXx   

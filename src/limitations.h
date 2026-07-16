@@ -25,7 +25,7 @@
 #define MAX_BIP32_PATH     10
 #define MAX_ENC_INPUT_SIZE 26
 #define MAX_FIELDNAME_LEN  50
-#define MAX_ARRAY_LEN      8
+#define MAX_ARRAY_LEN      32
 #define MAX_PATH_COUNT     6
 #define MAX_STEP_COUNT     8
 
@@ -41,7 +41,7 @@
 
 #else
 
-#define MAX_FIELD_COUNT        60
+#define MAX_FIELD_COUNT        70
 #define MAX_FIELD_LEN          1024
 #define MAX_RAW_TX             10000
 #define DISPLAY_SEGMENTED_ADDR false
