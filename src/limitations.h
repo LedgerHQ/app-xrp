@@ -29,23 +29,9 @@
 #define MAX_PATH_COUNT     6
 #define MAX_STEP_COUNT     8
 
-// Hardware dependent limits
-//   Ledger Nano X has 30K RAM
-//   Ledger Nano S has 4K RAM
-#if defined(TARGET_NANOS)
-
-#define MAX_FIELD_COUNT        24
-#define MAX_FIELD_LEN          128
-#define MAX_RAW_TX             800
-#define DISPLAY_SEGMENTED_ADDR true
-
-#else
-
 #define MAX_FIELD_COUNT        60
 #define MAX_FIELD_LEN          1024
 #define MAX_RAW_TX             10000
 #define DISPLAY_SEGMENTED_ADDR false
-
-#endif
 
 #endif  // LEDGER_APP_XRP_LIMITATIONS_H
