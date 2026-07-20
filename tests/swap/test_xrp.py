@@ -3,11 +3,12 @@ from ledger_app_clients.exchange.test_runner import (
     SWAP_TESTS_EXCEPT_THORSWAP,
     ExchangeTestRunner,
 )
+
+from ..xrp import RippleErrors, XRPClient
 from . import cal_helper as cal
 
-
-from ..xrp import XRPClient, RippleErrors
 # from ..utils import DEFAULT_PATH, DEFAULT_BIP32_PATH
+
 
 # ExchangeTestRunner implementation for Ripple
 class RippleTests(ExchangeTestRunner):
@@ -29,17 +30,15 @@ class RippleTests(ExchangeTestRunner):
     signature_refusal_error_code = RippleErrors.SW_SWAP_CHECKING_FAIL
 
     def perform_final_tx(self, destination, send_amount, fees, memo):
-        XRPClient(self.backend).send_simple_sign_tx(path="m/44'/144'/0'/0'/0",
-                                                    fees=fees,
-                                                    memo=memo,
-                                                    destination=destination,
-                                                    send_amount=send_amount)
+        XRPClient(self.backend).send_simple_sign_tx(
+            path="m/44'/144'/0'/0'/0", fees=fees, memo=memo, destination=destination, send_amount=send_amount
+        )
 
         # TODO : assert signature validity
 
 
 # Use a class to reuse the same Speculos instance
 class TestsRipple:
-    @pytest.mark.parametrize('test_to_run', SWAP_TESTS_EXCEPT_THORSWAP)
+    @pytest.mark.parametrize("test_to_run", SWAP_TESTS_EXCEPT_THORSWAP)
     def test_ripple(self, backend, exchange_navigation_helper, test_to_run):
         RippleTests(backend, exchange_navigation_helper).run_test(test_to_run)

@@ -11,6 +11,4 @@ XRP_CONF = create_currency_config("XRP", "XRP")
 # Serialized derivation path for the XRP app
 XRP_PACKED_DERIVATION_PATH = pack_derivation_path("m/" + DEFAULT_PATH)
 # Coin configuration mock as stored in CAL for the SWAP feature
-XRP_CURRENCY_CONFIGURATION = CurrencyConfiguration(
-    ticker="XRP", conf=XRP_CONF, packed_derivation_path=XRP_PACKED_DERIVATION_PATH
-)
+XRP_CURRENCY_CONFIGURATION = CurrencyConfiguration(ticker="XRP", conf=XRP_CONF, packed_derivation_path=XRP_PACKED_DERIVATION_PATH)
