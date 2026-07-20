@@ -32,6 +32,10 @@
 #define MAX_FIELD_COUNT        60
 #define MAX_FIELD_LEN          1024
 #define MAX_RAW_TX             10000
+#ifdef TARGET_NANOS
+#define DISPLAY_SEGMENTED_ADDR true
+#else
 #define DISPLAY_SEGMENTED_ADDR false
+#endif
 
 #endif  // LEDGER_APP_XRP_LIMITATIONS_H
