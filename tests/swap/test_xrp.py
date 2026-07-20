@@ -4,7 +4,7 @@ from ledger_app_clients.exchange.test_runner import (
     ExchangeTestRunner,
 )
 
-from ..xrp import RippleErrors, XRPClient
+from ..standalone.xrp import RippleErrors, XRPClient
 from . import cal_helper as cal
 
 # from ..utils import DEFAULT_PATH, DEFAULT_BIP32_PATH

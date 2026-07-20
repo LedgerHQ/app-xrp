@@ -29,12 +29,13 @@
 #define MAX_PATH_COUNT     6
 #define MAX_STEP_COUNT     8
 
-#define MAX_FIELD_COUNT        60
-#define MAX_FIELD_LEN          1024
-#define MAX_RAW_TX             10000
+#define MAX_FIELD_COUNT 60
+#define MAX_RAW_TX      10000
 #ifdef TARGET_NANOS
+#define MAX_FIELD_LEN          128
 #define DISPLAY_SEGMENTED_ADDR true
 #else
+#define MAX_FIELD_LEN          1024
 #define DISPLAY_SEGMENTED_ADDR false
 #endif
 

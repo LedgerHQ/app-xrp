@@ -53,7 +53,7 @@ def verify_version(root_path: Path, version: str) -> None:
     """Verify the app version, based on defines in Makefile"""
 
     print(f"version: {version}")
-    makefile = f"{root_path.parent.resolve()}/Makefile"
+    makefile = f"{root_path.parent.parent.resolve()}/Makefile"
     print(f"{makefile}")
     with open(makefile, encoding="utf-8") as f_p:
         lines = f_p.readlines()
