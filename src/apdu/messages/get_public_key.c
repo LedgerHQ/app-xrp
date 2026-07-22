@@ -65,10 +65,7 @@ void on_address_confirmed() {
 
 void on_address_rejected() {
     pubkey_confirmation_pending = false;
-    G_io_apdu_buffer[0] = 0x69;
-    G_io_apdu_buffer[1] = 0x85;
-    // Send back the response, do not restart the event loop
-    io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, 2);
+    io_send_sw(0x6985);
 #ifndef HAVE_NBGL
     // Display back the original UX
     display_idle_menu();
