@@ -91,6 +91,12 @@ static const char* testcases[] = {
     "../../tests/standalone/testcases/18-arrays/01-basic.raw",
     "../../tests/standalone/testcases/18-arrays/02-multiple.raw",
     "../../tests/standalone/testcases/18-arrays/03-not-last.raw",
+    // Multisigned Payment with a Signers array sized to 5 signers (5 base +
+    // 5 * 3 = 20 display fields, 744-byte tx). This unit-only fixture is kept
+    // out of tests/standalone/testcases to avoid device functional snapshots;
+    // the committed snapshot is generated in the unit-test format. The
+    // >8-signer case is covered by test_multisign_max_signers below.
+    "../testcases/30-multi-sign/01-nanos-5-signers.raw",
     "../../tests/standalone/testcases/19-nftoken-mint/01-basic.raw",
     "../../tests/standalone/testcases/19-nftoken-mint/02-burnable.raw",
     "../../tests/standalone/testcases/19-nftoken-mint/03-only-xrp.raw",
@@ -280,10 +286,33 @@ void test_invalid_transactions(void** state) {
     }
 }
 
+// Multisigned Payment carrying 18 Signer entries (5 base + 18 * 3 = 59 display
+// fields). This is the largest Signers array the raised MAX_ARRAY_LEN (18)
+// permits; with MAX_FIELD_COUNT = 60 the whole transaction must still parse.
+// Asserted directly rather than via a snapshot because no device-format
+// snapshot is committed for an 18-signer transaction.
+void test_multisign_max_signers(void** state) {
+    (void)state;
+
+    size_t size;
+    uint8_t* data =
+        load_transaction_data("../testcases/30-multi-sign/02-max-18-signers.raw", &size);
+
+    memset(&parse_context, 0, sizeof(parse_context));
+    parse_context.data = data;
+    parse_context.length = size;
+
+    assert_int_equal(parse_tx(&parse_context), 0);
+    assert_int_equal(parse_context.result.num_fields, 5 + 18 * 3);
+
+    free(data);
+}
+
 int main() {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_transactions),
         cmocka_unit_test(test_invalid_transactions),
+        cmocka_unit_test(test_multisign_max_signers),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
