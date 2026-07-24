@@ -33,9 +33,9 @@
 // fields which, together with the base transaction fields, still fits the
 // budget; 19 items would overflow it. 18 is therefore the highest value that
 // lets a fully populated multisigned transaction render on the latest models.
-#define MAX_ARRAY_LEN      18
-#define MAX_PATH_COUNT     6
-#define MAX_STEP_COUNT     8
+#define MAX_ARRAY_LEN  18
+#define MAX_PATH_COUNT 6
+#define MAX_STEP_COUNT 8
 
 #define MAX_FIELD_COUNT 60
 #define MAX_RAW_TX      10000
