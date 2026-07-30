@@ -28,8 +28,8 @@ include $(BOLOS_SDK)/Makefile.target
 APPNAME = XRP
 
 APPVERSION_M=2
-APPVERSION_N=6
-APPVERSION_P=1
+APPVERSION_N=7
+APPVERSION_P=0
 APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 
 # Application source files
@@ -77,8 +77,6 @@ VARIANT_VALUES = xrp
 #     Application custom permissions   #
 ########################################
 # See SDK `include/appflags.h` for the purpose of each permission
-#HAVE_APPLICATION_FLAG_DERIVE_MASTER = 1
-#HAVE_APPLICATION_FLAG_GLOBAL_PIN = 1
 HAVE_APPLICATION_FLAG_BOLOS_SETTINGS = 1
 HAVE_APPLICATION_FLAG_LIBRARY = 1
 
@@ -99,21 +97,6 @@ ENABLE_SWAP = 1
 #         NBGL custom features         #
 ########################################
 ENABLE_NBGL_QRCODE = 1
-#ENABLE_NBGL_KEYBOARD = 1
-#ENABLE_NBGL_KEYPAD = 1
-
-########################################
-#          Features disablers          #
-########################################
-# These advanced settings allow to disable some feature that are by
-# default enabled in the SDK `Makefile.standard_app`.
-#DISABLE_STANDARD_APP_FILES = 1
-#DISABLE_DEFAULT_IO_SEPROXY_BUFFER_SIZE = 1 # To allow custom size declaration
-#DISABLE_STANDARD_APP_DEFINES = 1 # Will set all the following disablers
-#DISABLE_STANDARD_SNPRINTF = 1
-#DISABLE_STANDARD_USB = 1
-#DISABLE_STANDARD_WEBUSB = 1
-# DISABLE_STANDARD_BAGL_UX_FLOW = 1
 
 ########################################
 #        Main app configuration        #
