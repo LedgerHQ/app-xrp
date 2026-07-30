@@ -74,7 +74,6 @@ typedef union {
 extern tmpCtx_t tmp_ctx;
 extern signState_e sign_state;
 extern approvalStrings_t approval_strings;
-extern bool called_from_swap;
 
 void reset_transaction_context();
 

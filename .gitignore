@@ -15,3 +15,8 @@ fuzzing/crash*
 # Curated seed inputs (*.raw) remain tracked.
 fuzzing/corpus/*/*
 !fuzzing/corpus/*/*.raw
+
+# Helper script git clone
+tests/swap/.test_dependencies/
+tests/swap/snapshots-tmp/
+
