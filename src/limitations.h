@@ -26,14 +26,17 @@
 #define MAX_ENC_INPUT_SIZE 26
 #define MAX_FIELDNAME_LEN  50
 // Maximum number of entries allowed in an array field (e.g. Signers,
-// SignerEntries, Memos). A single array item can expand into as many as three
-// displayed fields (a multisign Signer yields Sig.PubKey, Txn Sig. and
-// Account), so the effective ceiling is governed by MAX_FIELD_COUNT. On the
-// largest devices (MAX_FIELD_COUNT = 60) an 18-item array uses 18 * 3 = 54
-// fields which, together with the base transaction fields, still fits the
-// budget; 19 items would overflow it. 18 is therefore the highest value that
-// lets a fully populated multisigned transaction render on the latest models.
-#define MAX_ARRAY_LEN  18
+// SignerEntries, Memos). This is a coarse per-array cap; the real ceiling is
+// MAX_FIELD_COUNT, because each array item expands into a variable number of
+// displayed fields: a SignerListSet SignerEntry yields 2 (Account,
+// SignerWeight), whereas a multisign Signer yields 3 (Account, Sig.PubKey,
+// Txn Sig.). With MAX_FIELD_COUNT = 60 and ~5 base fields, a 2-field array
+// (SignerEntries) fits up to (60 - 5) / 2 = 27 items, while a 3-field array
+// (Signers) is bounded at 18 by the field budget (append_new_field returns
+// NOT_ENOUGH_SPACE beyond that). 27 lets SignerListSet configure the larger
+// signer lists enabled by the ExpandedSignerList amendment; transactions whose
+// items overflow the 60-field budget are still rejected gracefully.
+#define MAX_ARRAY_LEN  27
 #define MAX_PATH_COUNT 6
 #define MAX_STEP_COUNT 8
 

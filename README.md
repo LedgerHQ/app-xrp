@@ -241,7 +241,7 @@ hardware wallet:
 - Maximum fields per transaction: 24 fields
 - Maximum displayed field value length: 128 characters
 - Maximum transaction size: 800 bytes
-- Maximum number of elements per array field: 18 elements
+- Maximum number of elements per array field: 27 elements
 - Multi-sign support: Parallel only
 
 #### Ledger Nano X
@@ -249,7 +249,7 @@ hardware wallet:
 - Maximum fields per transaction: 60 fields
 - Maximum displayed field value length: 1024 characters
 - Maximum transaction size: 10 000 bytes
-- Maximum number of elements per array field: 18 elements
+- Maximum number of elements per array field: 27 elements
 - Multi-sign support: Parallel only
 
 ## Building
