@@ -4,10 +4,9 @@
 #include <cmocka.h>
 #include <string.h>
 
-#include "../src/swap/handle_check_address.h"
-#include "../src/swap/swap_utils.h"
 #include "../src/xrp/xrp_helpers.h"
 #include "cx.h"
+#include "swap_utils.h"
 
 void test_check_address(void** state) {
     (void)state;

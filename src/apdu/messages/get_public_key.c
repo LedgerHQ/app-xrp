@@ -25,6 +25,7 @@
 #include "constants.h"
 #include "global.h"
 #include "idle_menu.h"
+#include "io.h"
 #include "os_io_usb.h"
 #include "xrp_helpers.h"
 #include "xrp_parse.h"
@@ -33,34 +34,29 @@
 static bool pubkey_confirmation_pending = false;
 static publicKeyContext_t pending_pubkey_ctx;
 
-uint32_t set_result_get_public_key() {
+int set_result_get_public_key(void) {
+    uint8_t buf[1 + XRP_PUBKEY_SIZE + 1 + XRP_ADDRESS_SIZE + 32];
     uint32_t tx = 0;
     uint32_t address_length = strlen(tmp_ctx.public_key_context.address.buf);
-    G_io_apdu_buffer[tx++] = XRP_PUBKEY_SIZE;
-    xrp_pubkey_t* pubkey = (xrp_pubkey_t*)(G_io_apdu_buffer + tx);
-    xrp_compress_public_key(&tmp_ctx.public_key_context.public_key, pubkey);
+    buf[tx++] = XRP_PUBKEY_SIZE;
+    xrp_compress_public_key(&tmp_ctx.public_key_context.public_key,
+                            (xrp_pubkey_t*)(buf + tx));
     tx += XRP_PUBKEY_SIZE;
-    G_io_apdu_buffer[tx++] = address_length;
-    memmove(G_io_apdu_buffer + tx, tmp_ctx.public_key_context.address.buf,
-            address_length);
+    buf[tx++] = address_length;
+    memmove(buf + tx, tmp_ctx.public_key_context.address.buf, address_length);
     tx += address_length;
     if (tmp_ctx.public_key_context.get_chaincode) {
-        memmove(G_io_apdu_buffer + tx, tmp_ctx.public_key_context.chain_code,
-                32);
+        memmove(buf + tx, tmp_ctx.public_key_context.chain_code, 32);
         tx += 32;
     }
-    return tx;
+    return io_send_response_pointer(buf, tx, 0x9000);
 }
 
 void on_address_confirmed() {
     pubkey_confirmation_pending = false;
     memcpy(&tmp_ctx.public_key_context, &pending_pubkey_ctx,
            sizeof(publicKeyContext_t));
-    uint32_t tx = set_result_get_public_key();
-    G_io_apdu_buffer[tx++] = 0x90;
-    G_io_apdu_buffer[tx++] = 0x00;
-    // Send back the response, do not restart the event loop
-    io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
+    set_result_get_public_key();
 #ifndef HAVE_NBGL
     // Display back the original UX
     display_idle_menu();
@@ -69,25 +65,21 @@ void on_address_confirmed() {
 
 void on_address_rejected() {
     pubkey_confirmation_pending = false;
-    G_io_apdu_buffer[0] = 0x69;
-    G_io_apdu_buffer[1] = 0x85;
-    // Send back the response, do not restart the event loop
-    io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, 2);
+    io_send_sw(0x6985);
 #ifndef HAVE_NBGL
     // Display back the original UX
     display_idle_menu();
 #endif
 }
 
-void handle_get_public_key(uint8_t p1, uint8_t p2, uint8_t* data_buffer,
-                           uint16_t data_length, volatile unsigned int* flags,
-                           volatile unsigned int* tx) {
+int handle_get_public_key(uint8_t p1, uint8_t p2, uint8_t* data_buffer,
+                          uint16_t data_length) {
     if (data_length < 1) {
-        THROW(0x6a80);
+        return io_send_sw(0x6a80);
     }
 
     if (pubkey_confirmation_pending) {
-        THROW(0x6985);
+        return io_send_sw(0x6985);
     }
 
     uint8_t bip32_path_length = *(data_buffer++);
@@ -96,16 +88,16 @@ void handle_get_public_key(uint8_t p1, uint8_t p2, uint8_t* data_buffer,
     cx_curve_t curve;
 
     if ((p1 != P1_CONFIRM) && (p1 != P1_NON_CONFIRM)) {
-        THROW(0x6B00);
+        return io_send_sw(0x6B00);
     }
     if ((p2_chain != P2_CHAINCODE) && (p2_chain != P2_NO_CHAINCODE)) {
-        THROW(0x6B00);
+        return io_send_sw(0x6B00);
     }
     if (((p2 & P2_SECP256K1) == 0) && ((p2 & P2_ED25519) == 0)) {
-        THROW(0x6B00);
+        return io_send_sw(0x6B00);
     }
     if (((p2 & P2_SECP256K1) != 0) && ((p2 & P2_ED25519) != 0)) {
-        THROW(0x6B00);
+        return io_send_sw(0x6B00);
     }
 
     curve = (((p2 & P2_ED25519) != 0) ? CX_CURVE_Ed25519 : CX_CURVE_256K1);
@@ -119,7 +111,7 @@ void handle_get_public_key(uint8_t p1, uint8_t p2, uint8_t* data_buffer,
     error = get_public_key(curve, data_buffer, bip32_path_length, data_length,
                            &pending_pubkey_ctx.public_key, chain_code);
     if (error != 0) {
-        THROW(error);
+        return io_send_sw(error);
     }
 
     io_seproxyhal_io_heartbeat();
@@ -128,14 +120,13 @@ void handle_get_public_key(uint8_t p1, uint8_t p2, uint8_t* data_buffer,
     if (p1 == P1_NON_CONFIRM) {
         memcpy(&tmp_ctx.public_key_context, &pending_pubkey_ctx,
                sizeof(publicKeyContext_t));
-        *tx = set_result_get_public_key();
-        THROW(0x9000);
+        return set_result_get_public_key();
     } else {
         pubkey_confirmation_pending = true;
         display_address_confirmation_ui(pending_pubkey_ctx.address.buf,
                                         on_address_confirmed,
                                         on_address_rejected);
 
-        *flags |= IO_ASYNCH_REPLY;
+        return 0;
     }
 }

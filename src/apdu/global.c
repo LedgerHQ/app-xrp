@@ -21,11 +21,11 @@
 #include <string.h>
 
 #include "sign_transaction.h"
+#include "swap.h"
 
 tmpCtx_t tmp_ctx;
 signState_e sign_state;
 approvalStrings_t approval_strings;
-bool called_from_swap;
 
 void reset_transaction_context() {
     explicit_bzero(&parse_context, sizeof(parseContext_t));
@@ -33,7 +33,7 @@ void reset_transaction_context() {
 
     sign_state = IDLE;
 
-    if (!called_from_swap) {
+    if (!G_called_from_swap) {
         explicit_bzero(&approval_strings, sizeof(approval_strings));
     }
 }

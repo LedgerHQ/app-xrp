@@ -20,11 +20,15 @@
 
 #include <os.h>
 
-void handle_get_app_configuration(volatile unsigned int* tx) {
-    G_io_apdu_buffer[0] = 0x00;
-    G_io_apdu_buffer[1] = MAJOR_VERSION;
-    G_io_apdu_buffer[2] = MINOR_VERSION;
-    G_io_apdu_buffer[3] = PATCH_VERSION;
-    *tx = 4;
-    THROW(0x9000);
+#include "io.h"
+
+int handle_get_app_configuration(void) {
+    uint8_t buf[4];
+    uint32_t tx = 0;
+    buf[0] = 0x00;
+    buf[1] = MAJOR_VERSION;
+    buf[2] = MINOR_VERSION;
+    buf[3] = PATCH_VERSION;
+    tx = 4;
+    return io_send_response_pointer(buf, tx, 0x9000);
 }

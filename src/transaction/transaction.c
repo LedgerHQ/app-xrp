@@ -31,6 +31,7 @@
 #include "globals.h"
 #include "handle_swap_sign_transaction.h"
 #include "readers.h"
+#include "swap.h"
 #include "transaction_types.h"
 #include "xrp_helpers.h"
 
@@ -100,7 +101,7 @@ displayed with the approval flow):
 }
  */
 bool check_swap_conditions_and_sign(parseResult_t* transaction) {
-    if (!called_from_swap) {
+    if (!G_called_from_swap) {
         PRINTF("Not called from swap!\n");
         return false;
     }
@@ -185,7 +186,7 @@ void review_transaction(parseResult_t* transaction, action_t on_approve,
     approval_action = on_approve;
     rejection_action = on_reject;
 
-    if (called_from_swap) {
+    if (G_called_from_swap) {
         if (check_swap_conditions_and_sign(transaction)) {
             approval_action();
             finalize_exchange_sign_transaction(true);
