@@ -197,15 +197,15 @@ err_t read_fixed_size_field(parseContext_t* context, field_t* field,
     return advance_position(context, length);
 }
 
-err_t read_variable_length_field(parseContext_t* context, field_t* field) {
+static err_t read_vl_length(parseContext_t* context, uint16_t* data_length) {
     uint8_t value;
     err_t err;
 
     CHECK(read_next_byte(context, &value));
 
-    uint16_t data_length = value;
-    if (data_length > 192) {
-        if (data_length > 240) {
+    *data_length = value;
+    if (*data_length > 192) {
+        if (*data_length > 240) {
             // It is impossible to send a transaction large enough to
             // hold a field with a length of 12481 or greater, so we
             // should never reach this point with a valid transaction
@@ -215,8 +215,18 @@ err_t read_variable_length_field(parseContext_t* context, field_t* field) {
 
         uint8_t length_byte2;
         CHECK(read_next_byte(context, &length_byte2));
-        data_length = 193 + ((data_length - 193) * 256) + length_byte2;
+        *data_length = 193 + ((*data_length - 193) * 256) + length_byte2;
     }
+
+    err.err = SUCCESS;
+    return err;
+}
+
+err_t read_variable_length_field(parseContext_t* context, field_t* field) {
+    uint16_t data_length;
+    err_t err;
+
+    CHECK(read_vl_length(context, &data_length));
 
     return read_fixed_size_field(context, field, data_length);
 }
@@ -260,12 +270,22 @@ err_t read_vector256_field(parseContext_t* context, field_t* field) {
     field->data_type = STI_VECTOR256;
 
     err_t err;
-    uint8_t value;
+    uint16_t data_length;
 
-    CHECK(read_next_byte(context, &value));
+    CHECK(read_vl_length(context, &data_length));
 
-    uint16_t count = value / XRP_VECTOR256_SIZE;
-    CHECK(read_fixed_size_field(context, field, XRP_VECTOR256_SIZE * count));
+    if ((data_length % XRP_VECTOR256_SIZE) != 0) {
+        err.err = INVALID_STATE;
+        return err;
+    }
+
+    uint16_t count = data_length / XRP_VECTOR256_SIZE;
+    if (count > (MAX_FIELD_COUNT - context->result.num_fields)) {
+        err.err = NOT_ENOUGH_SPACE;
+        return err;
+    }
+
+    CHECK(read_fixed_size_field(context, field, data_length));
     for (size_t i = 0; i < count; i++) {
         field_t* hash256;
         CHECK(append_new_field(context, &hash256));

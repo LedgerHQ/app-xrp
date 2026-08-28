@@ -101,6 +101,7 @@ static const char* testcases[] = {
     "../../tests/standalone/testcases/21-nftoken-create-offer/03-buy.raw",
     "../../tests/standalone/testcases/21-nftoken-create-offer/04-buy-expiration.raw",
     "../../tests/standalone/testcases/22-nftoken-cancel-offer/01-basic.raw",
+    "../../tests/standalone/testcases/22-nftoken-cancel-offer/02-large-vector.raw",
     "../../tests/standalone/testcases/23-nftoken-accept-offer/01-basic.raw",
     "../../tests/standalone/testcases/23-nftoken-accept-offer/02-broker.raw",
     "../../tests/standalone/testcases/24-clawback/01-basic.raw",
@@ -127,6 +128,9 @@ static const char* negative_testcases[] = {
     // Composite path step type 0x11 (account|currency bitmask) is explicitly
     // forbidden by the XRPL spec; only 0x01, 0x10, 0x20, 0x30 are valid.
     "../../tests/standalone/testcases/01-payment/24-invalid-path-step-type.raw",
+    // STVector256 length not a multiple of 32 must be rejected, not
+    // silently truncated.
+    "../../tests/standalone/testcases/22-nftoken-cancel-offer/03-invalid-vector-length.raw",
     NULL,
 };
 
