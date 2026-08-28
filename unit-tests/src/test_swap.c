@@ -1,7 +1,9 @@
+// clang-format off
 #include <setjmp.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <cmocka.h>
+// clang-format on
 #include <string.h>
 
 #include "../src/xrp/xrp_helpers.h"

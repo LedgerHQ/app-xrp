@@ -1,8 +1,10 @@
+// clang-format off
 #include <setjmp.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <cmocka.h>
+// clang-format on
 #include <string.h>
 
 #include "../src/xrp/fmt.h"

@@ -2,7 +2,7 @@
 # pre-commit install --hook-type pre-commit
 # pre-commit install --hook-type commit-msg
 
-exclude: '^tests/testcases/'
+exclude: '^tests/standalone/testcases/'
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
