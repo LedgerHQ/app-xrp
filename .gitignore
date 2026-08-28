@@ -4,7 +4,7 @@ __pycache__/
 .cache/
 tests/build/
 build/
-tests/snapshots-tmp
+tests/standalone/snapshots-tmp
 venv/
 unit-tests/build*
 unit-tests/coverage*
