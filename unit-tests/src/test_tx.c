@@ -21,12 +21,17 @@ static const char* testcases[] = {
     "../../tests/standalone/testcases/01-payment/06-invoice-txn-ids-tags.raw",
     "../../tests/standalone/testcases/01-payment/07-issued-currency.raw",
     "../../tests/standalone/testcases/01-payment/08-issued-currency-max.raw",
-    "../../tests/standalone/testcases/01-payment/09-issued-currency-min-partial.raw",
-    "../../tests/standalone/testcases/01-payment/10-issued-currency-quality-partial.raw",
+    "../../tests/standalone/testcases/01-payment/"
+    "09-issued-currency-min-partial.raw",
+    "../../tests/standalone/testcases/01-payment/"
+    "10-issued-currency-quality-partial.raw",
     "../../tests/standalone/testcases/01-payment/11-issued-currency-paths.raw",
-    "../../tests/standalone/testcases/01-payment/12-issued-currency-conversion.raw",
-    "../../tests/standalone/testcases/01-payment/13-issued-currency-e-notation.raw",
-    "../../tests/standalone/testcases/01-payment/14-issued-currency-non-standard.raw",
+    "../../tests/standalone/testcases/01-payment/"
+    "12-issued-currency-conversion.raw",
+    "../../tests/standalone/testcases/01-payment/"
+    "13-issued-currency-e-notation.raw",
+    "../../tests/standalone/testcases/01-payment/"
+    "14-issued-currency-non-standard.raw",
     "../../tests/standalone/testcases/01-payment/15-issue-abc-currency.raw",
     "../../tests/standalone/testcases/01-payment/16-memos.raw",
     "../../tests/standalone/testcases/01-payment/17-multi-sign-parallel.raw",
@@ -36,13 +41,16 @@ static const char* testcases[] = {
     "../../tests/standalone/testcases/01-payment/23-xrp-nonstandard-spoof.raw",
     "../../tests/standalone/testcases/02-set-regular-key/01-basic.raw",
     "../../tests/standalone/testcases/02-set-regular-key/02-delete.raw",
-    "../../tests/standalone/testcases/02-set-regular-key/03-all-common-fields.raw",
+    "../../tests/standalone/testcases/02-set-regular-key/"
+    "03-all-common-fields.raw",
     "../../tests/standalone/testcases/03-escrow-create/01-finish-after.raw",
     "../../tests/standalone/testcases/03-escrow-create/02-cancel-after.raw",
     "../../tests/standalone/testcases/03-escrow-create/03-both.raw",
     "../../tests/standalone/testcases/03-escrow-create/04-both-condition.raw",
-    "../../tests/standalone/testcases/03-escrow-create/05-both-condition-destination.raw",
-    "../../tests/standalone/testcases/03-escrow-create/06-all-common-fields.raw",
+    "../../tests/standalone/testcases/03-escrow-create/"
+    "05-both-condition-destination.raw",
+    "../../tests/standalone/testcases/03-escrow-create/"
+    "06-all-common-fields.raw",
     "../../tests/standalone/testcases/04-escrow-finish/01-time-based.raw",
     "../../tests/standalone/testcases/04-escrow-finish/02-condition-based.raw",
     "../../tests/standalone/testcases/05-escrow-cancel/01-basic.raw",
@@ -55,7 +63,8 @@ static const char* testcases[] = {
     "../../tests/standalone/testcases/06-account-set/07-no-freeze.raw",
     "../../tests/standalone/testcases/06-account-set/08-require-auth.raw",
     "../../tests/standalone/testcases/06-account-set/09-require-tag.raw",
-    "../../tests/standalone/testcases/06-account-set/10-clear-account-txn-id.raw",
+    "../../tests/standalone/testcases/06-account-set/"
+    "10-clear-account-txn-id.raw",
     "../../tests/standalone/testcases/07-check-cancel/01-basic.raw",
     "../../tests/standalone/testcases/08-check-cash/01-basic.raw",
     "../../tests/standalone/testcases/08-check-cash/02-amount.raw",
@@ -68,7 +77,8 @@ static const char* testcases[] = {
     "../../tests/standalone/testcases/11-offer-cancel/01-basic.raw",
     "../../tests/standalone/testcases/12-offer-create/01-basic.raw",
     "../../tests/standalone/testcases/12-offer-create/02-passive.raw",
-    "../../tests/standalone/testcases/12-offer-create/03-immediate-or-cancel.raw",
+    "../../tests/standalone/testcases/12-offer-create/"
+    "03-immediate-or-cancel.raw",
     "../../tests/standalone/testcases/12-offer-create/04-fill-or-kill.raw",
     "../../tests/standalone/testcases/12-offer-create/05-sell.raw",
     "../../tests/standalone/testcases/12-offer-create/06-combo.raw",
@@ -86,7 +96,8 @@ static const char* testcases[] = {
     "../../tests/standalone/testcases/17-trust-set/05-rippling.raw",
     "../../tests/standalone/testcases/17-trust-set/06-freeze.raw",
     "../../tests/standalone/testcases/17-trust-set/07-unfreeze.raw",
-    "../../tests/standalone/testcases/17-trust-set/08-non-standard-currency.raw",
+    "../../tests/standalone/testcases/17-trust-set/"
+    "08-non-standard-currency.raw",
     "../../tests/standalone/testcases/17-trust-set/09-remove.raw",
     "../../tests/standalone/testcases/18-arrays/01-basic.raw",
     "../../tests/standalone/testcases/18-arrays/02-multiple.raw",
@@ -97,11 +108,14 @@ static const char* testcases[] = {
     "../../tests/standalone/testcases/19-nftoken-mint/04-transferable.raw",
     "../../tests/standalone/testcases/20-nftoken-burn/01-basic.raw",
     "../../tests/standalone/testcases/21-nftoken-create-offer/01-sell.raw",
-    "../../tests/standalone/testcases/21-nftoken-create-offer/02-sell-destination.raw",
+    "../../tests/standalone/testcases/21-nftoken-create-offer/"
+    "02-sell-destination.raw",
     "../../tests/standalone/testcases/21-nftoken-create-offer/03-buy.raw",
-    "../../tests/standalone/testcases/21-nftoken-create-offer/04-buy-expiration.raw",
+    "../../tests/standalone/testcases/21-nftoken-create-offer/"
+    "04-buy-expiration.raw",
     "../../tests/standalone/testcases/22-nftoken-cancel-offer/01-basic.raw",
-    "../../tests/standalone/testcases/22-nftoken-cancel-offer/02-large-vector.raw",
+    "../../tests/standalone/testcases/22-nftoken-cancel-offer/"
+    "02-large-vector.raw",
     "../../tests/standalone/testcases/23-nftoken-accept-offer/01-basic.raw",
     "../../tests/standalone/testcases/23-nftoken-accept-offer/02-broker.raw",
     "../../tests/standalone/testcases/24-clawback/01-basic.raw",
@@ -130,7 +144,16 @@ static const char* negative_testcases[] = {
     "../../tests/standalone/testcases/01-payment/24-invalid-path-step-type.raw",
     // STVector256 length not a multiple of 32 must be rejected, not
     // silently truncated.
-    "../../tests/standalone/testcases/22-nftoken-cancel-offer/03-invalid-vector-length.raw",
+    "../../tests/standalone/testcases/22-nftoken-cancel-offer/"
+    "03-invalid-vector-length.raw",
+    // A TransactionType nested inside another field, disagreeing with the
+    // top-level one, must not override it and bypass blind signing.
+    "../../tests/standalone/testcases/01-payment/"
+    "25-nested-transaction-type.raw",
+    // A duplicate top-level TransactionType (unsupported, then supported)
+    // must not let the second occurrence override the first.
+    "../../tests/standalone/testcases/01-payment/"
+    "26-duplicate-transaction-type.raw",
     NULL,
 };
 

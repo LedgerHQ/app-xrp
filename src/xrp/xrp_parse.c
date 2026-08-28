@@ -44,10 +44,18 @@ static bool has_data(parseContext_t* context, uint32_t num_bytes) {
 }
 
 static bool has_field(parseContext_t* context, field_type_t data_type,
-                      uint8_t id) {
+                      uint8_t id, bool top_level_only) {
     for (uint8_t i = 0; i < context->result.num_fields; ++i) {
         field_t* field = &context->result.fields[i];
-        if (field->data_type == data_type && field->id == id) {
+        // Same type and id as what we're looking for.
+        bool type_and_id_match =
+            field->data_type == data_type && field->id == id;
+        // If top-level-only is requested, the field must sit outside any
+        // array/object; otherwise any nesting level is fine.
+        bool level_matches =
+            top_level_only ? field->array_info.type == ARRAY_NONE : true;
+
+        if (type_and_id_match && level_matches) {
             return true;
         }
     }
@@ -340,12 +348,15 @@ err_t handle_object_field(parseContext_t* context, field_t* field) {
     if (field->id != OBJ_END) {
         // Normal object, only increment first array index
         context->array_index1++;
+        context->object_depth++;
 
         // Explicitly limit the maximum number of array items
         if (context->array_index1 > MAX_ARRAY_LEN) {
             err.err = NOT_SUPPORTED;
             return err;
         }
+    } else if (context->object_depth > 0) {
+        context->object_depth--;
     }
 
     err.err = SUCCESS;
@@ -538,17 +549,34 @@ err_t post_process_field(parseContext_t* context, field_t* field) {
 
     switch (field->data_type) {
         case STI_UINT16:
-            // Record the transaction type since it must be available for the
-            // formatting of certain values
+            // Trust only the first top-level TransactionType field. A
+            // later occurrence, at any nesting level, could disagree with
+            // it. Force blind signing in that case.
             if (is_transaction_type_field(field)) {
-                context->transaction_type = field->data.u16;
+                // Not inside any array/object.
+                bool is_top_level = field->array_info.type == ARRAY_NONE &&
+                                    context->object_depth == 0;
+                // No top-level TransactionType field has been recorded yet.
+                bool is_first_occurrence =
+                    context->transaction_type == TRANSACTION_INVALID;
+
+                if (is_top_level && is_first_occurrence) {
+                    context->transaction_type = field->data.u16;
+                } else {
+                    err.err = BLIND_SIGN_REQUIRED;
+                    return err;
+                }
             }
             break;
         case STI_UINT32:
             break;
         case STI_VL:
-            // Detect when SigningPubKey is empty (needed for multi-sign)
-            if (field->id == XRP_VL_SIGNING_PUB_KEY && field->length == 0) {
+            // Detect when SigningPubKey is empty (needed for multi-sign).
+            // Defence in depth: only a top-level occurrence counts, so one
+            // nested inside an array/object cannot spoof this.
+            if (field->id == XRP_VL_SIGNING_PUB_KEY && field->length == 0 &&
+                field->array_info.type == ARRAY_NONE &&
+                context->object_depth == 0) {
                 context->has_empty_pub_key = true;
             }
             break;
@@ -574,7 +602,7 @@ err_t post_process_transaction(parseContext_t* context) {
 
     // Append "empty" regular key field when clearing it
     if (context->transaction_type == TRANSACTION_SET_REGULAR_KEY &&
-        !has_field(context, STI_ACCOUNT, 8)) {
+        !has_field(context, STI_ACCOUNT, 8, false)) {
         field_t* field;
         CHECK(append_new_field(context, &field));
         field->data_type = STI_ACCOUNT;
@@ -603,6 +631,7 @@ err_t parse_tx_internal(parseContext_t* context) {
 
     context->transaction_type = TRANSACTION_INVALID;
     context->has_empty_pub_key = false;
+    context->object_depth = 0;
 
     while (context->offset != context->length) {
         if (context->offset > context->length) {
@@ -623,8 +652,8 @@ err_t parse_tx_internal(parseContext_t* context) {
 
     CHECK(post_process_transaction(context));
 
-    if (!has_field(context, STI_UINT16, XRP_UINT16_TRANSACTION_TYPE) ||
-        !has_field(context, STI_ACCOUNT, XRP_ACCOUNT_ACCOUNT)) {
+    if (!has_field(context, STI_UINT16, XRP_UINT16_TRANSACTION_TYPE, true) ||
+        !has_field(context, STI_ACCOUNT, XRP_ACCOUNT_ACCOUNT, true)) {
         err.err = NOT_SUPPORTED;
         return err;
     }
