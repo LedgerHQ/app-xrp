@@ -19,6 +19,7 @@
 #include "get_public_key.h"
 
 #include <os.h>
+#include <status_words.h>
 #include <string.h>
 
 #include "address_ui.h"
@@ -123,9 +124,16 @@ int handle_get_public_key(uint8_t p1, uint8_t p2, uint8_t* data_buffer,
         return set_result_get_public_key();
     } else {
         pubkey_confirmation_pending = true;
-        display_address_confirmation_ui(pending_pubkey_ctx.address.buf,
-                                        on_address_confirmed,
-                                        on_address_rejected);
+        if (!display_address_confirmation_ui(
+                pending_pubkey_ctx.address.buf,
+                strlen(pending_pubkey_ctx.address.buf), on_address_confirmed,
+                on_address_rejected)) {
+            // Nothing was displayed and neither callback will ever fire, so
+            // don't leave the device waiting on a confirmation that will
+            // never come.
+            pubkey_confirmation_pending = false;
+            return io_send_sw(SWO_INCORRECT_DATA);
+        }
 
         return 0;
     }
