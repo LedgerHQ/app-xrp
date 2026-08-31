@@ -81,8 +81,8 @@ static void format_account_set_transaction_flags(uint32_t value,
 #define TF_ALLOW_XRP 0x00200000u
 // Keep in sync with the checks below: every bit this formatter recognizes
 // must be listed here, so has_unknown_flags() can catch anything it does not.
-#define ACCOUNT_SET_KNOWN_FLAGS                                            \
-    (TF_REQUIRE_DEST_TAG | TF_OPTIONAL_DEST_TAG | TF_REQUIRE_AUTH |        \
+#define ACCOUNT_SET_KNOWN_FLAGS                                     \
+    (TF_REQUIRE_DEST_TAG | TF_OPTIONAL_DEST_TAG | TF_REQUIRE_AUTH | \
      TF_OPTIONAL_AUTH | TF_DISALLOW_XRP | TF_ALLOW_XRP)
 
     size_t offset = 0;
@@ -239,7 +239,7 @@ static void format_trust_set_flags(uint32_t value, field_value_t* dst) {
 #define TF_SET_FREEZE 0x00100000u
 #define TF_CLEAR_FREEZE 0x00200000u
 // Keep in sync with the checks below (see ACCOUNT_SET_KNOWN_FLAGS).
-#define TRUST_SET_KNOWN_FLAGS                                           \
+#define TRUST_SET_KNOWN_FLAGS                                               \
     (TF_SETF_AUTH | TF_SET_NO_RIPPLE | TF_CLEAR_NO_RIPPLE | TF_SET_FREEZE | \
      TF_CLEAR_FREEZE)
 
@@ -336,10 +336,10 @@ static void format_nftoken_create_offer_flags(uint32_t value,
 // Keep in sync with the checks in each formatter below (see
 // ACCOUNT_SET_KNOWN_FLAGS). AMMDeposit and AMMWithdraw share most bits but
 // each has some the other does not, so they need separate masks.
-#define AMM_DEPOSIT_KNOWN_FLAGS                                            \
+#define AMM_DEPOSIT_KNOWN_FLAGS                                             \
     (TF_LP_TOKEN | TF_SINGLE_ASSET | TF_TWO_ASSET | TF_ONE_ASSET_LP_TOKEN | \
      TF_LIMIT_LP_TOKEN | TF_TWO_ASSET_IF_EMPTY)
-#define AMM_WITHDRAW_KNOWN_FLAGS                                           \
+#define AMM_WITHDRAW_KNOWN_FLAGS                                            \
     (TF_LP_TOKEN | TF_SINGLE_ASSET | TF_TWO_ASSET | TF_ONE_ASSET_LP_TOKEN | \
      TF_LIMIT_LP_TOKEN | TF_WITHDRAW_ALL | TF_ONE_ASSET_WITHDRAW_ALL)
 
