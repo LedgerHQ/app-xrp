@@ -277,6 +277,8 @@ def test_sign_valid_tx(
         pytest.skip(f"skip trustline-flag tx from '{Path(raw_tx_path).stem}'")
     if raw_tx_path.endswith("27-unrecognized-field.raw"):
         pytest.skip(f"skip unrecognized-field tx from '{Path(raw_tx_path).stem}'")
+    if raw_tx_path.endswith("28-all-zero-currency-issued-amount.raw"):
+        pytest.skip(f"skip all-zero-currency tx from '{Path(raw_tx_path).stem}'")
 
     xrp = XRPClient(backend, navigator)
 
@@ -322,6 +324,23 @@ def test_sign_invalid_path_step_type(backend: BackendInterface, navigator: Navig
     xrp = XRPClient(backend, navigator)
 
     tx_path = Path(__file__).parent / "testcases/01-payment/24-invalid-path-step-type.raw"
+    with open(tx_path, "rb") as fp:
+        tx = fp.read()
+
+    backend.raise_policy = RaisePolicy.RAISE_ALL_BUT_0x9000
+    with pytest.raises(ExceptionRAPDU) as err:
+        with xrp.sign(DEFAULT_BIP32_PATH + tx):
+            pass  # error is synchronous — returned before yield
+    assert err.value.status != Errors.SW_SUCCESS
+
+
+def test_sign_all_zero_currency_issued_amount(backend: BackendInterface, navigator: Navigator):
+    """An all-zero currency in a 48-byte issued Amount is the reserved native-XRP
+    encoding, but this form always carries an issuer; it must not clear-sign as
+    plain XRP with an attacker-chosen issuer."""
+    xrp = XRPClient(backend, navigator)
+
+    tx_path = Path(__file__).parent / "testcases/01-payment/28-all-zero-currency-issued-amount.raw"
     with open(tx_path, "rb") as fp:
         tx = fp.read()
 

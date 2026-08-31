@@ -170,6 +170,11 @@ static const char* negative_testcases[] = {
     // supported Payment, must not clear-sign with an unlabeled row while
     // still being signed.
     "../../tests/standalone/testcases/01-payment/27-unrecognized-field.raw",
+    // An all-zero currency in a 48-byte issued Amount is the reserved
+    // native-XRP encoding, but this form always carries an issuer, so it
+    // must not clear-sign as plain XRP with an attacker-chosen issuer.
+    "../../tests/standalone/testcases/01-payment/"
+    "28-all-zero-currency-issued-amount.raw",
     NULL,
 };
 
