@@ -14,7 +14,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  ********************************************************************************/
-#ifdef HAVE_NBGL
 #include <os_io_seproxyhal.h>
 #include <string.h>
 #include <ux.h>
@@ -50,4 +49,3 @@ void display_address_confirmation_ui(char* address, action_t on_approve,
                               "Verify XRP Address", NULL,
                               confirmationChoiceClbk);
 }
-#endif  // HAVE_NBGL
