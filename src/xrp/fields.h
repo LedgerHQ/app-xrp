@@ -232,5 +232,6 @@ typedef struct {
 bool is_normal_account_field(field_t *field);
 const char *resolve_field_name(field_t *field);
 bool is_field_hidden(field_t *field);
+bool is_field_recognized(field_t *field);
 
 #endif  // LEDGER_APP_XRP_FIELDS_H

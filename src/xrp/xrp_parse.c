@@ -695,6 +695,18 @@ err_t parse_tx_internal(parseContext_t* context) {
         return err;
     }
 
+    // Every field that survived is_field_hidden() would be shown to the
+    // user during review. A field the app cannot name is a field it
+    // cannot explain, even though it is still part of the signed data.
+    // Force blind signing rather than show an unlabeled "Unknown" row
+    // next to a normal, otherwise-trustworthy-looking review.
+    for (uint8_t i = 0; i < context->result.num_fields; ++i) {
+        if (!is_field_recognized(&context->result.fields[i])) {
+            err.err = BLIND_SIGN_REQUIRED;
+            return err;
+        }
+    }
+
     err.err = SUCCESS;
     return err;
 }

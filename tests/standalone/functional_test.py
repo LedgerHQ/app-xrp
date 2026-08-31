@@ -275,6 +275,8 @@ def test_sign_valid_tx(
         pytest.skip(f"skip unknown-flag tx from '{Path(raw_tx_path).stem}'")
     if raw_tx_path.endswith("07-trustline-flag.raw"):
         pytest.skip(f"skip trustline-flag tx from '{Path(raw_tx_path).stem}'")
+    if raw_tx_path.endswith("27-unrecognized-field.raw"):
+        pytest.skip(f"skip unrecognized-field tx from '{Path(raw_tx_path).stem}'")
 
     xrp = XRPClient(backend, navigator)
 
