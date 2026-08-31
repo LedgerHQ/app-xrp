@@ -265,10 +265,16 @@ def test_sign_valid_tx(
         pytest.skip(f"skip rejected-currency tx from '{Path(raw_tx_path).stem}'")
     if raw_tx_path.endswith("24-invalid-path-step-type.raw"):
         pytest.skip(f"skip invalid-path-step tx from '{Path(raw_tx_path).stem}'")
+    if raw_tx_path.endswith("03-invalid-vector-length.raw"):
+        pytest.skip(f"skip invalid-vector-length tx from '{Path(raw_tx_path).stem}'")
     if raw_tx_path.endswith("25-nested-transaction-type.raw"):
         pytest.skip(f"skip nested-transaction-type tx from '{Path(raw_tx_path).stem}'")
     if raw_tx_path.endswith("26-duplicate-transaction-type.raw"):
         pytest.skip(f"skip duplicate-transaction-type tx from '{Path(raw_tx_path).stem}'")
+    if raw_tx_path.endswith("06-unknown-flag.raw"):
+        pytest.skip(f"skip unknown-flag tx from '{Path(raw_tx_path).stem}'")
+    if raw_tx_path.endswith("07-trustline-flag.raw"):
+        pytest.skip(f"skip trustline-flag tx from '{Path(raw_tx_path).stem}'")
 
     xrp = XRPClient(backend, navigator)
 

@@ -108,6 +108,8 @@ static const char* testcases[] = {
     "../../tests/standalone/testcases/19-nftoken-mint/02-burnable.raw",
     "../../tests/standalone/testcases/19-nftoken-mint/03-only-xrp.raw",
     "../../tests/standalone/testcases/19-nftoken-mint/04-transferable.raw",
+    "../../tests/standalone/testcases/19-nftoken-mint/"
+    "05-transferable-mutable.raw",
     "../../tests/standalone/testcases/20-nftoken-burn/01-basic.raw",
     "../../tests/standalone/testcases/21-nftoken-create-offer/01-sell.raw",
     "../../tests/standalone/testcases/21-nftoken-create-offer/"
@@ -156,6 +158,14 @@ static const char* negative_testcases[] = {
     // must not let the second occurrence override the first.
     "../../tests/standalone/testcases/01-payment/"
     "26-duplicate-transaction-type.raw",
+    // NFTokenMint Flags combining a recognized bit with an unrecognized
+    // one must not clear-sign showing only the recognized bit while the
+    // other vanishes from the review.
+    "../../tests/standalone/testcases/19-nftoken-mint/06-unknown-flag.raw",
+    // tfTrustLine is invalid to set per XRPL's
+    // fixRemoveNFTokenAutoTrustLine amendment; it must not clear-sign as a
+    // normal, usable flag.
+    "../../tests/standalone/testcases/19-nftoken-mint/07-trustline-flag.raw",
     NULL,
 };
 

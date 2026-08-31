@@ -63,6 +63,24 @@ static bool has_field(parseContext_t* context, field_type_t data_type,
     return false;
 }
 
+// Finds the top-level Flags field, if any, and outputs its value. Run only
+// after the whole transaction is parsed, since the byte stream can present
+// Flags before TransactionType, and the known-bits check below needs the
+// transaction type to already be resolved.
+static bool find_top_level_flags_value(parseContext_t* context,
+                                       uint32_t* value) {
+    for (uint8_t i = 0; i < context->result.num_fields; ++i) {
+        field_t* field = &context->result.fields[i];
+        if (field->data_type == STI_UINT32 && field->id == XRP_UINT32_FLAGS &&
+            field->array_info.type == ARRAY_NONE) {
+            *value = field->data.u32;
+            return true;
+        }
+    }
+
+    return false;
+}
+
 static bool is_supported_transaction_type(uint16_t t) {
     switch (t) {
         case TRANSACTION_PAYMENT:
@@ -662,6 +680,17 @@ err_t parse_tx_internal(parseContext_t* context) {
 
     if (context->transaction_type == TRANSACTION_INVALID ||
         !is_supported_transaction_type(context->transaction_type)) {
+        err.err = BLIND_SIGN_REQUIRED;
+        return err;
+    }
+
+    // A flag formatter can only show the bits it recognizes; an
+    // unrecognized bit set alongside a recognized one would otherwise
+    // vanish from the review while still being signed. Force blind
+    // signing instead of a normal, silently-partial review.
+    uint32_t flags_value;
+    if (find_top_level_flags_value(context, &flags_value) &&
+        has_unknown_flags(context->transaction_type, flags_value)) {
         err.err = BLIND_SIGN_REQUIRED;
         return err;
     }
