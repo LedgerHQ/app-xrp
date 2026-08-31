@@ -255,7 +255,7 @@ hardware wallet:
 ## Building
 
 Make sure that you have configured a development environment as outlined in [the development
-documentation](https://ledger.readthedocs.io/en/latest/userspace/getting_started.html)
+documentation](https://developers.ledger.com/docs/device-app/getting-started)
 for Ledger devices. Then run make from the repository root to build the app:
 
 ```sh
@@ -273,6 +273,6 @@ make load
 ## Testing
 
 Manual testing can be conducted with the help of the testing utility
-[TowoLabs/ledger-tests-xrp](https://github.com/TowoLabs/ledger-tests-xrp).
+[Transia-RnD/ledger-tests-xrp](https://github.com/Transia-RnD/ledger-tests-xrp).
 Make sure that your device is running the latest firmware and then follow
 the instructions in the test repository.
