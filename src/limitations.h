@@ -25,9 +25,20 @@
 #define MAX_BIP32_PATH     10
 #define MAX_ENC_INPUT_SIZE 26
 #define MAX_FIELDNAME_LEN  50
-#define MAX_ARRAY_LEN      8
-#define MAX_PATH_COUNT     6
-#define MAX_STEP_COUNT     8
+// Maximum number of entries allowed in an array field (e.g. Signers,
+// SignerEntries, Memos). This is a coarse per-array cap; the real ceiling is
+// MAX_FIELD_COUNT, because each array item expands into a variable number of
+// displayed fields: a SignerListSet SignerEntry yields 2 (Account,
+// SignerWeight), whereas a multisign Signer yields 3 (Account, Sig.PubKey,
+// Txn Sig.). With MAX_FIELD_COUNT = 60 and ~5 base fields, a 2-field array
+// (SignerEntries) fits up to (60 - 5) / 2 = 27 items, while a 3-field array
+// (Signers) is bounded at 18 by the field budget (append_new_field returns
+// NOT_ENOUGH_SPACE beyond that). 27 lets SignerListSet configure the larger
+// signer lists enabled by the ExpandedSignerList amendment; transactions whose
+// items overflow the 60-field budget are still rejected gracefully.
+#define MAX_ARRAY_LEN  27
+#define MAX_PATH_COUNT 6
+#define MAX_STEP_COUNT 8
 
 #define MAX_FIELD_COUNT 60
 #define MAX_RAW_TX      10000

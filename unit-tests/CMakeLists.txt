@@ -77,10 +77,20 @@ add_executable(test_tx
   include/os.h
 )
 
+add_executable(test_signer_list_set
+  src/test_signer_list_set.c
+  src/cx.c
+  include/bolos_target.h
+  include/cx.h
+  include/os.h
+)
+
 target_link_libraries(test_printers PRIVATE cmocka crypto ssl xrp)
 target_link_libraries(test_swap PRIVATE cmocka crypto ssl xrp)
 target_link_libraries(test_tx PRIVATE cmocka crypto ssl xrp)
+target_link_libraries(test_signer_list_set PRIVATE cmocka crypto ssl xrp)
 
 add_test(test_printers test_printers)
 add_test(test_swap test_swap)
 add_test(test_tx test_tx)
+add_test(test_signer_list_set test_signer_list_set)
