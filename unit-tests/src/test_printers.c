@@ -54,6 +54,46 @@ void test_public_key_to_base58_requires_exactly_one_source(void** state) {
     assert_true(xrp_public_key_to_encoded_base58(NULL, &account, &out, 0) > 0);
 }
 
+void test_cx_hash_no_throw_rejects_undersized_buffer(void** state) {
+    (void)state;
+
+    cx_sha256_t sha256_hash;
+    cx_sha256_init(&sha256_hash);
+    unsigned char in[] = "some data";
+    unsigned char canary_guard[36];
+    memset(canary_guard, 0xAA, sizeof(canary_guard));
+
+    // Too small: must error out without writing anything, canary untouched.
+    assert_int_equal(cx_hash_no_throw(&sha256_hash.header, CX_LAST, in,
+                                      sizeof(in), canary_guard, 31),
+                     (int)CX_INVALID_PARAMETER_SIZE);
+    for (size_t i = 0; i < sizeof(canary_guard); i++) {
+        assert_int_equal(canary_guard[i], 0xAA);
+    }
+
+    // Exact size: succeeds and writes exactly the digest.
+    unsigned char exact[32];
+    cx_sha256_init(&sha256_hash);
+    assert_int_equal(cx_hash_no_throw(&sha256_hash.header, CX_LAST, in,
+                                      sizeof(in), exact, sizeof(exact)),
+                     CX_OK);
+
+    // Oversized: succeeds, and matches the exact-size digest bit for bit.
+    unsigned char oversized[40];
+    memset(oversized, 0xAA, sizeof(oversized));
+    cx_sha256_init(&sha256_hash);
+    assert_int_equal(cx_hash_no_throw(&sha256_hash.header, CX_LAST, in,
+                                      sizeof(in), oversized, sizeof(oversized)),
+                     CX_OK);
+    assert_memory_equal(oversized, exact, sizeof(exact));
+
+    cx_ripemd160_t ripemd_hash;
+    cx_ripemd160_init(&ripemd_hash);
+    assert_int_equal(cx_hash_no_throw(&ripemd_hash.header, CX_LAST, in,
+                                      sizeof(in), canary_guard, 19),
+                     (int)CX_INVALID_PARAMETER_SIZE);
+}
+
 void test_print_amount(void** state) {
     (void)state;
 
@@ -75,6 +115,7 @@ int main() {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_address),
         cmocka_unit_test(test_public_key_to_base58_requires_exactly_one_source),
+        cmocka_unit_test(test_cx_hash_no_throw_rejects_undersized_buffer),
         cmocka_unit_test(test_print_amount),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
