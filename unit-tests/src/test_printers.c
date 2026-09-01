@@ -32,6 +32,28 @@ void test_address(void** state) {
     assert_string_equal(address.buf, "r3wi8h8ZYuJDm4TwYaAFAwR8ZwnPSiN3CC");
 }
 
+void test_public_key_to_base58_requires_exactly_one_source(void** state) {
+    (void)state;
+
+    xrp_pubkey_t pubkey;
+    memset(&pubkey, 0x02, sizeof(pubkey));
+    xrp_account_t account;
+    memset(&account, 0x03, sizeof(account));
+    xrp_address_t out;
+
+    // Neither pubkey nor account given: must not silently encode whatever
+    // stale bytes were already on the stack.
+    assert_int_equal(xrp_public_key_to_encoded_base58(NULL, NULL, &out, 0), 0);
+
+    // Both given: must not silently let account overwrite the pubkey hash.
+    assert_int_equal(
+        xrp_public_key_to_encoded_base58(&pubkey, &account, &out, 0), 0);
+
+    // Exactly one given, either way: must still work normally.
+    assert_true(xrp_public_key_to_encoded_base58(&pubkey, NULL, &out, 0) > 0);
+    assert_true(xrp_public_key_to_encoded_base58(NULL, &account, &out, 0) > 0);
+}
+
 void test_print_amount(void** state) {
     (void)state;
 
@@ -52,6 +74,7 @@ void test_print_amount(void** state) {
 int main() {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_address),
+        cmocka_unit_test(test_public_key_to_base58_requires_exactly_one_source),
         cmocka_unit_test(test_print_amount),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
