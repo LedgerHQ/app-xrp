@@ -137,6 +137,8 @@ const char* resolve_field_name(field_t* field) {
                 return "NFToken Buy Offer";
             case 29:
                 return "NFToken Sell Offer";
+            case 0xFE:
+                return "NFToken Offer";
         }
     }
 

@@ -320,10 +320,23 @@ err_t read_vector256_field(parseContext_t* context, field_t* field) {
         field_t* hash256;
         CHECK(append_new_field(context, &hash256));
         hash256->data_type = STI_HASH256;
-        hash256->id = XRP_HASH256_NFTOKEN_BUY_OFFER;
+        // A Vector256 entry carries no buy/sell semantics of its own; label
+        // it generically and let the array index tell entries apart.
+        //
+        // The XRPL protocol also has Vector256 fields other than
+        // NFTokenOffers (Indexes, Hashes, Amendments, CredentialIDs), but
+        // this app only recognizes NFTokenOffers (field id 4) in
+        // resolve_field_name()'s STI_VECTOR256 case (fields.c): any other
+        // Vector256 field's own id resolves to "Unknown" and forces blind
+        // signing before these synthesized entries are ever displayed. That
+        // is why it's safe to hardcode this label here rather than branch
+        // on field->id.
+        hash256->id = XRP_HASH256_NFTOKEN_OFFER;
         hash256->data.hash256 =
             (hash256_t*)(field->data.ptr + (i * XRP_VECTOR256_SIZE));
         hash256->length = XRP_VECTOR256_SIZE;
+        hash256->array_info.type = field->id;
+        hash256->array_info.index1 = (uint8_t)(i + 1);
     }
 
     return err;

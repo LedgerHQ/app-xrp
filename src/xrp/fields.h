@@ -93,6 +93,10 @@ typedef enum {
 #define XRP_HASH256_CHECK_ID           0x18
 #define XRP_HASH256_NFTOKEN_BUY_OFFER  0x1C
 #define XRP_HASH256_NFTOKEN_SELL_OFFER 0x1D
+// Not a real XRPL field code: a Vector256 entry has no per-element field ID
+// of its own, so this display-only value is picked far outside the range
+// rippled actually assigns to Hash256 fields.
+#define XRP_HASH256_NFTOKEN_OFFER 0xFE
 // AMOUNT
 #define XRP_UINT64_AMOUNT                    0x01
 #define XRP_UINT64_BALANCE                   0x02
