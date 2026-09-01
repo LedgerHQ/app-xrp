@@ -171,8 +171,13 @@ bool check_swap_conditions_and_sign(parseResult_t* transaction) {
     xrp_account_t* account = (xrp_account_t*)field->data.account;
     size_t addr_length =
         xrp_public_key_to_encoded_base58(NULL, account, &destination, 0);
-    if (strncmp(destination.buf, approval_strings.swap.address, addr_length) !=
-        0) {
+    // Compare full lengths, not just the first addr_length bytes: strncmp
+    // alone would not require the two addresses to be fully identical.
+    size_t expected_length = strnlen(approval_strings.swap.address,
+                                     sizeof(approval_strings.swap.address));
+    if (addr_length == 0 || addr_length != expected_length ||
+        memcmp(destination.buf, approval_strings.swap.address, addr_length) !=
+            0) {
         return false;
     }
 
