@@ -101,6 +101,20 @@ def test_get_public_key_confirm(
     assert reply and reply.status == Errors.SW_SUCCESS
 
 
+def test_get_public_key_confirm_ed25519(
+    backend: BackendInterface,
+    navigator: Navigator,
+    scenario_navigator: NavigateWithScenario,
+):
+    xrp = XRPClient(backend, navigator)
+    with xrp.get_pubkey_confirm_ed25519():
+        scenario_navigator.address_review_approve()
+
+    # Check the status (Asynchronous)
+    reply = xrp.get_async_response()
+    assert reply and reply.status == Errors.SW_SUCCESS
+
+
 def test_get_public_key_reject(
     backend: BackendInterface,
     navigator: Navigator,
