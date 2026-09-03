@@ -67,18 +67,29 @@ static bool has_field(parseContext_t* context, field_type_t data_type,
 // after the whole transaction is parsed, since the byte stream can present
 // Flags before TransactionType, and the known-bits check below needs the
 // transaction type to already be resolved.
-static bool find_top_level_flags_value(parseContext_t* context,
-                                       uint32_t* value) {
+//
+// Checks both array_info.type and object_depth to rule out any nesting.
+// Also flags a second top-level Flags field via *duplicate, instead of
+// silently keeping whichever one was seen first.
+static bool find_top_level_flags_value(parseContext_t* context, uint32_t* value,
+                                       bool* duplicate) {
+    bool found = false;
+    *duplicate = false;
+
     for (uint8_t i = 0; i < context->result.num_fields; ++i) {
         field_t* field = &context->result.fields[i];
         if (field->data_type == STI_UINT32 && field->id == XRP_UINT32_FLAGS &&
-            field->array_info.type == ARRAY_NONE) {
+            field->array_info.type == ARRAY_NONE && field->object_depth == 0) {
+            if (found) {
+                *duplicate = true;
+                return true;
+            }
             *value = field->data.u32;
-            return true;
+            found = true;
         }
     }
 
-    return false;
+    return found;
 }
 
 static bool is_supported_transaction_type(uint16_t t) {
@@ -186,6 +197,7 @@ err_t append_new_field(parseContext_t* context, field_t** field) {
 
     *field = &context->result.fields[context->result.num_fields++];
     append_array_info(context, *field);
+    (*field)->object_depth = context->object_depth;
 
     err.err = SUCCESS;
     return err;
@@ -701,13 +713,16 @@ err_t parse_tx_internal(parseContext_t* context) {
         return err;
     }
 
-    // A flag formatter can only show the bits it recognizes; an
-    // unrecognized bit set alongside a recognized one would otherwise
-    // vanish from the review while still being signed. Force blind
-    // signing instead of a normal, silently-partial review.
+    // An unrecognized flag bit must not clear-sign, since it can't be
+    // shown to the user. A second top-level Flags field forces blind
+    // signing too, same as a duplicate TransactionType above.
     uint32_t flags_value;
-    if (find_top_level_flags_value(context, &flags_value) &&
-        has_unknown_flags(context->transaction_type, flags_value)) {
+    bool flags_duplicate;
+    bool has_flags =
+        find_top_level_flags_value(context, &flags_value, &flags_duplicate);
+    if (flags_duplicate ||
+        (has_flags &&
+         has_unknown_flags(context->transaction_type, flags_value))) {
         err.err = BLIND_SIGN_REQUIRED;
         return err;
     }

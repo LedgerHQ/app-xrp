@@ -166,6 +166,8 @@ static const char* negative_testcases[] = {
     // fixRemoveNFTokenAutoTrustLine amendment; it must not clear-sign as a
     // normal, usable flag.
     "../../tests/standalone/testcases/19-nftoken-mint/07-trustline-flag.raw",
+    // A second top-level Flags field must not be silently ignored.
+    "../../tests/standalone/testcases/19-nftoken-mint/08-duplicate-flags.raw",
     // A field id this app does not recognize, on an otherwise well-formed
     // supported Payment, must not clear-sign with an unlabeled row while
     // still being signed.

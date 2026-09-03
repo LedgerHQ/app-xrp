@@ -223,6 +223,10 @@ typedef struct {
         uint8_t *ptr;
     } data;
     array_info_t array_info;
+    // How deep in nested objects this field was when parsed. Saved on the
+    // field itself, since parseContext_t's own object_depth changes as
+    // parsing continues and can't be checked later.
+    uint8_t object_depth;
 } field_t;
 
 typedef struct {
