@@ -28,5 +28,6 @@
 bool is_flag(const field_t *field);
 bool is_flag_hidden(const field_t *field);
 void format_flags(field_t *field, field_value_t *dst);
+bool has_unknown_flags(uint16_t transaction_type, uint32_t value);
 
 #endif  // LEDGER_APP_XRP_FLAGS_H

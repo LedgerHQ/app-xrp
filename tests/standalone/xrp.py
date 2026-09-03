@@ -174,6 +174,11 @@ class XRPClient:
             yield reply
 
     @contextmanager
+    def get_pubkey_confirm_ed25519(self):
+        with self._exchange_async(Ins.GET_PUBLIC_KEY, p1=P1.CONFIRM, p2=P2.CURVE_ED25519, data=DEFAULT_BIP32_PATH) as reply:
+            yield reply
+
+    @contextmanager
     def sign(self, payload):
         messages = split_message(payload, MAX_APDU_LEN)
         if len(messages) == 1:

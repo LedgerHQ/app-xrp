@@ -99,7 +99,14 @@ cx_err_t xrp_public_key_hash160(xrp_pubkey_t* pubkey, uint8_t* out) {
 size_t xrp_public_key_to_encoded_base58(xrp_pubkey_t* pubkey,
                                         xrp_account_t* account,
                                         xrp_address_t* out, uint16_t version) {
-    base58_buf_t tmp;
+    // Exactly one of pubkey/account must be given. Neither would leave the
+    // hash bytes below unset (stale stack data, not zeros); both would let
+    // account silently overwrite the pubkey hash without telling anyone.
+    if (out == NULL || (pubkey == NULL) == (account == NULL)) {
+        return 0;
+    }
+
+    base58_buf_t tmp = {0};
     unsigned char checksum_buffer[32];
     cx_sha256_t hash;
     unsigned char version_size = (version > 255 ? 2 : 1);

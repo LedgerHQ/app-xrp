@@ -79,6 +79,11 @@ static void format_account_set_transaction_flags(uint32_t value,
 #define TF_OPTIONAL_AUTH 0x00080000u
 #define TF_DISALLOW_XRP 0x00100000u
 #define TF_ALLOW_XRP 0x00200000u
+// Keep in sync with the checks below: every bit this formatter recognizes
+// must be listed here, so has_unknown_flags() can catch anything it does not.
+#define ACCOUNT_SET_KNOWN_FLAGS                                     \
+    (TF_REQUIRE_DEST_TAG | TF_OPTIONAL_DEST_TAG | TF_REQUIRE_AUTH | \
+     TF_OPTIONAL_AUTH | TF_DISALLOW_XRP | TF_ALLOW_XRP)
 
     size_t offset = 0;
     if (HAS_FLAG(value, TF_REQUIRE_DEST_TAG)) {
@@ -181,6 +186,9 @@ static void format_offer_create_flags(uint32_t value, field_value_t* dst) {
 #define TF_IMMEDIATE_OR_CANCEL 0x00020000u
 #define TF_FILL_OR_KILL 0x00040000u
 #define TF_SELL 0x00080000u
+// Keep in sync with the checks below (see ACCOUNT_SET_KNOWN_FLAGS).
+#define OFFER_CREATE_KNOWN_FLAGS \
+    (TF_PASSIVE | TF_IMMEDIATE_OR_CANCEL | TF_FILL_OR_KILL | TF_SELL)
 
     size_t offset = 0;
     if (HAS_FLAG(value, TF_PASSIVE)) {
@@ -205,6 +213,9 @@ static void format_payment_flags(uint32_t value, field_value_t* dst) {
 #define TF_NO_RIPPLE_DIRECT 0x00010000u
 #define TF_PARTIAL_PAYMENT 0x00020000u
 #define TF_LIMIT_QUALITY 0x00040000u
+// Keep in sync with the checks below (see ACCOUNT_SET_KNOWN_FLAGS).
+#define PAYMENT_KNOWN_FLAGS \
+    (TF_NO_RIPPLE_DIRECT | TF_PARTIAL_PAYMENT | TF_LIMIT_QUALITY)
 
     size_t offset = 0;
     if (HAS_FLAG(value, TF_NO_RIPPLE_DIRECT)) {
@@ -227,6 +238,10 @@ static void format_trust_set_flags(uint32_t value, field_value_t* dst) {
 #define TF_CLEAR_NO_RIPPLE 0x00040000u
 #define TF_SET_FREEZE 0x00100000u
 #define TF_CLEAR_FREEZE 0x00200000u
+// Keep in sync with the checks below (see ACCOUNT_SET_KNOWN_FLAGS).
+#define TRUST_SET_KNOWN_FLAGS                                               \
+    (TF_SETF_AUTH | TF_SET_NO_RIPPLE | TF_CLEAR_NO_RIPPLE | TF_SET_FREEZE | \
+     TF_CLEAR_FREEZE)
 
     size_t offset = 0;
     if (HAS_FLAG(value, TF_SETF_AUTH)) {
@@ -255,6 +270,8 @@ static void format_payment_channel_claim_flags(uint32_t value,
 // PaymentChannelClaim flags
 #define TF_RENEW 0x00010000u
 #define TF_CLOSE 0x00020000u
+// Keep in sync with the checks below (see ACCOUNT_SET_KNOWN_FLAGS).
+#define PAYMENT_CHANNEL_CLAIM_KNOWN_FLAGS (TF_RENEW | TF_CLOSE)
 
     size_t offset = 0;
     if (HAS_FLAG(value, TF_RENEW)) {
@@ -270,7 +287,15 @@ static void format_nftoken_mint_flags(uint32_t value, field_value_t* dst) {
 // NFTokenMint flags
 #define TF_BURNABLE 0x00000001u
 #define TF_ONLY_XRP 0x00000002u
+// tfTrustLine (0x00000004u) is deliberately not a known flag: XRPL's
+// fixRemoveNFTokenAutoTrustLine amendment makes it invalid to set, so it
+// is left out of the mask on purpose and falls through to force blind
+// signing, rather than being rendered as a normal, usable flag.
 #define TF_TRANSFERABLE 0x00000008u
+#define TF_MUTABLE 0x00000010u
+// Keep in sync with the checks below (see ACCOUNT_SET_KNOWN_FLAGS).
+#define NFTOKEN_MINT_KNOWN_FLAGS \
+    (TF_BURNABLE | TF_ONLY_XRP | TF_TRANSFERABLE | TF_MUTABLE)
 
     size_t offset = 0;
     if (HAS_FLAG(value, TF_BURNABLE)) {
@@ -280,7 +305,10 @@ static void format_nftoken_mint_flags(uint32_t value, field_value_t* dst) {
         offset = append_item(dst, offset, "Only XRP");
     }
     if (HAS_FLAG(value, TF_TRANSFERABLE)) {
-        append_item(dst, offset, "Transferable");
+        offset = append_item(dst, offset, "Transferable");
+    }
+    if (HAS_FLAG(value, TF_MUTABLE)) {
+        append_item(dst, offset, "Mutable");
     }
 }
 
@@ -288,6 +316,8 @@ static void format_nftoken_create_offer_flags(uint32_t value,
                                               field_value_t* dst) {
 // NFTokenCreateOffer flags
 #define TF_SELL_NFTOKEN 0x00000001u
+// Keep in sync with the checks below (see ACCOUNT_SET_KNOWN_FLAGS).
+#define NFTOKEN_CREATE_OFFER_KNOWN_FLAGS TF_SELL_NFTOKEN
 
     size_t offset = 0;
     if (HAS_FLAG(value, TF_SELL_NFTOKEN)) {
@@ -303,6 +333,15 @@ static void format_nftoken_create_offer_flags(uint32_t value,
 #define TF_ONE_ASSET_LP_TOKEN 0x00200000u
 #define TF_LIMIT_LP_TOKEN 0x00400000u
 #define TF_TWO_ASSET_IF_EMPTY 0x00800000u
+// Keep in sync with the checks in each formatter below (see
+// ACCOUNT_SET_KNOWN_FLAGS). AMMDeposit and AMMWithdraw share most bits but
+// each has some the other does not, so they need separate masks.
+#define AMM_DEPOSIT_KNOWN_FLAGS                                             \
+    (TF_LP_TOKEN | TF_SINGLE_ASSET | TF_TWO_ASSET | TF_ONE_ASSET_LP_TOKEN | \
+     TF_LIMIT_LP_TOKEN | TF_TWO_ASSET_IF_EMPTY)
+#define AMM_WITHDRAW_KNOWN_FLAGS                                            \
+    (TF_LP_TOKEN | TF_SINGLE_ASSET | TF_TWO_ASSET | TF_ONE_ASSET_LP_TOKEN | \
+     TF_LIMIT_LP_TOKEN | TF_WITHDRAW_ALL | TF_ONE_ASSET_WITHDRAW_ALL)
 
 static void format_amm_deposit_flags(uint32_t value, field_value_t* dst) {
     // AMMDeposit flags
@@ -395,4 +434,49 @@ void format_flags(field_t* field, field_value_t* dst) {
     if (dst->buf[0] == 0x00) {
         strncpy(dst->buf, "Unsupported value", sizeof(dst->buf));
     }
+}
+
+// Whether the Flags field for this transaction type has any bit set that
+// none of the formatters above know about. Every formatter can only append
+// labels for the bits it recognizes, so an unrecognized bit combined with a
+// recognized one would otherwise vanish from the review while still being
+// signed. Keep this switch's case list in sync with format_flags() above:
+// a type missing here is simply not checked, not misclassified.
+bool has_unknown_flags(uint16_t transaction_type, uint32_t value) {
+    uint32_t known = TF_FULLY_CANONICAL_SIG;
+
+    switch (transaction_type) {
+        case TRANSACTION_ACCOUNT_SET:
+            known |= ACCOUNT_SET_KNOWN_FLAGS;
+            break;
+        case TRANSACTION_OFFER_CREATE:
+            known |= OFFER_CREATE_KNOWN_FLAGS;
+            break;
+        case TRANSACTION_PAYMENT:
+            known |= PAYMENT_KNOWN_FLAGS;
+            break;
+        case TRANSACTION_TRUST_SET:
+            known |= TRUST_SET_KNOWN_FLAGS;
+            break;
+        case TRANSACTION_PAYMENT_CHANNEL_CLAIM:
+            known |= PAYMENT_CHANNEL_CLAIM_KNOWN_FLAGS;
+            break;
+        case TRANSACTION_NFTOKEN_MINT:
+            known |= NFTOKEN_MINT_KNOWN_FLAGS;
+            break;
+        case TRANSACTION_NFTOKEN_CREATE_OFFER:
+            known |= NFTOKEN_CREATE_OFFER_KNOWN_FLAGS;
+            break;
+        case TRANSACTION_AMM_DEPOSIT:
+            known |= AMM_DEPOSIT_KNOWN_FLAGS;
+            break;
+        case TRANSACTION_AMM_WITHDRAW:
+            known |= AMM_WITHDRAW_KNOWN_FLAGS;
+            break;
+        default:
+            // No specific-flag formatter for this type: nothing to check.
+            return false;
+    }
+
+    return (value & ~known) != 0;
 }

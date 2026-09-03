@@ -93,6 +93,10 @@ typedef enum {
 #define XRP_HASH256_CHECK_ID           0x18
 #define XRP_HASH256_NFTOKEN_BUY_OFFER  0x1C
 #define XRP_HASH256_NFTOKEN_SELL_OFFER 0x1D
+// Not a real XRPL field code: a Vector256 entry has no per-element field ID
+// of its own, so this display-only value is picked far outside the range
+// rippled actually assigns to Hash256 fields.
+#define XRP_HASH256_NFTOKEN_OFFER 0xFE
 // AMOUNT
 #define XRP_UINT64_AMOUNT                    0x01
 #define XRP_UINT64_BALANCE                   0x02
@@ -219,6 +223,10 @@ typedef struct {
         uint8_t *ptr;
     } data;
     array_info_t array_info;
+    // How deep in nested objects this field was when parsed. Saved on the
+    // field itself, since parseContext_t's own object_depth changes as
+    // parsing continues and can't be checked later.
+    uint8_t object_depth;
 } field_t;
 
 typedef struct {
@@ -232,5 +240,6 @@ typedef struct {
 bool is_normal_account_field(field_t *field);
 const char *resolve_field_name(field_t *field);
 bool is_field_hidden(field_t *field);
+bool is_field_recognized(field_t *field);
 
 #endif  // LEDGER_APP_XRP_FIELDS_H

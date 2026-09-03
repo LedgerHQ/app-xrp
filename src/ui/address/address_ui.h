@@ -17,6 +17,14 @@
 
 #include "common.h"
 
+#include <stdbool.h>
+#include <stddef.h>
+
 #pragma once
 
-void display_address_confirmation_ui(char *address, action_t on_approve, action_t on_reject);
+// Returns false without displaying anything if address_len is 0 or too
+// long to fit the fixed display buffer, instead of silently truncating it.
+bool display_address_confirmation_ui(char *address,
+                                     size_t address_len,
+                                     action_t on_approve,
+                                     action_t on_reject);

@@ -44,15 +44,52 @@ static bool has_data(parseContext_t* context, uint32_t num_bytes) {
 }
 
 static bool has_field(parseContext_t* context, field_type_t data_type,
-                      uint8_t id) {
+                      uint8_t id, bool top_level_only) {
     for (uint8_t i = 0; i < context->result.num_fields; ++i) {
         field_t* field = &context->result.fields[i];
-        if (field->data_type == data_type && field->id == id) {
+        // Same type and id as what we're looking for.
+        bool type_and_id_match =
+            field->data_type == data_type && field->id == id;
+        // If top-level-only is requested, the field must sit outside any
+        // array/object; otherwise any nesting level is fine.
+        bool level_matches =
+            top_level_only ? field->array_info.type == ARRAY_NONE : true;
+
+        if (type_and_id_match && level_matches) {
             return true;
         }
     }
 
     return false;
+}
+
+// Finds the top-level Flags field, if any, and outputs its value. Run only
+// after the whole transaction is parsed, since the byte stream can present
+// Flags before TransactionType, and the known-bits check below needs the
+// transaction type to already be resolved.
+//
+// Checks both array_info.type and object_depth to rule out any nesting.
+// Also flags a second top-level Flags field via *duplicate, instead of
+// silently keeping whichever one was seen first.
+static bool find_top_level_flags_value(parseContext_t* context, uint32_t* value,
+                                       bool* duplicate) {
+    bool found = false;
+    *duplicate = false;
+
+    for (uint8_t i = 0; i < context->result.num_fields; ++i) {
+        field_t* field = &context->result.fields[i];
+        if (field->data_type == STI_UINT32 && field->id == XRP_UINT32_FLAGS &&
+            field->array_info.type == ARRAY_NONE && field->object_depth == 0) {
+            if (found) {
+                *duplicate = true;
+                return true;
+            }
+            *value = field->data.u32;
+            found = true;
+        }
+    }
+
+    return found;
 }
 
 static bool is_supported_transaction_type(uint16_t t) {
@@ -160,6 +197,7 @@ err_t append_new_field(parseContext_t* context, field_t** field) {
 
     *field = &context->result.fields[context->result.num_fields++];
     append_array_info(context, *field);
+    (*field)->object_depth = context->object_depth;
 
     err.err = SUCCESS;
     return err;
@@ -197,15 +235,15 @@ err_t read_fixed_size_field(parseContext_t* context, field_t* field,
     return advance_position(context, length);
 }
 
-err_t read_variable_length_field(parseContext_t* context, field_t* field) {
+static err_t read_vl_length(parseContext_t* context, uint16_t* data_length) {
     uint8_t value;
     err_t err;
 
     CHECK(read_next_byte(context, &value));
 
-    uint16_t data_length = value;
-    if (data_length > 192) {
-        if (data_length > 240) {
+    *data_length = value;
+    if (*data_length > 192) {
+        if (*data_length > 240) {
             // It is impossible to send a transaction large enough to
             // hold a field with a length of 12481 or greater, so we
             // should never reach this point with a valid transaction
@@ -215,8 +253,18 @@ err_t read_variable_length_field(parseContext_t* context, field_t* field) {
 
         uint8_t length_byte2;
         CHECK(read_next_byte(context, &length_byte2));
-        data_length = 193 + ((data_length - 193) * 256) + length_byte2;
+        *data_length = 193 + ((*data_length - 193) * 256) + length_byte2;
     }
+
+    err.err = SUCCESS;
+    return err;
+}
+
+err_t read_variable_length_field(parseContext_t* context, field_t* field) {
+    uint16_t data_length;
+    err_t err;
+
+    CHECK(read_vl_length(context, &data_length));
 
     return read_fixed_size_field(context, field, data_length);
 }
@@ -231,7 +279,11 @@ err_t read_amount(parseContext_t* context, field_t* field) {
     } else {
         CHECK(read_fixed_size_field(context, field, ISSUED_CURRENCY_LEN));
 
-        if (!is_valid_currency(field->data.ptr + 8)) {
+        // All-zero currency means "this is XRP", but XRP is the ledger's
+        // native token and never has an issuer. This 48-byte form always
+        // carries one, so an all-zero currency here is a fake XRP amount.
+        if (is_all_zeros(field->data.ptr + 8, XRP_CURRENCY_SIZE) ||
+            !is_valid_currency(field->data.ptr + 8)) {
             err.err = INVALID_STATE;
             return err;
         }
@@ -260,20 +312,43 @@ err_t read_vector256_field(parseContext_t* context, field_t* field) {
     field->data_type = STI_VECTOR256;
 
     err_t err;
-    uint8_t value;
+    uint16_t data_length;
 
-    CHECK(read_next_byte(context, &value));
+    CHECK(read_vl_length(context, &data_length));
 
-    uint16_t count = value / XRP_VECTOR256_SIZE;
-    CHECK(read_fixed_size_field(context, field, XRP_VECTOR256_SIZE * count));
+    if ((data_length % XRP_VECTOR256_SIZE) != 0) {
+        err.err = INVALID_STATE;
+        return err;
+    }
+
+    uint16_t count = data_length / XRP_VECTOR256_SIZE;
+    if (count > (MAX_FIELD_COUNT - context->result.num_fields)) {
+        err.err = NOT_ENOUGH_SPACE;
+        return err;
+    }
+
+    CHECK(read_fixed_size_field(context, field, data_length));
     for (size_t i = 0; i < count; i++) {
         field_t* hash256;
         CHECK(append_new_field(context, &hash256));
         hash256->data_type = STI_HASH256;
-        hash256->id = XRP_HASH256_NFTOKEN_BUY_OFFER;
+        // A Vector256 entry carries no buy/sell semantics of its own; label
+        // it generically and let the array index tell entries apart.
+        //
+        // The XRPL protocol also has Vector256 fields other than
+        // NFTokenOffers (Indexes, Hashes, Amendments, CredentialIDs), but
+        // this app only recognizes NFTokenOffers (field id 4) in
+        // resolve_field_name()'s STI_VECTOR256 case (fields.c): any other
+        // Vector256 field's own id resolves to "Unknown" and forces blind
+        // signing before these synthesized entries are ever displayed. That
+        // is why it's safe to hardcode this label here rather than branch
+        // on field->id.
+        hash256->id = XRP_HASH256_NFTOKEN_OFFER;
         hash256->data.hash256 =
             (hash256_t*)(field->data.ptr + (i * XRP_VECTOR256_SIZE));
         hash256->length = XRP_VECTOR256_SIZE;
+        hash256->array_info.type = field->id;
+        hash256->array_info.index1 = (uint8_t)(i + 1);
     }
 
     return err;
@@ -320,12 +395,15 @@ err_t handle_object_field(parseContext_t* context, field_t* field) {
     if (field->id != OBJ_END) {
         // Normal object, only increment first array index
         context->array_index1++;
+        context->object_depth++;
 
         // Explicitly limit the maximum number of array items
         if (context->array_index1 > MAX_ARRAY_LEN) {
             err.err = NOT_SUPPORTED;
             return err;
         }
+    } else if (context->object_depth > 0) {
+        context->object_depth--;
     }
 
     err.err = SUCCESS;
@@ -518,17 +596,34 @@ err_t post_process_field(parseContext_t* context, field_t* field) {
 
     switch (field->data_type) {
         case STI_UINT16:
-            // Record the transaction type since it must be available for the
-            // formatting of certain values
+            // Trust only the first top-level TransactionType field. A
+            // later occurrence, at any nesting level, could disagree with
+            // it. Force blind signing in that case.
             if (is_transaction_type_field(field)) {
-                context->transaction_type = field->data.u16;
+                // Not inside any array/object.
+                bool is_top_level = field->array_info.type == ARRAY_NONE &&
+                                    context->object_depth == 0;
+                // No top-level TransactionType field has been recorded yet.
+                bool is_first_occurrence =
+                    context->transaction_type == TRANSACTION_INVALID;
+
+                if (is_top_level && is_first_occurrence) {
+                    context->transaction_type = field->data.u16;
+                } else {
+                    err.err = BLIND_SIGN_REQUIRED;
+                    return err;
+                }
             }
             break;
         case STI_UINT32:
             break;
         case STI_VL:
-            // Detect when SigningPubKey is empty (needed for multi-sign)
-            if (field->id == XRP_VL_SIGNING_PUB_KEY && field->length == 0) {
+            // Detect when SigningPubKey is empty (needed for multi-sign).
+            // Defence in depth: only a top-level occurrence counts, so one
+            // nested inside an array/object cannot spoof this.
+            if (field->id == XRP_VL_SIGNING_PUB_KEY && field->length == 0 &&
+                field->array_info.type == ARRAY_NONE &&
+                context->object_depth == 0) {
                 context->has_empty_pub_key = true;
             }
             break;
@@ -554,7 +649,7 @@ err_t post_process_transaction(parseContext_t* context) {
 
     // Append "empty" regular key field when clearing it
     if (context->transaction_type == TRANSACTION_SET_REGULAR_KEY &&
-        !has_field(context, STI_ACCOUNT, 8)) {
+        !has_field(context, STI_ACCOUNT, 8, false)) {
         field_t* field;
         CHECK(append_new_field(context, &field));
         field->data_type = STI_ACCOUNT;
@@ -583,6 +678,7 @@ err_t parse_tx_internal(parseContext_t* context) {
 
     context->transaction_type = TRANSACTION_INVALID;
     context->has_empty_pub_key = false;
+    context->object_depth = 0;
 
     while (context->offset != context->length) {
         if (context->offset > context->length) {
@@ -603,8 +699,8 @@ err_t parse_tx_internal(parseContext_t* context) {
 
     CHECK(post_process_transaction(context));
 
-    if (!has_field(context, STI_UINT16, XRP_UINT16_TRANSACTION_TYPE) ||
-        !has_field(context, STI_ACCOUNT, XRP_ACCOUNT_ACCOUNT)) {
+    if (!has_field(context, STI_UINT16, XRP_UINT16_TRANSACTION_TYPE, true) ||
+        !has_field(context, STI_ACCOUNT, XRP_ACCOUNT_ACCOUNT, true)) {
         err.err = NOT_SUPPORTED;
         return err;
     }
@@ -615,6 +711,32 @@ err_t parse_tx_internal(parseContext_t* context) {
         !is_supported_transaction_type(context->transaction_type)) {
         err.err = BLIND_SIGN_REQUIRED;
         return err;
+    }
+
+    // An unrecognized flag bit must not clear-sign, since it can't be
+    // shown to the user. A second top-level Flags field forces blind
+    // signing too, same as a duplicate TransactionType above.
+    uint32_t flags_value;
+    bool flags_duplicate;
+    bool has_flags =
+        find_top_level_flags_value(context, &flags_value, &flags_duplicate);
+    if (flags_duplicate ||
+        (has_flags &&
+         has_unknown_flags(context->transaction_type, flags_value))) {
+        err.err = BLIND_SIGN_REQUIRED;
+        return err;
+    }
+
+    // Every field that survived is_field_hidden() would be shown to the
+    // user during review. A field the app cannot name is a field it
+    // cannot explain, even though it is still part of the signed data.
+    // Force blind signing rather than show an unlabeled "Unknown" row
+    // next to a normal, otherwise-trustworthy-looking review.
+    for (uint8_t i = 0; i < context->result.num_fields; ++i) {
+        if (!is_field_recognized(&context->result.fields[i])) {
+            err.err = BLIND_SIGN_REQUIRED;
+            return err;
+        }
     }
 
     err.err = SUCCESS;

@@ -18,9 +18,14 @@ int get_public_key(cx_curve_t curve, uint8_t* bip32_path,
         return 0x6a80;
     }
 
+    // Ed25519 public-key expansion is SHA-512-based (RFC 8032); secp256k1
+    // doesn't use this hash at all, so CX_SHA256 here is just the SDK's
+    // other supported value.
+    cx_md_t pubkey_hash = (curve == CX_CURVE_Ed25519) ? CX_SHA512 : CX_SHA256;
+
     pub_key->curve = curve;
     pub_key->W_len = 65;
     return bip32_derive_get_pubkey_256(curve, bip32_path_parsed,
                                        bip32_path_length, pub_key->W,
-                                       chain_code, CX_SHA256);
+                                       chain_code, pubkey_hash);
 }

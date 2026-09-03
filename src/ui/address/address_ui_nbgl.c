@@ -14,7 +14,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  ********************************************************************************/
-#ifdef HAVE_NBGL
 #include <os_io_seproxyhal.h>
 #include <string.h>
 #include <ux.h>
@@ -40,14 +39,18 @@ static void confirmationChoiceClbk(bool confirm) {
     }
 }
 
-void display_address_confirmation_ui(char* address, action_t on_approve,
-                                     action_t on_reject) {
+bool display_address_confirmation_ui(char* address, size_t address_len,
+                                     action_t on_approve, action_t on_reject) {
+    if (address_len == 0 || address_len >= sizeof(full_address)) {
+        return false;
+    }
+
     approval_action = on_approve;
     rejection_action = on_reject;
     memset(full_address, 0, sizeof(full_address));
-    strncpy(full_address, address, sizeof(full_address));
+    memcpy(full_address, address, address_len);
     nbgl_useCaseAddressReview((char*)full_address, NULL, &ICON_APP_HOME,
                               "Verify XRP Address", NULL,
                               confirmationChoiceClbk);
+    return true;
 }
-#endif  // HAVE_NBGL
