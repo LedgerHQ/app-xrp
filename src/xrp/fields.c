@@ -32,6 +32,11 @@ bool is_normal_account_field(field_t* field) {
            field->id == XRP_ACCOUNT_ACCOUNT && field->array_info.type == 0;
 }
 
+// Returned by resolve_field_name() when no case below matches. Kept as one
+// named constant so is_field_recognized() can identify that exact case by
+// pointer, instead of duplicating this function's switch statements.
+static const char UNKNOWN_FIELD_NAME[] = "Unknown";
+
 const char* resolve_field_name(field_t* field) {
     if (field->data_type == STI_UINT16) {
         switch (field->id) {
@@ -132,6 +137,8 @@ const char* resolve_field_name(field_t* field) {
                 return "NFToken Buy Offer";
             case 29:
                 return "NFToken Sell Offer";
+            case 0xFE:
+                return "NFToken Offer";
         }
     }
 
@@ -304,7 +311,14 @@ const char* resolve_field_name(field_t* field) {
     }
 
     // Default case
-    return "Unknown";
+    return UNKNOWN_FIELD_NAME;
+}
+
+// Whether the parser knows what this field means. A field the app cannot
+// name is a field it cannot explain to the user during review, even
+// though it is still part of the signed data.
+bool is_field_recognized(field_t* field) {
+    return resolve_field_name(field) != UNKNOWN_FIELD_NAME;
 }
 
 bool is_field_hidden(field_t* field) {

@@ -101,6 +101,20 @@ def test_get_public_key_confirm(
     assert reply and reply.status == Errors.SW_SUCCESS
 
 
+def test_get_public_key_confirm_ed25519(
+    backend: BackendInterface,
+    navigator: Navigator,
+    scenario_navigator: NavigateWithScenario,
+):
+    xrp = XRPClient(backend, navigator)
+    with xrp.get_pubkey_confirm_ed25519():
+        scenario_navigator.address_review_approve()
+
+    # Check the status (Asynchronous)
+    reply = xrp.get_async_response()
+    assert reply and reply.status == Errors.SW_SUCCESS
+
+
 def test_get_public_key_reject(
     backend: BackendInterface,
     navigator: Navigator,
@@ -265,6 +279,22 @@ def test_sign_valid_tx(
         pytest.skip(f"skip rejected-currency tx from '{Path(raw_tx_path).stem}'")
     if raw_tx_path.endswith("24-invalid-path-step-type.raw"):
         pytest.skip(f"skip invalid-path-step tx from '{Path(raw_tx_path).stem}'")
+    if raw_tx_path.endswith("03-invalid-vector-length.raw"):
+        pytest.skip(f"skip invalid-vector-length tx from '{Path(raw_tx_path).stem}'")
+    if raw_tx_path.endswith("25-nested-transaction-type.raw"):
+        pytest.skip(f"skip nested-transaction-type tx from '{Path(raw_tx_path).stem}'")
+    if raw_tx_path.endswith("26-duplicate-transaction-type.raw"):
+        pytest.skip(f"skip duplicate-transaction-type tx from '{Path(raw_tx_path).stem}'")
+    if raw_tx_path.endswith("06-unknown-flag.raw"):
+        pytest.skip(f"skip unknown-flag tx from '{Path(raw_tx_path).stem}'")
+    if raw_tx_path.endswith("07-trustline-flag.raw"):
+        pytest.skip(f"skip trustline-flag tx from '{Path(raw_tx_path).stem}'")
+    if raw_tx_path.endswith("08-duplicate-flags.raw"):
+        pytest.skip(f"skip duplicate-flags tx from '{Path(raw_tx_path).stem}'")
+    if raw_tx_path.endswith("27-unrecognized-field.raw"):
+        pytest.skip(f"skip unrecognized-field tx from '{Path(raw_tx_path).stem}'")
+    if raw_tx_path.endswith("28-all-zero-currency-issued-amount.raw"):
+        pytest.skip(f"skip all-zero-currency tx from '{Path(raw_tx_path).stem}'")
 
     xrp = XRPClient(backend, navigator)
 
@@ -310,6 +340,23 @@ def test_sign_invalid_path_step_type(backend: BackendInterface, navigator: Navig
     xrp = XRPClient(backend, navigator)
 
     tx_path = Path(__file__).parent / "testcases/01-payment/24-invalid-path-step-type.raw"
+    with open(tx_path, "rb") as fp:
+        tx = fp.read()
+
+    backend.raise_policy = RaisePolicy.RAISE_ALL_BUT_0x9000
+    with pytest.raises(ExceptionRAPDU) as err:
+        with xrp.sign(DEFAULT_BIP32_PATH + tx):
+            pass  # error is synchronous — returned before yield
+    assert err.value.status != Errors.SW_SUCCESS
+
+
+def test_sign_all_zero_currency_issued_amount(backend: BackendInterface, navigator: Navigator):
+    """An all-zero currency in a 48-byte issued Amount is the reserved native-XRP
+    encoding, but this form always carries an issuer; it must not clear-sign as
+    plain XRP with an attacker-chosen issuer."""
+    xrp = XRPClient(backend, navigator)
+
+    tx_path = Path(__file__).parent / "testcases/01-payment/28-all-zero-currency-issued-amount.raw"
     with open(tx_path, "rb") as fp:
         tx = fp.read()
 

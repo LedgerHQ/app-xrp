@@ -15,16 +15,19 @@
  *  limitations under the License.
  *****************************************************************************/
 
+#include <status_words.h>
 #include <stdint.h>  // uint*_t
 #include <string.h>  // memset, explicit_bzero
 #include <ux.h>
 
 #include "address_ui.h"
+#include "constants.h"
 #include "entry.h"
 #include "global.h"
 #include "globals.h"
 #include "idle_menu.h"
 #include "io.h"
+#include "parser.h"
 #include "swap.h"
 
 const internal_storage_t N_storage_real;
@@ -42,9 +45,23 @@ void app_main() {
 
     for (;;) {
         // Receive command bytes in G_io_apdu_buffer
-        if (io_recv_command() < 0) {
+        int rx_len = io_recv_command();
+        if (rx_len < 0) {
             PRINTF("=> io_recv_command failure\n");
             return;
+        }
+
+        // Reject a truncated APDU so handlers never read stale
+        // G_io_apdu_buffer bytes as if they were part of this command.
+        // The rx_len check covers an edge case apdu_parser() alone would
+        // accept even though handle_apdu() still reads
+        // G_io_apdu_buffer[OFFSET_LC] directly.
+        command_t cmd;
+        if (!apdu_parser(&cmd, G_io_apdu_buffer, (size_t)rx_len) ||
+            (size_t)rx_len < OFFSET_CDATA) {
+            reset_transaction_context();
+            io_send_sw(SWO_WRONG_DATA_LENGTH);
+            continue;
         }
 
         // Parse APDU command from G_io_apdu_buffer

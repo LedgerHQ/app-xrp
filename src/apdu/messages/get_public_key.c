@@ -19,6 +19,7 @@
 #include "get_public_key.h"
 
 #include <os.h>
+#include <status_words.h>
 #include <string.h>
 
 #include "address_ui.h"
@@ -34,19 +35,18 @@
 static bool pubkey_confirmation_pending = false;
 static publicKeyContext_t pending_pubkey_ctx;
 
-int set_result_get_public_key(void) {
+int set_result_get_public_key(publicKeyContext_t* ctx) {
     uint8_t buf[1 + XRP_PUBKEY_SIZE + 1 + XRP_ADDRESS_SIZE + 32];
     uint32_t tx = 0;
-    uint32_t address_length = strlen(tmp_ctx.public_key_context.address.buf);
+    uint32_t address_length = strlen(ctx->address.buf);
     buf[tx++] = XRP_PUBKEY_SIZE;
-    xrp_compress_public_key(&tmp_ctx.public_key_context.public_key,
-                            (xrp_pubkey_t*)(buf + tx));
+    xrp_compress_public_key(&ctx->public_key, (xrp_pubkey_t*)(buf + tx));
     tx += XRP_PUBKEY_SIZE;
     buf[tx++] = address_length;
-    memmove(buf + tx, tmp_ctx.public_key_context.address.buf, address_length);
+    memmove(buf + tx, ctx->address.buf, address_length);
     tx += address_length;
-    if (tmp_ctx.public_key_context.get_chaincode) {
-        memmove(buf + tx, tmp_ctx.public_key_context.chain_code, 32);
+    if (ctx->get_chaincode) {
+        memmove(buf + tx, ctx->chain_code, 32);
         tx += 32;
     }
     return io_send_response_pointer(buf, tx, 0x9000);
@@ -54,9 +54,11 @@ int set_result_get_public_key(void) {
 
 void on_address_confirmed() {
     pubkey_confirmation_pending = false;
-    memcpy(&tmp_ctx.public_key_context, &pending_pubkey_ctx,
-           sizeof(publicKeyContext_t));
-    set_result_get_public_key();
+    // Serialize directly from pending_pubkey_ctx rather than copying it into
+    // the shared tmp_ctx union first: tmp_ctx also holds the in-progress
+    // signing context, which this asynchronous callback must never touch.
+    set_result_get_public_key(&pending_pubkey_ctx);
+    explicit_bzero(&pending_pubkey_ctx, sizeof(pending_pubkey_ctx));
 #ifndef HAVE_NBGL
     // Display back the original UX
     display_idle_menu();
@@ -65,6 +67,7 @@ void on_address_confirmed() {
 
 void on_address_rejected() {
     pubkey_confirmation_pending = false;
+    explicit_bzero(&pending_pubkey_ctx, sizeof(pending_pubkey_ctx));
     io_send_sw(0x6985);
 #ifndef HAVE_NBGL
     // Display back the original UX
@@ -118,14 +121,22 @@ int handle_get_public_key(uint8_t p1, uint8_t p2, uint8_t* data_buffer,
     get_address(&pending_pubkey_ctx.public_key, &pending_pubkey_ctx.address);
 
     if (p1 == P1_NON_CONFIRM) {
-        memcpy(&tmp_ctx.public_key_context, &pending_pubkey_ctx,
-               sizeof(publicKeyContext_t));
-        return set_result_get_public_key();
+        int result = set_result_get_public_key(&pending_pubkey_ctx);
+        explicit_bzero(&pending_pubkey_ctx, sizeof(pending_pubkey_ctx));
+        return result;
     } else {
         pubkey_confirmation_pending = true;
-        display_address_confirmation_ui(pending_pubkey_ctx.address.buf,
-                                        on_address_confirmed,
-                                        on_address_rejected);
+        if (!display_address_confirmation_ui(
+                pending_pubkey_ctx.address.buf,
+                strlen(pending_pubkey_ctx.address.buf), on_address_confirmed,
+                on_address_rejected)) {
+            // Nothing was displayed and neither callback will ever fire, so
+            // don't leave the device waiting on a confirmation that will
+            // never come.
+            pubkey_confirmation_pending = false;
+            explicit_bzero(&pending_pubkey_ctx, sizeof(pending_pubkey_ctx));
+            return io_send_sw(SWO_INCORRECT_DATA);
+        }
 
         return 0;
     }

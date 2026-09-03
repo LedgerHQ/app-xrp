@@ -41,6 +41,7 @@ typedef struct {
     uint8_t current_array;
     uint8_t array_index1;
     uint8_t array_index2;
+    uint8_t object_depth;
 } parseContext_t;
 
 int parse_tx(parseContext_t *parse_context);

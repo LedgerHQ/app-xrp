@@ -98,9 +98,11 @@ void sign_transaction() {
     }
 
     if (tmp_ctx.transaction_context.curve == CX_CURVE_256K1) {
-        cx_hash_sha512(tmp_ctx.transaction_context.raw_tx,
-                       tmp_ctx.transaction_context.raw_tx_length, key_buffer,
-                       64);
+        cx_sha512_t hash;
+        CX_CHECK(cx_sha512_init_no_throw(&hash));
+        CX_CHECK(cx_hash_no_throw(
+            &hash.header, CX_LAST, tmp_ctx.transaction_context.raw_tx,
+            tmp_ctx.transaction_context.raw_tx_length, key_buffer, 64));
         PRINTF("Hash to sign:\n%.*H\n", 32, key_buffer);
         io_seproxyhal_io_heartbeat();
 

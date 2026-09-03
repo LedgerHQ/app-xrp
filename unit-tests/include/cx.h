@@ -11,6 +11,12 @@ typedef unsigned int cx_curve_t;
 /** Internal error */
 #define CX_INTERNAL_ERROR 0xFFFFFF85
 
+/** Invalid parameter size */
+#define CX_INVALID_PARAMETER_SIZE 0xFFFFFF86
+
+/** Invalid parameter */
+#define CX_INVALID_PARAMETER 0xFFFFFF88
+
 /** Type of error code */
 typedef uint32_t cx_err_t;
 
