@@ -134,6 +134,7 @@ int handle_get_public_key(uint8_t p1, uint8_t p2, uint8_t* data_buffer,
             // don't leave the device waiting on a confirmation that will
             // never come.
             pubkey_confirmation_pending = false;
+            explicit_bzero(&pending_pubkey_ctx, sizeof(pending_pubkey_ctx));
             return io_send_sw(SWO_INCORRECT_DATA);
         }
 
