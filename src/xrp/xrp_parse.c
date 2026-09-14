@@ -239,6 +239,8 @@ static err_t read_vl_length(parseContext_t* context, uint16_t* data_length) {
     uint8_t value;
     err_t err;
 
+    *data_length = 0;
+
     CHECK(read_next_byte(context, &value));
 
     *data_length = value;
