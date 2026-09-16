@@ -179,8 +179,10 @@ static const char* negative_testcases[] = {
     // on the NFTokenOffer ledger object, outside the signed bytes. A clear
     // sign review would therefore show the same screen for a fair trade and
     // for one that drains the account, so it must blind sign instead.
-    "../../tests/standalone/testcases/23-nftoken-accept-offer/01-basic.raw",
-    "../../tests/standalone/testcases/23-nftoken-accept-offer/02-broker.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "03-nftoken-accept-offer.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "04-nftoken-accept-offer-broker.raw",
     NULL,
 };
 
