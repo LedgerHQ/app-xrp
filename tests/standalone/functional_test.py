@@ -295,6 +295,8 @@ def test_sign_valid_tx(
         pytest.skip(f"skip unrecognized-field tx from '{Path(raw_tx_path).stem}'")
     if raw_tx_path.endswith("28-all-zero-currency-issued-amount.raw"):
         pytest.skip(f"skip all-zero-currency tx from '{Path(raw_tx_path).stem}'")
+    if "23-nftoken-accept-offer" in raw_tx_path:
+        pytest.skip(f"skip blind-signed accept-offer tx from '{Path(raw_tx_path).stem}'")
 
     xrp = XRPClient(backend, navigator)
 

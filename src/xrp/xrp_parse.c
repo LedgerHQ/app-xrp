@@ -118,7 +118,6 @@ static bool is_supported_transaction_type(uint16_t t) {
         case TRANSACTION_NFTOKEN_BURN:
         case TRANSACTION_NFTOKEN_CREATE_OFFER:
         case TRANSACTION_NFTOKEN_CANCEL_OFFER:
-        case TRANSACTION_NFTOKEN_ACCEPT_OFFER:
         case TRANSACTION_CLAWBACK:
         case TRANSACTION_AMM_CREATE:
         case TRANSACTION_AMM_DEPOSIT:
