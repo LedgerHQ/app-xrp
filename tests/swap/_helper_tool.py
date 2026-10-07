@@ -4,11 +4,11 @@ from pathlib import Path
 
 base = Path(__file__).parent.resolve() / ".test_dependencies"
 
-APP_EXCHANGE_URL = "git@github.com:LedgerHQ/app-exchange.git"
+APP_EXCHANGE_URL = "git@github.com:LedgerHQ/app-exchange-dev.git"
 APP_EXCHANGE_DIR = base / "main/app-exchange/"
 APP_EXCHANGE_CLONE_DIR = base / "app-exchange/"
 
-APP_ETHEREUM_URL = "git@github.com:LedgerHQ/app-ethereum.git"
+APP_ETHEREUM_URL = "git@github.com:LedgerHQ/app-ethereum-dev.git"
 APP_ETHEREUM_DIR = base / "libraries/app-ethereum/"
 APP_ETHEREUM_CLONE_DIR = base / "app-ethereum/"
 
