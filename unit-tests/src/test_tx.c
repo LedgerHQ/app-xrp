@@ -120,8 +120,6 @@ static const char* testcases[] = {
     "../../tests/standalone/testcases/22-nftoken-cancel-offer/01-basic.raw",
     "../../tests/standalone/testcases/22-nftoken-cancel-offer/"
     "02-large-vector.raw",
-    "../../tests/standalone/testcases/23-nftoken-accept-offer/01-basic.raw",
-    "../../tests/standalone/testcases/23-nftoken-accept-offer/02-broker.raw",
     "../../tests/standalone/testcases/24-clawback/01-basic.raw",
     "../../tests/standalone/testcases/25-amm-create/01-basic.raw",
     "../../tests/standalone/testcases/26-amm-deposit/01-one-sided.raw",
@@ -177,6 +175,14 @@ static const char* negative_testcases[] = {
     // must not clear-sign as plain XRP with an attacker-chosen issuer.
     "../../tests/standalone/testcases/01-payment/"
     "28-all-zero-currency-issued-amount.raw",
+    // NFTokenAcceptOffer only references an offer by hash; the price lives
+    // on the NFTokenOffer ledger object, outside the signed bytes. A clear
+    // sign review would therefore show the same screen for a fair trade and
+    // for one that drains the account, so it must blind sign instead.
+    "../../tests/standalone/testcases/blind-sign/"
+    "03-nftoken-accept-offer.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "04-nftoken-accept-offer-broker.raw",
     NULL,
 };
 
