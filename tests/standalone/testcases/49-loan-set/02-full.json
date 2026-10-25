@@ -1,0 +1,23 @@
+{
+    "TransactionType": "LoanSet",
+    "Account": "OWN_ADDR",
+    "LoanBrokerID": "29539E95928D3A4F6F9C3B2830D3B773D78F2B9AC94CA6B3BD46EEB0AA43A26C",
+    "Counterparty": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
+    "PrincipalRequested": "1234567.891",
+    "InterestRate": 9250,
+    "PaymentTotal": 60,
+    "PaymentInterval": 2592000,
+    "GracePeriod": 604800,
+    "Data": "4578616D706C65206C6F616E",
+    "LoanOriginationFee": "55000",
+    "LoanServiceFee": "25",
+    "LatePaymentFee": "500",
+    "ClosePaymentFee": "1000",
+    "OverpaymentFee": 500,
+    "LateInterestRate": 2000,
+    "CloseInterestRate": 1000,
+    "OverpaymentInterestRate": 125,
+    "Flags": 65536,
+    "Fee": "15",
+    "SigningPubKey": "OWN_PUBKEY"
+}

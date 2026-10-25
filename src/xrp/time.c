@@ -18,6 +18,7 @@
 #include "time.h"
 
 #include <limits.h>
+#include <string.h>
 
 #include "fmt.h"
 #include "limitations.h"
@@ -48,6 +49,8 @@ bool is_time(field_t* field) {
             case XRP_UINT32_EXPIRATION:
             case XRP_UINT32_CANCEL_AFTER:
             case XRP_UINT32_FINISH_AFTER:
+            case XRP_UINT32_SUBSCRIPTION_DATE:
+            case XRP_UINT32_REDEMPTION_DATE:
                 return true;
             default:
                 return false;
@@ -60,6 +63,20 @@ bool is_time(field_t* field) {
 bool is_time_delta(field_t* field) {
     return field->data_type == STI_UINT32 &&
            field->id == XRP_UINT32_SETTLE_DELAY;
+}
+
+bool is_duration(field_t* field) {
+    if (field->data_type == STI_UINT32) {
+        switch (field->id) {
+            case XRP_UINT32_PAYMENT_INTERVAL:
+            case XRP_UINT32_GRACE_PERIOD:
+                return true;
+            default:
+                return false;
+        }
+    } else {
+        return false;
+    }
 }
 
 // Inspired from
@@ -142,4 +159,38 @@ void format_time(field_t* field, field_value_t* dst) {
 void format_time_delta(field_t* field, field_value_t* dst) {
     uint32_t value = field->data.u32;
     snprintf(dst->buf, sizeof(dst->buf), "%u s", value);
+}
+
+#define SECONDS_PER_MINUTE 60
+#define SECONDS_PER_HOUR 3600
+#define SECONDS_PER_DAY 86400
+
+static size_t append_duration_part(field_value_t* dst, size_t len,
+                                   uint32_t count, const char* unit) {
+    if (count == 0) {
+        return len;
+    }
+    snprintf(dst->buf + len, sizeof(dst->buf) - len, "%s%u %s%s",
+             len > 0 ? " " : "", count, unit, count == 1 ? "" : "s");
+    return strlen(dst->buf);
+}
+
+// A loan's payment interval or grace period, exactly, in the largest units
+// first and without the zero ones: "30 days", "1 day 12 hours". The longest,
+// UINT32_MAX, is "49710 days 6 hours 28 minutes 15 seconds", 40 characters,
+// well within a field value.
+void format_duration(field_t* field, field_value_t* dst) {
+    uint32_t seconds = field->data.u32;
+    if (seconds == 0) {
+        strncpy(dst->buf, "0 seconds", sizeof(dst->buf));
+        return;
+    }
+
+    size_t len = 0;
+    len = append_duration_part(dst, len, seconds / SECONDS_PER_DAY, "day");
+    len = append_duration_part(
+        dst, len, seconds % SECONDS_PER_DAY / SECONDS_PER_HOUR, "hour");
+    len = append_duration_part(
+        dst, len, seconds % SECONDS_PER_HOUR / SECONDS_PER_MINUTE, "minute");
+    append_duration_part(dst, len, seconds % SECONDS_PER_MINUTE, "second");
 }

@@ -1,0 +1,6 @@
+Transaction Type; Loan Broker Cover Deposit
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Loan Broker ID; 29539e95928d3a4f6f9c3b2830d3b773d78f2b9ac94ca6b3bd46eeb0aa43a26c
+Amount; USD 250000
+Issuer;   rExKpRKXNz25    UAjbckCRtQs     JFcSfjL9Er3   
+Fee; XRP 0.000015

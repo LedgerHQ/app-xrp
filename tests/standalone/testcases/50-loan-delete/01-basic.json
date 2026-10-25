@@ -1,0 +1,8 @@
+{
+    "TransactionType": "LoanDelete",
+    "Account": "OWN_ADDR",
+    "LoanID": "472BBF14923E2E7CEFD8529825C401E8D1A2937B96DD697A6D1C75C53E6CCA3A",
+    "Fee": "15",
+    "Flags": 0,
+    "SigningPubKey": "OWN_PUBKEY"
+}

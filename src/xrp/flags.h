@@ -20,6 +20,7 @@
 #define LEDGER_APP_XRP_FLAGS_H
 
 #include <stdbool.h>
+#include <stdint.h>
 #include "fields.h"
 
 // Universal Transaction flags (hidden)

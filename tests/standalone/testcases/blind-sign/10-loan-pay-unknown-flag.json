@@ -1,0 +1,14 @@
+{
+    "TransactionType": "LoanPay",
+    "Account": "OWN_ADDR",
+    "LoanID": "472BBF14923E2E7CEFD8529825C401E8D1A2937B96DD697A6D1C75C53E6CCA3A",
+    "Amount": {
+        "currency": "USD",
+        "issuer": "rExKpRKXNz25UAjbckCRtQsJFcSfjL9Er3",
+        "value": "52345.67"
+    },
+    "Flags": 589824,
+    "Fee": "15",
+    "SigningPubKey": "OWN_PUBKEY",
+    "_comment": "tfLoanOverpayment plus 0x00080000, which LoanPay does not define: the unknown bit must not vanish from the review, so this goes to blind signing."
+}

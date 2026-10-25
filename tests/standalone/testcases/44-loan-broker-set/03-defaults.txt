@@ -1,0 +1,8 @@
+Transaction Type; Loan Broker Set
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Vault ID; e6f0a1fbb43c89196dcfcbef85908f19ab4c5f7cc4f4c452284697757683d7ef
+Fee; XRP 0.000015
+Management Fee Rate; 0 % (default)
+Cover Rate Minimum; 0 % (default)
+Cover Rate Liquidation; 0 % (default)
+Debt Maximum; No limit (default)

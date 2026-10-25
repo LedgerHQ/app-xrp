@@ -31,6 +31,8 @@ static nbgl_contentTagValue_t pair;
 static nbgl_contentTagValueList_t pairList;
 static parseResult_t* transaction;
 static resultAction_t approval_menu_callback;
+static nbgl_contentCenter_t asset_warning_info;
+static nbgl_warning_t asset_warning;
 
 static void build_title(const field_t* field, field_name_t* title) {
     const char* name = resolve_field_name((field_t*)field);
@@ -92,6 +94,22 @@ void display_blind_signed_review(parseResult_t* transaction_param,
                                    "Sign transaction?", NULL, reviewChoice);
 }
 
+#ifdef HAVE_SE_TOUCH
+// Whether the transaction names its vault: a LoanSet names its loan broker
+// instead.
+static bool names_vault(const parseResult_t* tx) {
+    for (uint8_t i = 0; i < tx->num_fields; i++) {
+        const field_t* field = &tx->fields[i];
+        if (field->data_type == STI_HASH256 &&
+            field->id == XRP_HASH256_VAULT_ID &&
+            field->array_info.type == ARRAY_NONE) {
+            return true;
+        }
+    }
+    return false;
+}
+#endif
+
 void display_review_menu(parseResult_t* transaction_param,
                          resultAction_t callback) {
     transaction = transaction_param;
@@ -108,7 +126,35 @@ void display_review_menu(parseResult_t* transaction_param,
     pairList.callback = getPair;
     pairList.startIndex = 0;
 
-    nbgl_useCaseReview(TYPE_TRANSACTION, &pairList, &ICON_APP_HOME,
-                       "Review transaction", NULL, "Sign transaction?",
-                       reviewChoice);
+    if (!has_number_without_asset(transaction)) {
+        nbgl_useCaseReview(TYPE_TRANSACTION, &pairList, &ICON_APP_HOME,
+                           "Review transaction", NULL, "Sign transaction?",
+                           reviewChoice);
+        return;
+    }
+
+    // Some amounts are in the base units of an asset the transaction does
+    // not name, the vault's: say so before the review, since a host could
+    // swap the vault ID (in a LoanSet, the loan broker ID) for one in another
+    // asset and the amounts would read the same.
+    memset(&asset_warning_info, 0, sizeof(asset_warning_info));
+    asset_warning_info.icon = &LARGE_WARNING_ICON;
+    asset_warning_info.title = "Asset not verified";
+#ifdef HAVE_SE_TOUCH
+    asset_warning_info.description =
+        names_vault(transaction)
+            ? "Amounts are in base units of the vault's asset, drops for XRP. "
+              "Verify the vault ID."
+            : "Amounts are in base units of the vault's asset, drops for XRP. "
+              "Verify the loan broker ID.";
+#else
+    // A Nano shows two short lines under the title
+    asset_warning_info.description = "In base units of the vault's asset";
+#endif
+    memset(&asset_warning, 0, sizeof(asset_warning));
+    asset_warning.info = &asset_warning_info;
+
+    nbgl_useCaseAdvancedReview(TYPE_TRANSACTION, &pairList, &ICON_APP_HOME,
+                               "Review transaction", NULL, "Sign transaction?",
+                               NULL, &asset_warning, reviewChoice);
 }

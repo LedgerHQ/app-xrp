@@ -1,0 +1,10 @@
+{
+    "_comment": "An AssetsMaximum of 0 is no limit.",
+    "TransactionType": "VaultSet",
+    "Account": "OWN_ADDR",
+    "VaultID": "E6F0A1FBB43C89196DCFCBEF85908F19AB4C5F7CC4F4C452284697757683D7EF",
+    "AssetsMaximum": "0",
+    "Fee": "15",
+    "Flags": 0,
+    "SigningPubKey": "OWN_PUBKEY"
+}

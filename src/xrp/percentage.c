@@ -24,9 +24,39 @@
 #include "limitations.h"
 #include "readers.h"
 
+// A TransferRate or Quality is held in billionths over 1: 10000000 is 1 %
 #define DENOMINATOR 10000000
+// XLS-66 rates and fees are held in tenths of a basis point: 1000 is 1 %
+#define TENTH_BPS_PER_PERCENT 1000
+
+static bool is_tenth_bps_rate(field_t* field) {
+    if (field->data_type == STI_UINT16) {
+        return field->id == XRP_UINT16_MANAGEMENT_FEE_RATE;
+    }
+
+    if (field->data_type == STI_UINT32) {
+        switch (field->id) {
+            case XRP_UINT32_COVER_RATE_MINIMUM:
+            case XRP_UINT32_COVER_RATE_LIQUIDATION:
+            case XRP_UINT32_OVERPAYMENT_FEE:
+            case XRP_UINT32_INTEREST_RATE:
+            case XRP_UINT32_LATE_INTEREST_RATE:
+            case XRP_UINT32_CLOSE_INTEREST_RATE:
+            case XRP_UINT32_OVERPAYMENT_INTEREST_RATE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    return false;
+}
 
 bool is_percentage(field_t* field) {
+    if (is_tenth_bps_rate(field)) {
+        return true;
+    }
+
     if (field->data_type == STI_UINT32) {
         switch (field->id) {
             case XRP_UINT32_TRANSFER_RATE:
@@ -62,11 +92,21 @@ void remove_redundant_decimals(field_value_t* dst) {
     dst->buf[end + 1] = '\0';
 }
 
-static void format_percentage_internal(field_value_t* dst, uint32_t value) {
-    unsigned int decimal_part = value % DENOMINATOR;
-    unsigned int integer_part = (value - decimal_part) / DENOMINATOR;
+// Prints value / per_percent as a percentage, per_percent being the power of
+// ten that stands for 1 %: one decimal per zero of it, the trailing zeros
+// then removed.
+static void format_scaled_percentage(field_value_t* dst, uint32_t value,
+                                     uint32_t per_percent) {
+    uint32_t decimal_part = value % per_percent;
 
-    snprintf(dst->buf, sizeof(dst->buf), "%u.%07u", integer_part, decimal_part);
+    snprintf(dst->buf, sizeof(dst->buf), "%u.", value / per_percent);
+    size_t len = strlen(dst->buf);
+    for (uint32_t unit = per_percent / 10; unit > 0; unit /= 10) {
+        if (len < sizeof(dst->buf) - 1) {
+            dst->buf[len++] = (char)('0' + decimal_part / unit % 10);
+        }
+    }
+    dst->buf[len] = '\x00';
     remove_redundant_decimals(dst);
 
     size_t total_length = strlen(dst->buf);
@@ -79,7 +119,7 @@ static void format_transfer_rate(field_value_t* dst, uint32_t value) {
     } else if (value < 1000000000) {
         strncpy(dst->buf, "Invalid value", sizeof(dst->buf));
     } else {
-        format_percentage_internal(dst, value - 1000000000);
+        format_scaled_percentage(dst, value - 1000000000, DENOMINATOR);
     }
 }
 
@@ -87,11 +127,18 @@ static void format_quality(field_value_t* dst, uint32_t value) {
     if (value == 0) {
         strncpy(dst->buf, "100 %", sizeof(dst->buf));
     } else {
-        format_percentage_internal(dst, value);
+        format_scaled_percentage(dst, value, DENOMINATOR);
     }
 }
 
 void format_percentage(field_t* field, field_value_t* dst) {
+    if (is_tenth_bps_rate(field)) {
+        uint32_t rate =
+            field->data_type == STI_UINT16 ? field->data.u16 : field->data.u32;
+        format_scaled_percentage(dst, rate, TENTH_BPS_PER_PERCENT);
+        return;
+    }
+
     uint32_t value = field->data.u32;
 
     if (field->id == XRP_UINT32_TRANSFER_RATE) {

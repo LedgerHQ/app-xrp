@@ -1,0 +1,13 @@
+{
+    "TransactionType": "LoanBrokerCoverWithdraw",
+    "Account": "OWN_ADDR",
+    "LoanBrokerID": "29539E95928D3A4F6F9C3B2830D3B773D78F2B9AC94CA6B3BD46EEB0AA43A26C",
+    "Amount": {
+        "currency": "USD",
+        "issuer": "rExKpRKXNz25UAjbckCRtQsJFcSfjL9Er3",
+        "value": "1000"
+    },
+    "Fee": "15",
+    "Flags": 0,
+    "SigningPubKey": "OWN_PUBKEY"
+}

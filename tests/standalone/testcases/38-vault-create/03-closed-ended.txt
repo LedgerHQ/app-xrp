@@ -1,0 +1,9 @@
+Transaction Type; Vault Create
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Subscription Date; 2026-12-01 00:00:00 UTC
+Redemption Date; 2031-12-01 00:00:00 UTC
+Fee; XRP 0.000015
+Assets Maximum; USD 1000000.5
+Vault Kind; Closed-Ended
+Asset; USD
+Issuer;   rExKpRKXNz25    UAjbckCRtQs     JFcSfjL9Er3   

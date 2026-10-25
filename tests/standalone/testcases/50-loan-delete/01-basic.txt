@@ -1,0 +1,4 @@
+Transaction Type; Loan Delete
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Loan ID; 472bbf14923e2e7cefd8529825c401e8d1a2937b96dd697a6d1c75c53e6cca3a
+Fee; XRP 0.000015

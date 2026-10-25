@@ -1,0 +1,11 @@
+{
+    "TransactionType": "VaultCreate",
+    "Account": "OWN_ADDR",
+    "Asset": {
+        "currency": "XRP"
+    },
+    "AssetsMaximum": "100000000",
+    "Fee": "15",
+    "Flags": 0,
+    "SigningPubKey": "OWN_PUBKEY"
+}

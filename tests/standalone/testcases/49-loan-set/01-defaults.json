@@ -1,0 +1,10 @@
+{
+    "_comment": "Every optional term omitted: the review shows the defaults rippled applies, 1 payment due every minute with a minute of grace, no interest, no fees, the loan broker's owner as counterparty.",
+    "TransactionType": "LoanSet",
+    "Account": "OWN_ADDR",
+    "LoanBrokerID": "29539E95928D3A4F6F9C3B2830D3B773D78F2B9AC94CA6B3BD46EEB0AA43A26C",
+    "PrincipalRequested": "1000000",
+    "Fee": "15",
+    "Flags": 0,
+    "SigningPubKey": "OWN_PUBKEY"
+}

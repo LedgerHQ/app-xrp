@@ -1,0 +1,13 @@
+{
+    "TransactionType": "LoanBrokerCoverDeposit",
+    "Account": "OWN_ADDR",
+    "LoanBrokerID": "29539E95928D3A4F6F9C3B2830D3B773D78F2B9AC94CA6B3BD46EEB0AA43A26C",
+    "Amount": {
+        "mpt_issuance_id": "0000012FA407AF5856CCF3C42619DAA925813FC955C72983",
+        "value": "250000"
+    },
+    "Fee": "15",
+    "Flags": 0,
+    "SigningPubKey": "OWN_PUBKEY",
+    "_comment": "First-loss cover in an MPT: vaults of an MPT are not supported yet, so refused."
+}

@@ -1,0 +1,11 @@
+{
+    "TransactionType": "VaultDeposit",
+    "Account": "OWN_ADDR",
+    "VaultID": "E6F0A1FBB43C89196DCFCBEF85908F19AB4C5F7CC4F4C452284697757683D7EF",
+    "DomainID": "F2FF83860A4DC203988ED1A22BA1F21237F04ABDBD0C4C951103CFBED121DE78",
+    "Amount": "1000000",
+    "Fee": "15",
+    "Flags": 0,
+    "SigningPubKey": "OWN_PUBKEY",
+    "_comment": "DomainID is named in VaultCreate and VaultSet only: in a VaultDeposit it goes to blind signing."
+}

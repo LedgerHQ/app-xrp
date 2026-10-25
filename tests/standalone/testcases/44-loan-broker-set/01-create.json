@@ -1,0 +1,13 @@
+{
+    "TransactionType": "LoanBrokerSet",
+    "Account": "OWN_ADDR",
+    "VaultID": "E6F0A1FBB43C89196DCFCBEF85908F19AB4C5F7CC4F4C452284697757683D7EF",
+    "Data": "4578616D706C652062726F6B6572",
+    "ManagementFeeRate": 1000,
+    "DebtMaximum": "10000000",
+    "CoverRateMinimum": 10000,
+    "CoverRateLiquidation": 2500,
+    "Fee": "15",
+    "Flags": 0,
+    "SigningPubKey": "OWN_PUBKEY"
+}

@@ -55,9 +55,49 @@
 #define TRANSACTION_AMM_VOTE               38
 #define TRANSACTION_AMM_BID                39
 #define TRANSACTION_AMM_DELETE             40
+#define TRANSACTION_VAULT_CREATE           65
+#define TRANSACTION_VAULT_SET              66
+#define TRANSACTION_VAULT_DELETE           67
+#define TRANSACTION_VAULT_DEPOSIT          68
+#define TRANSACTION_VAULT_WITHDRAW         69
+#define TRANSACTION_VAULT_CLAWBACK         70
+// Lending (XLS-66)
+#define TRANSACTION_LOAN_BROKER_SET            74
+#define TRANSACTION_LOAN_BROKER_DELETE         75
+#define TRANSACTION_LOAN_BROKER_COVER_DEPOSIT  76
+#define TRANSACTION_LOAN_BROKER_COVER_WITHDRAW 77
+#define TRANSACTION_LOAN_BROKER_COVER_CLAWBACK 78
+#define TRANSACTION_LOAN_SET                   80
+#define TRANSACTION_LOAN_DELETE                81
+#define TRANSACTION_LOAN_MANAGE                82
+#define TRANSACTION_LOAN_PAY                   84
 
 static inline bool is_transaction_type_field(field_t *field) {
     return field->data_type == STI_UINT16 && field->id == XRP_UINT16_TRANSACTION_TYPE;
+}
+
+// Single Asset Vault transactions (XLS-65)
+static inline bool is_vault_transaction(uint16_t transaction_type) {
+    return transaction_type >= TRANSACTION_VAULT_CREATE &&
+           transaction_type <= TRANSACTION_VAULT_CLAWBACK;
+}
+
+// Lending Protocol transactions (XLS-66)
+static inline bool is_loan_transaction(uint16_t transaction_type) {
+    switch (transaction_type) {
+        case TRANSACTION_LOAN_BROKER_SET:
+        case TRANSACTION_LOAN_BROKER_DELETE:
+        case TRANSACTION_LOAN_BROKER_COVER_DEPOSIT:
+        case TRANSACTION_LOAN_BROKER_COVER_WITHDRAW:
+        case TRANSACTION_LOAN_BROKER_COVER_CLAWBACK:
+        case TRANSACTION_LOAN_SET:
+        case TRANSACTION_LOAN_DELETE:
+        case TRANSACTION_LOAN_MANAGE:
+        case TRANSACTION_LOAN_PAY:
+            return true;
+        default:
+            return false;
+    }
 }
 
 #endif  // LEDGER_APP_XRP_TRANSACTIONTYPES_H

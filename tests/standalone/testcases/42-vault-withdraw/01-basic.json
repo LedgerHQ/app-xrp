@@ -1,0 +1,13 @@
+{
+    "TransactionType": "VaultWithdraw",
+    "Account": "OWN_ADDR",
+    "VaultID": "E6F0A1FBB43C89196DCFCBEF85908F19AB4C5F7CC4F4C452284697757683D7EF",
+    "Amount": {
+        "currency": "USD",
+        "issuer": "rExKpRKXNz25UAjbckCRtQsJFcSfjL9Er3",
+        "value": "1500.25"
+    },
+    "Fee": "15",
+    "Flags": 0,
+    "SigningPubKey": "OWN_PUBKEY"
+}

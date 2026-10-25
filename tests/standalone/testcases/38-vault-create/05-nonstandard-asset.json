@@ -1,0 +1,12 @@
+{
+    "TransactionType": "VaultCreate",
+    "Account": "OWN_ADDR",
+    "Asset": {
+        "currency": "0158415500000000C1F76FF6ECB0BAC600000000",
+        "issuer": "rExKpRKXNz25UAjbckCRtQsJFcSfjL9Er3"
+    },
+    "AssetsMaximum": "2750000.5",
+    "Fee": "15",
+    "Flags": 0,
+    "SigningPubKey": "OWN_PUBKEY"
+}

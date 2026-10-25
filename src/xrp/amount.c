@@ -301,3 +301,177 @@ void currency_formatter(field_t* field, field_value_t* dst) {
     xrp_currency_t* currency = (xrp_currency_t*)field->data.ptr;
     format_non_standard_currency(currency, dst);
 }
+
+// An STNumber (serialized type 9) is a big-endian signed 64-bit mantissa
+// followed by a big-endian signed 32-bit exponent. Its mantissa is not
+// normalized to the 16 digits of an issued-currency amount (it can use 19), so
+// parse_decimal_number() cannot print it.
+#define NUMBER_MANTISSA_SIZE 8
+
+// Writes c at offset if it fits with the terminating NUL (size is at least 1),
+// and returns the next offset, or size once the buffer is full: an offset of
+// size tells the caller that the number did not fit.
+static size_t append_char(char* buf, size_t size, size_t offset, char c) {
+    if (offset >= size - 1) {
+        return size;
+    }
+    buf[offset] = c;
+    return offset + 1;
+}
+
+static size_t append_str(char* buf, size_t size, size_t offset,
+                         const char* str) {
+    for (size_t i = 0; str[i] != '\x00'; i++) {
+        offset = append_char(buf, size, offset, str[i]);
+    }
+    return offset;
+}
+
+// rippled keeps a Number in an XRP asset in drops (STAmount::operator
+// Number), and a drop is 10^-6 XRP.
+#define XRP_DROPS_EXPONENT (-6)
+
+// Reads an STNumber as its sign, its magnitude without trailing zeros, and
+// its exponent with those zeros added.
+static void read_number(const uint8_t* number, bool* negative,
+                        uint64_t* mantissa, int64_t* exponent) {
+    const uint8_t* exponent_bytes = number + NUMBER_MANTISSA_SIZE;
+    uint64_t raw_mantissa = read_unsigned64(number);
+    uint32_t raw_exponent = ((uint32_t)exponent_bytes[0] << 24) |
+                            ((uint32_t)exponent_bytes[1] << 16) |
+                            ((uint32_t)exponent_bytes[2] << 8) |
+                            (uint32_t)exponent_bytes[3];
+
+    // Two's complement magnitude: the magnitude of INT64_MIN, 2^63, still fits.
+    *negative = (raw_mantissa >> 63u) != 0;
+    *mantissa = *negative ? ~raw_mantissa + 1 : raw_mantissa;
+
+    // Sign-extend by arithmetic rather than a cast, into 64 bits, so that
+    // a shift and stripping the trailing zeros cannot overflow at INT32_MAX.
+    *exponent = (int64_t)raw_exponent;
+    if (raw_exponent > INT32_MAX) {
+        *exponent -= 0x100000000LL;
+    }
+
+    while (*mantissa != 0 && *mantissa % 10 == 0) {
+        *mantissa /= 10;
+        (*exponent)++;
+    }
+}
+
+bool is_number_in_range(const uint8_t* number) {
+    bool negative;
+    uint64_t mantissa;
+    int64_t exponent;
+    read_number(number, &negative, &mantissa, &exponent);
+
+    // Zero carries any exponent (rippled writes INT32_MIN). Otherwise, the
+    // exponent range of an issued-currency amount, raised by the drops
+    // shift so that a Number in an XRP asset stays within it too.
+    return mantissa == 0 ||
+           (exponent >= EXP_MIN - XRP_DROPS_EXPONENT && exponent <= EXP_MAX);
+}
+
+bool is_number_zero(const uint8_t* number) {
+    return is_all_zeros(number, NUMBER_MANTISSA_SIZE);
+}
+
+int print_number(char* buf, size_t size, const uint8_t* number, int32_t shift) {
+    if (size == 0) {
+        return -1;
+    }
+
+    bool negative;
+    uint64_t mantissa;
+    int64_t exponent;
+    read_number(number, &negative, &mantissa, &exponent);
+    exponent += shift;
+
+    size_t offset = 0;
+    if (mantissa == 0) {
+        offset = append_char(buf, size, offset, '0');
+    } else {
+        char digits[21] = {0};
+        if (print_uint64_t(digits, sizeof(digits), mantissa) != 0) {
+            buf[0] = '\x00';
+            return -1;
+        }
+        int num_digits = (int)strlen(digits);
+
+        if (negative) {
+            offset = append_char(buf, size, offset, '-');
+        }
+
+        if (exponent < EXP_MIN || exponent > EXP_MAX) {
+            // Outside the exponent range of an issued-currency amount, show
+            // the exponent rather than a run of zeros too long to read.
+            char magnitude[21] = {0};
+            if (print_uint64_t(
+                    magnitude, sizeof(magnitude),
+                    (uint64_t)(exponent < 0 ? -exponent : exponent)) != 0) {
+                buf[0] = '\x00';
+                return -1;
+            }
+            offset = append_str(buf, size, offset, digits);
+            offset = append_char(buf, size, offset, 'e');
+            if (exponent < 0) {
+                offset = append_char(buf, size, offset, '-');
+            }
+            offset = append_str(buf, size, offset, magnitude);
+        } else {
+            // Number of digits before the decimal point, zero or less for
+            // 0.0...
+            int point = num_digits + (int)exponent;
+            if (point <= 0) {
+                offset = append_str(buf, size, offset, "0.");
+                for (int i = point; i < 0; i++) {
+                    offset = append_char(buf, size, offset, '0');
+                }
+            }
+            for (int i = 0; i < num_digits; i++) {
+                if (i == point && point > 0) {
+                    offset = append_char(buf, size, offset, '.');
+                }
+                offset = append_char(buf, size, offset, digits[i]);
+            }
+            for (int i = num_digits; i < point; i++) {
+                offset = append_char(buf, size, offset, '0');
+            }
+        }
+    }
+
+    if (offset >= size) {
+        buf[0] = '\x00';
+        return -1;
+    }
+    buf[offset] = '\x00';
+    return 0;
+}
+
+// A parsed Number is in range (is_number_in_range), and the longest one in
+// range is a 100-character plain decimal: the replacement below is never
+// shown, but a printer must not show a value it could not print whole.
+void number_formatter(field_t* field, field_value_t* dst) {
+    if (print_number(dst->buf, sizeof(dst->buf), field->data.ptr, 0) != 0) {
+        strncpy(dst->buf, "Invalid number!", sizeof(dst->buf));
+    }
+}
+
+void asset_number_formatter(field_t* field, xrp_currency_t* currency,
+                            field_value_t* dst) {
+    // The currency as an amount shows it: XRP, a standard code, or nothing
+    // for a nonstandard code, which has a row of its own.
+    format_standard_currency(currency, dst->buf, sizeof(dst->buf));
+    size_t len = strnlen(dst->buf, sizeof(dst->buf));
+    if (len > 0 && len + 1 < sizeof(dst->buf)) {
+        dst->buf[len++] = ' ';
+    }
+
+    int32_t shift =
+        is_all_zeros(currency->buf, XRP_CURRENCY_SIZE) ? XRP_DROPS_EXPONENT : 0;
+    if (len >= sizeof(dst->buf) ||
+        print_number(dst->buf + len, sizeof(dst->buf) - len, field->data.ptr,
+                     shift) != 0) {
+        strncpy(dst->buf, "Invalid number!", sizeof(dst->buf));
+    }
+}

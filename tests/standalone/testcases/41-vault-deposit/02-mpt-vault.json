@@ -1,0 +1,13 @@
+{
+    "TransactionType": "VaultDeposit",
+    "Account": "OWN_ADDR",
+    "VaultID": "E6F0A1FBB43C89196DCFCBEF85908F19AB4C5F7CC4F4C452284697757683D7EF",
+    "Amount": {
+        "mpt_issuance_id": "0000012FA407AF5856CCF3C42619DAA925813FC955C72983",
+        "value": "1000000"
+    },
+    "Fee": "15",
+    "Flags": 0,
+    "SigningPubKey": "OWN_PUBKEY",
+    "_comment": "A deposit of an MPT: vaults of an MPT are not supported yet, so refused."
+}

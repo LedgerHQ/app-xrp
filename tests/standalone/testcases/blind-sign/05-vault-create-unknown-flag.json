@@ -1,0 +1,11 @@
+{
+    "TransactionType": "VaultCreate",
+    "Account": "OWN_ADDR",
+    "Asset": {
+        "currency": "XRP"
+    },
+    "Flags": 327680,
+    "Fee": "15",
+    "SigningPubKey": "OWN_PUBKEY",
+    "_comment": "tfVaultPrivate plus the undefined bit 0x00040000: the unknown bit must not vanish from the review, so this goes to blind signing."
+}

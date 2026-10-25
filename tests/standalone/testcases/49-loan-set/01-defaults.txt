@@ -1,0 +1,18 @@
+Transaction Type; Loan Set
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Loan Broker ID; 29539e95928d3a4f6f9c3b2830d3b773d78f2b9ac94ca6b3bd46eeb0aa43a26c
+Fee; XRP 0.000015
+Principal Requested; 1000000 (vault asset, base units)
+Payment Total; 1 (default)
+Payment Interval; 1 minute (default)
+Grace Period; 1 minute (default)
+Interest Rate; 0 % (default)
+Late Interest Rate; 0 % (default)
+Close Interest Rate; 0 % (default)
+Overpayment Interest Rate; 0 % (default)
+Overpayment Fee; 0 % (default)
+Loan Origination Fee; 0 (default)
+Loan Service Fee; 0 (default)
+Late Payment Fee; 0 (default)
+Close Payment Fee; 0 (default)
+Counterparty; Loan broker's owner (default)

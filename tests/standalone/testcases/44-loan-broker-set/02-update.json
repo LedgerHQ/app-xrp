@@ -1,0 +1,10 @@
+{
+    "TransactionType": "LoanBrokerSet",
+    "Account": "OWN_ADDR",
+    "VaultID": "E6F0A1FBB43C89196DCFCBEF85908F19AB4C5F7CC4F4C452284697757683D7EF",
+    "LoanBrokerID": "29539E95928D3A4F6F9C3B2830D3B773D78F2B9AC94CA6B3BD46EEB0AA43A26C",
+    "DebtMaximum": "20000000",
+    "Fee": "15",
+    "Flags": 0,
+    "SigningPubKey": "OWN_PUBKEY"
+}

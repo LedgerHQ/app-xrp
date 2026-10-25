@@ -1,0 +1,7 @@
+Transaction Type; Loan Pay
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Flags; Full Payment
+Loan ID; 472bbf14923e2e7cefd8529825c401e8d1a2937b96dd697a6d1c75c53e6cca3a
+Amount; USD 2800000
+Issuer;   rExKpRKXNz25    UAjbckCRtQs     JFcSfjL9Er3   
+Fee; XRP 0.000015
