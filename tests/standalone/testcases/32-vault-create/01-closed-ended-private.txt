@@ -1,0 +1,13 @@
+Transaction Type; Vault Create
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Flags; Private
+Subscription Date; 2026-11-01 00:00:00 UTC
+Redemption Date; 2026-12-01 00:00:00 UTC
+Domain ID; d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0
+Fee; XRP 0.000012
+Data; agent-cash vault
+Assets Maximum; 1000000000
+Scale; 6
+Withdrawal Policy; 1
+Vault Kind; 1
+Asset; XRP

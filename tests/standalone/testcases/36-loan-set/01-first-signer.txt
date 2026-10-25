@@ -1,0 +1,13 @@
+Transaction Type; Loan Set
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Payment Interval; 2592000 s
+Grace Period; 604800 s
+Payment Total; 12
+Interest Rate; 0.5 %
+Loan Broker ID; b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2
+Fee; XRP 0.000012
+Data; lr_0016
+Counterparty;   rPT1Sjq2YGrB    MTttX4GZHjK     u9dyfzbpAYe   
+Loan Origination Fee; 100
+Loan Service Fee; 10
+Principal Requested; 100000000

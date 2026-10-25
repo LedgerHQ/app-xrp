@@ -1,0 +1,6 @@
+Transaction Type; Loan Pay
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Flags; Full Payment
+Loan ID; c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3
+Amount; XRP 95
+Fee; XRP 0.000012

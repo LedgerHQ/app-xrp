@@ -1,0 +1,5 @@
+Transaction Type; Loan Manage
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Flags; Default
+Loan ID; c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3
+Fee; XRP 0.000012

@@ -1,0 +1,20 @@
+{
+  "Account": "OWN_ADDR",
+  "Fee": "12",
+  "Sequence": 7,
+  "LastLedgerSequence": 6400000,
+  "SigningPubKey": "OWN_PUBKEY",
+  "TransactionType": "VaultCreate",
+  "Asset": {
+    "currency": "XRP"
+  },
+  "AssetsMaximum": "1000000000",
+  "WithdrawalPolicy": 1,
+  "VaultKind": 1,
+  "Scale": 6,
+  "SubscriptionDate": 846806400,
+  "RedemptionDate": 849398400,
+  "DomainID": "D0D0D0D0D0D0D0D0D0D0D0D0D0D0D0D0D0D0D0D0D0D0D0D0D0D0D0D0D0D0D0D0",
+  "Data": "6167656e742d63617368207661756c74",
+  "Flags": 65536
+}

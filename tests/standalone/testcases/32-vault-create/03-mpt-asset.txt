@@ -1,0 +1,4 @@
+Transaction Type; Vault Create
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Fee; XRP 0.000012
+Asset; MPT 000000f05e7c5e7c5e7c5e7c5e7c5e7c5e7c5e7c5e7c5e7c

@@ -1,0 +1,6 @@
+Transaction Type; Vault Deposit
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Vault ID; a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1
+Amount; USD 2500.5
+Issuer;   rhub8VRN55s9    4qWKDv6jmDy     1pUykJzF3wq   
+Fee; XRP 0.000012

@@ -1,0 +1,18 @@
+{
+  "Account": "OWN_ADDR",
+  "Fee": "12",
+  "Sequence": 7,
+  "LastLedgerSequence": 6400000,
+  "SigningPubKey": "OWN_PUBKEY",
+  "TransactionType": "LoanSet",
+  "LoanBrokerID": "B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2",
+  "Counterparty": "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
+  "PrincipalRequested": "100000000",
+  "InterestRate": 500,
+  "PaymentTotal": 12,
+  "PaymentInterval": 2592000,
+  "GracePeriod": 604800,
+  "LoanOriginationFee": "100",
+  "LoanServiceFee": "10",
+  "Data": "6c725f30303136"
+}

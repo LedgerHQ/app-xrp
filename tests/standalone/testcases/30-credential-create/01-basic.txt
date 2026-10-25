@@ -1,0 +1,7 @@
+Transaction Type; Credential Create
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Expiration; 2026-12-01 00:00:00 UTC
+Fee; XRP 0.000012
+URI; https://desk.example/kyc
+Credential Type; KYC
+Subject;   rPT1Sjq2YGrB    MTttX4GZHjK     u9dyfzbpAYe   

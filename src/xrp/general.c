@@ -105,8 +105,115 @@ static const char* resolve_transaction_name(uint16_t value) {
             return "AMM Bid";
         case TRANSACTION_AMM_DELETE:
             return "AMM Delete";
+        case TRANSACTION_MPTOKEN_ISSUANCE_CREATE:
+            return "MPT Issuance Create";
+        case TRANSACTION_MPTOKEN_ISSUANCE_DESTROY:
+            return "MPT Issuance Destroy";
+        case TRANSACTION_MPTOKEN_ISSUANCE_SET:
+            return "MPT Issuance Set";
+        case TRANSACTION_MPTOKEN_AUTHORIZE:
+            return "MPT Authorize";
+        case TRANSACTION_CREDENTIAL_CREATE:
+            return "Credential Create";
+        case TRANSACTION_CREDENTIAL_ACCEPT:
+            return "Credential Accept";
+        case TRANSACTION_CREDENTIAL_DELETE:
+            return "Credential Delete";
+        case TRANSACTION_PERMISSIONED_DOMAIN_SET:
+            return "Permissioned Domain Set";
+        case TRANSACTION_PERMISSIONED_DOMAIN_DELETE:
+            return "Permissioned Domain Delete";
+        case TRANSACTION_DELEGATE_SET:
+            return "Delegate Set";
+        case TRANSACTION_VAULT_CREATE:
+            return "Vault Create";
+        case TRANSACTION_VAULT_SET:
+            return "Vault Set";
+        case TRANSACTION_VAULT_DELETE:
+            return "Vault Delete";
+        case TRANSACTION_VAULT_DEPOSIT:
+            return "Vault Deposit";
+        case TRANSACTION_VAULT_WITHDRAW:
+            return "Vault Withdraw";
+        case TRANSACTION_VAULT_CLAWBACK:
+            return "Vault Clawback";
+        case TRANSACTION_BATCH:
+            return "Batch";
+        case TRANSACTION_LOAN_BROKER_SET:
+            return "Loan Broker Set";
+        case TRANSACTION_LOAN_BROKER_DELETE:
+            return "Loan Broker Delete";
+        case TRANSACTION_LOAN_BROKER_COVER_DEPOSIT:
+            return "Loan Broker Cover Deposit";
+        case TRANSACTION_LOAN_BROKER_COVER_WITHDRAW:
+            return "Loan Broker Cover Withdraw";
+        case TRANSACTION_LOAN_BROKER_COVER_CLAWBACK:
+            return "Loan Broker Cover Clawback";
+        case TRANSACTION_LOAN_SET:
+            return "Loan Set";
+        case TRANSACTION_LOAN_DELETE:
+            return "Loan Delete";
+        case TRANSACTION_LOAN_MANAGE:
+            return "Loan Manage";
+        case TRANSACTION_LOAN_PAY:
+            return "Loan Pay";
         default:
             return "Unknown";
+    }
+}
+
+// DelegateSet permission values above the transaction-type range
+// (xrpl.js definitions.json, "granular permissions").
+static const char* resolve_granular_permission_name(uint32_t value) {
+    switch (value) {
+        case 65537:
+            return "Trustline Authorize";
+        case 65538:
+            return "Trustline Freeze";
+        case 65539:
+            return "Trustline Unfreeze";
+        case 65540:
+            return "Account Domain Set";
+        case 65541:
+            return "Account Email Hash Set";
+        case 65542:
+            return "Account Message Key Set";
+        case 65543:
+            return "Account Transfer Rate Set";
+        case 65544:
+            return "Account Tick Size Set";
+        case 65545:
+            return "Payment Mint";
+        case 65546:
+            return "Payment Burn";
+        case 65547:
+            return "MPT Issuance Lock";
+        case 65548:
+            return "MPT Issuance Unlock";
+        default:
+            return NULL;
+    }
+}
+
+// A DelegateSet Permission grants one transaction type (its code plus one;
+// 0 is reserved) or one granular permission. Show the name: a grant of
+// "Payment" and one of "Account Setting" must not read the same.
+static void format_permission_value(uint32_t value, field_value_t* dst) {
+    const char* name = NULL;
+
+    if (value >= 1 && value <= 0xFFFF) {
+        name = resolve_transaction_name((uint16_t)(value - 1));
+        if (strcmp(name, "Unknown") == 0) {
+            name = NULL;
+        }
+    } else {
+        name = resolve_granular_permission_name(value);
+    }
+
+    if (name != NULL) {
+        strncpy(dst->buf, name, sizeof(dst->buf));
+    } else {
+        snprintf(dst->buf, sizeof(dst->buf), "Unknown (%u)", value);
     }
 }
 
@@ -116,6 +223,8 @@ void uint16_formatter(field_t* field, field_value_t* dst) {
     if (is_transaction_type_field(field)) {
         const char* name = resolve_transaction_name(value);
         strncpy(dst->buf, name, sizeof(dst->buf));
+    } else if (is_percentage(field)) {
+        format_percentage(field, dst);
     } else {
         snprintf(dst->buf, sizeof(dst->buf), "%u", value);
     }
@@ -130,10 +239,20 @@ void uint32_formatter(field_t* field, field_value_t* dst) {
         format_time_delta(field, dst);
     } else if (is_percentage(field)) {
         format_percentage(field, dst);
+    } else if (field->id == XRP_UINT32_PERMISSION_VALUE) {
+        format_permission_value(field->data.u32, dst);
     } else {
         uint32_t value = field->data.u32;
         snprintf(dst->buf, sizeof(dst->buf), "%u", value);
     }
+}
+
+void int32_formatter(field_t* field, field_value_t* dst) {
+    int32_t value = (int32_t)(((uint32_t)field->data.ptr[0] << 24) |
+                              ((uint32_t)field->data.ptr[1] << 16) |
+                              ((uint32_t)field->data.ptr[2] << 8) |
+                              (uint32_t)field->data.ptr[3]);
+    snprintf(dst->buf, sizeof(dst->buf), "%d", value);
 }
 
 void hash_formatter128(field_t* field, field_value_t* dst) {
@@ -146,6 +265,10 @@ void hash_formatter256(field_t* field, field_value_t* dst) {
              sizeof(field->data.hash256->buf));
 }
 
+void hash_formatter192(field_t* field, field_value_t* dst) {
+    read_hex(dst->buf, sizeof(dst->buf), field->data.ptr, XRP_HASH192_SIZE);
+}
+
 static bool should_format_blob_as_string(field_t* field) {
     switch (field->id) {
         case XRP_VL_DOMAIN:
@@ -153,6 +276,8 @@ static bool should_format_blob_as_string(field_t* field) {
         case XRP_VL_MEMO_FORMAT:
         case XRP_VL_MEMO_DATA:
         case XRP_VL_URI:
+        case XRP_VL_DATA:
+        case XRP_VL_CREDENTIAL_TYPE:
             return is_purely_ascii(field->data.ptr, field->length, false);
         default:
             return false;

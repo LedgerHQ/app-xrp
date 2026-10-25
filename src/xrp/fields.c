@@ -50,6 +50,8 @@ const char* resolve_field_name(field_t* field) {
                 return "Trading Fee";
             case 6:
                 return "Discount Fee";
+            case 22:
+                return "Management Fee Rate";
         }
     }
 
@@ -102,6 +104,68 @@ const char* resolve_field_name(field_t* field) {
                 return "Ticket Sequence";
             case 42:
                 return "NFToken Taxon";
+            case 52:
+                return "Permission";
+            case 54:
+                return "Start Date";
+            case 55:
+                return "Payment Interval";
+            case 56:
+                return "Grace Period";
+            case 60:
+                return "Payment Total";
+            case 62:
+                return "Cover Rate Minimum";
+            case 63:
+                return "Cover Rate Liquidation";
+            case 64:
+                return "Overpayment Fee";
+            case 65:
+                return "Interest Rate";
+            case 66:
+                return "Late Interest Rate";
+            case 67:
+                return "Close Interest Rate";
+            case 68:
+                return "Overpayment Interest Rate";
+            case 75:
+                return "Subscription Date";
+            case 76:
+                return "Redemption Date";
+        }
+    }
+
+    if (field->data_type == STI_INT32) {
+        switch (field->id) {
+            case 1:
+                return "Loan Scale";
+        }
+    }
+
+    if (field->data_type == STI_NUMBER) {
+        switch (field->id) {
+            // STNumber, in units of the vault asset
+            case 3:
+                return "Assets Maximum";
+            case 7:
+                return "Debt Maximum";
+            case 9:
+                return "Loan Origination Fee";
+            case 10:
+                return "Loan Service Fee";
+            case 11:
+                return "Late Payment Fee";
+            case 12:
+                return "Close Payment Fee";
+            case 14:
+                return "Principal Requested";
+        }
+    }
+
+    if (field->data_type == STI_HASH192) {
+        switch (field->id) {
+            case 1:
+                return "MPT Issuance ID";
         }
     }
 
@@ -137,6 +201,16 @@ const char* resolve_field_name(field_t* field) {
                 return "NFToken Buy Offer";
             case 29:
                 return "NFToken Sell Offer";
+            case 34:
+                return "Domain ID";
+            case 35:
+                return "Vault ID";
+            case 37:
+                return "Loan Broker ID";
+            case 38:
+                return "Loan ID";
+            case 0xFD:
+                return "Credential ID";
             case 0xFE:
                 return "NFToken Offer";
         }
@@ -213,6 +287,12 @@ const char* resolve_field_name(field_t* field) {
                 return "Fulfillment";
             case 17:
                 return "Condition";
+            case 27:
+                return "Data";
+            case 30:
+                return "MPT Metadata";
+            case 31:
+                return "Credential Type";
         }
     }
 
@@ -221,6 +301,8 @@ const char* resolve_field_name(field_t* field) {
             // vector 256
             case 4:
                 return "NFToken Offers";
+            case 5:
+                return "Credential IDs";
         }
     }
 
@@ -242,6 +324,14 @@ const char* resolve_field_name(field_t* field) {
                 return "Regular Key";
             case 9:
                 return "NFToken Minter";
+            case 11:
+                return "Holder";
+            case 12:
+                return "Delegate";
+            case 24:
+                return "Subject";
+            case 26:
+                return "Counterparty";
         }
     }
 
@@ -257,8 +347,18 @@ const char* resolve_field_name(field_t* field) {
                 return "NFToken";
             case 16:
                 return "Signer";
+            case 15:
+                return "Permission";
             case 27:
                 return "Auth Account";
+            case 33:
+                return "Credential";
+            case 34:
+                return "Raw Transaction";
+            case 35:
+                return "Batch Signer";
+            case 37:
+                return "Counterparty Signature";
         }
     }
 
@@ -276,14 +376,30 @@ const char* resolve_field_name(field_t* field) {
                 return "NFTokens";
             case 25:
                 return "Auth Accounts";
+            case 28:
+                return "Accepted Credentials";
+            case 29:
+                return "Permissions";
+            case 30:
+                return "Raw Transactions";
+            case 31:
+                return "Batch Signers";
         }
     }
 
     if (field->data_type == STI_UINT8) {
         switch (field->id) {
             // 8-bit integers
+            case 4:
+                return "Scale";
+            case 5:
+                return "Asset Scale";
             case 16:
                 return "Tick Size";
+            case 20:
+                return "Withdrawal Policy";
+            case 22:
+                return "Vault Kind";
         }
     }
 

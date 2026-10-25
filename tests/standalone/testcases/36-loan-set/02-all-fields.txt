@@ -1,0 +1,18 @@
+Transaction Type; Loan Set
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Payment Interval; 60 s
+Grace Period; 60 s
+Payment Total; 3
+Overpayment Fee; 0.05 %
+Interest Rate; 1.25 %
+Late Interest Rate; 2 %
+Close Interest Rate; 0.3 %
+Overpayment Interest Rate; 0.1 %
+Loan Broker ID; b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2
+Fee; XRP 0.000012
+Counterparty;   rPT1Sjq2YGrB    MTttX4GZHjK     u9dyfzbpAYe   
+Loan Origination Fee; 1
+Loan Service Fee; 0.25
+Late Payment Fee; 5
+Close Payment Fee; 2
+Principal Requested; 2500.5

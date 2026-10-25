@@ -1,0 +1,12 @@
+{
+  "Account": "OWN_ADDR",
+  "Fee": "12",
+  "Sequence": 7,
+  "LastLedgerSequence": 6400000,
+  "SigningPubKey": "OWN_PUBKEY",
+  "TransactionType": "MPTokenIssuanceCreate",
+  "AssetScale": 2,
+  "MaximumAmount": "1000000000",
+  "TransferFee": 100,
+  "Flags": 32
+}

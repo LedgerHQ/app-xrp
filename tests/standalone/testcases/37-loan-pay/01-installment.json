@@ -1,0 +1,10 @@
+{
+  "Account": "OWN_ADDR",
+  "Fee": "12",
+  "Sequence": 7,
+  "LastLedgerSequence": 6400000,
+  "SigningPubKey": "OWN_PUBKEY",
+  "TransactionType": "LoanPay",
+  "LoanID": "C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3",
+  "Amount": "9000000"
+}

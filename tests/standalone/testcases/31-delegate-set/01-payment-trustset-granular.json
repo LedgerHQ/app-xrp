@@ -1,0 +1,26 @@
+{
+  "Account": "OWN_ADDR",
+  "Fee": "12",
+  "Sequence": 7,
+  "LastLedgerSequence": 6400000,
+  "SigningPubKey": "OWN_PUBKEY",
+  "TransactionType": "DelegateSet",
+  "Authorize": "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
+  "Permissions": [
+    {
+      "Permission": {
+        "PermissionValue": "Payment"
+      }
+    },
+    {
+      "Permission": {
+        "PermissionValue": "TrustSet"
+      }
+    },
+    {
+      "Permission": {
+        "PermissionValue": "TrustlineAuthorize"
+      }
+    }
+  ]
+}

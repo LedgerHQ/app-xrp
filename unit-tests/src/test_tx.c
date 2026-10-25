@@ -133,6 +133,47 @@ static const char* testcases[] = {
     "../../tests/standalone/testcases/28-amm-bid/01-basic.raw",
     "../../tests/standalone/testcases/28-amm-bid/02-min-max.raw",
     "../../tests/standalone/testcases/29-amm-vote/01-basic.raw",
+    // XRPL 3.x: Credentials, DelegateSet, Single Asset Vault (XLS-65),
+    // Lending Protocol (XLS-66). Generated with xrpl-py 5.2 from the .json
+    // next to each .raw.
+    "../../tests/standalone/testcases/30-credential-create/01-basic.raw",
+    "../../tests/standalone/testcases/31-delegate-set/"
+    "01-payment-trustset-granular.raw",
+    "../../tests/standalone/testcases/32-vault-create/"
+    "01-closed-ended-private.raw",
+    "../../tests/standalone/testcases/32-vault-create/02-iou-asset.raw",
+    "../../tests/standalone/testcases/32-vault-create/03-mpt-asset.raw",
+    "../../tests/standalone/testcases/33-vault-deposit/01-xrp.raw",
+    "../../tests/standalone/testcases/33-vault-deposit/02-iou.raw",
+    "../../tests/standalone/testcases/33-vault-deposit/03-mpt.raw",
+    "../../tests/standalone/testcases/34-vault-withdraw/"
+    "01-destination-credentials.raw",
+    "../../tests/standalone/testcases/35-loan-broker-set/01-basic.raw",
+    "../../tests/standalone/testcases/36-loan-set/01-first-signer.raw",
+    "../../tests/standalone/testcases/36-loan-set/02-all-fields.raw",
+    "../../tests/standalone/testcases/36-loan-set/03-countersigned.raw",
+    "../../tests/standalone/testcases/37-loan-pay/01-installment.raw",
+    "../../tests/standalone/testcases/37-loan-pay/02-full-payment.raw",
+    "../../tests/standalone/testcases/38-loan-manage/01-default.raw",
+    "../../tests/standalone/testcases/38-loan-manage/02-impair.raw",
+    NULL,
+};
+
+// Transactions that must parse without error but end in the blind-signing
+// flow (parse_tx returns BLIND_SIGN_REQUIRED), never in a normal review and
+// never in an APDU error.
+static const char* blind_sign_testcases[] = {
+    // Unknown transaction type (EnableAmendment).
+    "../../tests/standalone/testcases/blind-sign/02-unknown-tx-type.raw",
+    // Batch: each inner transaction carries a nested TransactionType.
+    "../../tests/standalone/testcases/blind-sign/05-batch-two-payments.raw",
+    // A field of a data type (Hash160) the parser has no reader for.
+    // Before unknown data types fell through to blind signing, this was
+    // rejected with 0x6800 | NOT_SUPPORTED, the same path every LoanSet hit
+    // on its STNumber PrincipalRequested field.
+    "../../tests/standalone/testcases/blind-sign/06-unknown-data-type.raw",
+    // Named but deliberately not clear-signed.
+    "../../tests/standalone/testcases/blind-sign/07-mpt-issuance-create.raw",
     NULL,
 };
 
@@ -336,10 +377,29 @@ void test_invalid_transactions(void** state) {
     }
 }
 
+void test_blind_sign_transactions(void** state) {
+    (void)state;
+
+    for (const char** testcase = blind_sign_testcases; *testcase != NULL;
+         testcase++) {
+        printf("[*] %s\n", *testcase);
+        size_t size;
+        uint8_t* data = load_transaction_data(*testcase, &size);
+
+        memset(&parse_context, 0, sizeof(parse_context));
+        parse_context.data = data;
+        parse_context.length = size;
+        assert_int_equal(parse_tx(&parse_context), BLIND_SIGN_REQUIRED);
+
+        free(data);
+    }
+}
+
 int main() {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_transactions),
         cmocka_unit_test(test_invalid_transactions),
+        cmocka_unit_test(test_blind_sign_transactions),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

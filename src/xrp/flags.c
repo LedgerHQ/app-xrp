@@ -392,6 +392,66 @@ static void format_amm_withdraw_flags(uint32_t value, field_value_t* dst) {
     }
 }
 
+static void format_vault_create_flags(uint32_t value, field_value_t* dst) {
+// VaultCreate flags
+#define TF_VAULT_PRIVATE 0x00010000u
+#define TF_VAULT_SHARE_NON_TRANSFERABLE 0x00020000u
+// Keep in sync with the checks below (see ACCOUNT_SET_KNOWN_FLAGS).
+#define VAULT_CREATE_KNOWN_FLAGS \
+    (TF_VAULT_PRIVATE | TF_VAULT_SHARE_NON_TRANSFERABLE)
+
+    size_t offset = 0;
+    if (HAS_FLAG(value, TF_VAULT_PRIVATE)) {
+        offset = append_item(dst, offset, "Private");
+    }
+    if (HAS_FLAG(value, TF_VAULT_SHARE_NON_TRANSFERABLE)) {
+        append_item(dst, offset, "Share Non Transferable");
+    }
+}
+
+static void format_loan_manage_flags(uint32_t value, field_value_t* dst) {
+// LoanManage flags. "Default" seizes the broker's first-loss cover, so it
+// must be spelled out on the device.
+#define TF_LOAN_DEFAULT 0x00010000u
+#define TF_LOAN_IMPAIR 0x00020000u
+#define TF_LOAN_UNIMPAIR 0x00040000u
+// Keep in sync with the checks below (see ACCOUNT_SET_KNOWN_FLAGS).
+#define LOAN_MANAGE_KNOWN_FLAGS \
+    (TF_LOAN_DEFAULT | TF_LOAN_IMPAIR | TF_LOAN_UNIMPAIR)
+
+    size_t offset = 0;
+    if (HAS_FLAG(value, TF_LOAN_DEFAULT)) {
+        offset = append_item(dst, offset, "Default");
+    }
+    if (HAS_FLAG(value, TF_LOAN_IMPAIR)) {
+        offset = append_item(dst, offset, "Impair");
+    }
+    if (HAS_FLAG(value, TF_LOAN_UNIMPAIR)) {
+        append_item(dst, offset, "Unimpair");
+    }
+}
+
+static void format_loan_pay_flags(uint32_t value, field_value_t* dst) {
+// LoanPay flags
+#define TF_LOAN_OVERPAYMENT 0x00010000u
+#define TF_LOAN_FULL_PAYMENT 0x00020000u
+#define TF_LOAN_LATE_PAYMENT 0x00040000u
+// Keep in sync with the checks below (see ACCOUNT_SET_KNOWN_FLAGS).
+#define LOAN_PAY_KNOWN_FLAGS \
+    (TF_LOAN_OVERPAYMENT | TF_LOAN_FULL_PAYMENT | TF_LOAN_LATE_PAYMENT)
+
+    size_t offset = 0;
+    if (HAS_FLAG(value, TF_LOAN_OVERPAYMENT)) {
+        offset = append_item(dst, offset, "Overpayment");
+    }
+    if (HAS_FLAG(value, TF_LOAN_FULL_PAYMENT)) {
+        offset = append_item(dst, offset, "Full Payment");
+    }
+    if (HAS_FLAG(value, TF_LOAN_LATE_PAYMENT)) {
+        append_item(dst, offset, "Late Payment");
+    }
+}
+
 void format_flags(field_t* field, field_value_t* dst) {
     uint32_t value = field->data.u32;
     switch (parse_context.transaction_type) {
@@ -421,6 +481,15 @@ void format_flags(field_t* field, field_value_t* dst) {
             break;
         case TRANSACTION_AMM_WITHDRAW:
             format_amm_withdraw_flags(value, dst);
+            break;
+        case TRANSACTION_VAULT_CREATE:
+            format_vault_create_flags(value, dst);
+            break;
+        case TRANSACTION_LOAN_MANAGE:
+            format_loan_manage_flags(value, dst);
+            break;
+        case TRANSACTION_LOAN_PAY:
+            format_loan_pay_flags(value, dst);
             break;
         default:
             snprintf(dst->buf, sizeof(dst->buf),
@@ -472,6 +541,15 @@ bool has_unknown_flags(uint16_t transaction_type, uint32_t value) {
             break;
         case TRANSACTION_AMM_WITHDRAW:
             known |= AMM_WITHDRAW_KNOWN_FLAGS;
+            break;
+        case TRANSACTION_VAULT_CREATE:
+            known |= VAULT_CREATE_KNOWN_FLAGS;
+            break;
+        case TRANSACTION_LOAN_MANAGE:
+            known |= LOAN_MANAGE_KNOWN_FLAGS;
+            break;
+        case TRANSACTION_LOAN_PAY:
+            known |= LOAN_PAY_KNOWN_FLAGS;
             break;
         default:
             // No specific-flag formatter for this type: nothing to check.

@@ -1,0 +1,14 @@
+{
+  "Account": "OWN_ADDR",
+  "Fee": "12",
+  "Sequence": 7,
+  "LastLedgerSequence": 6400000,
+  "SigningPubKey": "OWN_PUBKEY",
+  "TransactionType": "VaultCreate",
+  "Asset": {
+    "currency": "USD",
+    "issuer": "rhub8VRN55s94qWKDv6jmDy1pUykJzF3wq"
+  },
+  "AssetsMaximum": "0",
+  "WithdrawalPolicy": 1
+}

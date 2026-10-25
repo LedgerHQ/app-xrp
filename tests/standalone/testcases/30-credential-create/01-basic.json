@@ -1,0 +1,12 @@
+{
+  "Account": "OWN_ADDR",
+  "Fee": "12",
+  "Sequence": 7,
+  "LastLedgerSequence": 6400000,
+  "SigningPubKey": "OWN_PUBKEY",
+  "TransactionType": "CredentialCreate",
+  "Subject": "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
+  "CredentialType": "4B5943",
+  "Expiration": 849398400,
+  "URI": "68747470733a2f2f6465736b2e6578616d706c652f6b7963"
+}

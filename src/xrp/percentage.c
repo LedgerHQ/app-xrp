@@ -26,7 +26,35 @@
 
 #define DENOMINATOR 10000000
 
+// Lending-protocol rates (XLS-66) are in 1/10 basis point: 100000 = 100 %.
+static bool is_lending_rate(field_t* field) {
+    if (field->data_type == STI_UINT16) {
+        return field->id == XRP_UINT16_MANAGEMENT_FEE_RATE;
+    }
+
+    if (field->data_type == STI_UINT32) {
+        switch (field->id) {
+            case XRP_UINT32_COVER_RATE_MINIMUM:
+            case XRP_UINT32_COVER_RATE_LIQUIDATION:
+            case XRP_UINT32_OVERPAYMENT_FEE:
+            case XRP_UINT32_INTEREST_RATE:
+            case XRP_UINT32_LATE_INTEREST_RATE:
+            case XRP_UINT32_CLOSE_INTEREST_RATE:
+            case XRP_UINT32_OVERPAYMENT_INTEREST_RATE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    return false;
+}
+
 bool is_percentage(field_t* field) {
+    if (is_lending_rate(field)) {
+        return true;
+    }
+
     if (field->data_type == STI_UINT32) {
         switch (field->id) {
             case XRP_UINT32_TRANSFER_RATE:
@@ -91,7 +119,24 @@ static void format_quality(field_value_t* dst, uint32_t value) {
     }
 }
 
+// 1/10 basis point to percent: 500 -> "0.5 %", 100000 -> "100 %".
+static void format_lending_rate(field_value_t* dst, uint32_t value) {
+    snprintf(dst->buf, sizeof(dst->buf), "%u.%03u", value / 1000,
+             value % 1000);
+    remove_redundant_decimals(dst);
+
+    size_t total_length = strlen(dst->buf);
+    strncpy(dst->buf + total_length, " %", sizeof(dst->buf) - total_length);
+}
+
 void format_percentage(field_t* field, field_value_t* dst) {
+    if (is_lending_rate(field)) {
+        format_lending_rate(dst, field->data_type == STI_UINT16
+                                     ? field->data.u16
+                                     : field->data.u32);
+        return;
+    }
+
     uint32_t value = field->data.u32;
 
     if (field->id == XRP_UINT32_TRANSFER_RATE) {

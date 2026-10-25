@@ -1,0 +1,35 @@
+{
+  "Account": "OWN_ADDR",
+  "Fee": "12",
+  "Sequence": 7,
+  "LastLedgerSequence": 6400000,
+  "SigningPubKey": "OWN_PUBKEY",
+  "TransactionType": "Batch",
+  "Flags": 65536,
+  "RawTransactions": [
+    {
+      "RawTransaction": {
+        "TransactionType": "Payment",
+        "Account": "OWN_ADDR",
+        "Destination": "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
+        "Amount": "1000000",
+        "Fee": "0",
+        "Flags": 1073741824,
+        "Sequence": 8,
+        "SigningPubKey": ""
+      }
+    },
+    {
+      "RawTransaction": {
+        "TransactionType": "Payment",
+        "Account": "OWN_ADDR",
+        "Destination": "rhub8VRN55s94qWKDv6jmDy1pUykJzF3wq",
+        "Amount": "2000000",
+        "Fee": "0",
+        "Flags": 1073741824,
+        "Sequence": 9,
+        "SigningPubKey": ""
+      }
+    }
+  ]
+}

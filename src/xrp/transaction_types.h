@@ -55,6 +55,34 @@
 #define TRANSACTION_AMM_VOTE               38
 #define TRANSACTION_AMM_BID                39
 #define TRANSACTION_AMM_DELETE             40
+#define TRANSACTION_MPTOKEN_ISSUANCE_CREATE  54
+#define TRANSACTION_MPTOKEN_ISSUANCE_DESTROY 55
+#define TRANSACTION_MPTOKEN_ISSUANCE_SET     56
+#define TRANSACTION_MPTOKEN_AUTHORIZE        57
+#define TRANSACTION_CREDENTIAL_CREATE        58
+#define TRANSACTION_CREDENTIAL_ACCEPT        59
+#define TRANSACTION_CREDENTIAL_DELETE        60
+#define TRANSACTION_PERMISSIONED_DOMAIN_SET    62
+#define TRANSACTION_PERMISSIONED_DOMAIN_DELETE 63
+#define TRANSACTION_DELEGATE_SET             64
+#define TRANSACTION_VAULT_CREATE             65
+#define TRANSACTION_VAULT_SET                66
+#define TRANSACTION_VAULT_DELETE             67
+#define TRANSACTION_VAULT_DEPOSIT            68
+#define TRANSACTION_VAULT_WITHDRAW           69
+#define TRANSACTION_VAULT_CLAWBACK           70
+#define TRANSACTION_BATCH                    71
+#define TRANSACTION_LOAN_BROKER_SET          74
+#define TRANSACTION_LOAN_BROKER_DELETE       75
+#define TRANSACTION_LOAN_BROKER_COVER_DEPOSIT  76
+#define TRANSACTION_LOAN_BROKER_COVER_WITHDRAW 77
+#define TRANSACTION_LOAN_BROKER_COVER_CLAWBACK 78
+#define TRANSACTION_LOAN_SET                 80
+#define TRANSACTION_LOAN_DELETE              81
+#define TRANSACTION_LOAN_MANAGE              82
+// 83 is unassigned in rippled; LoanPay is 84 (definitions.json, not the
+// XLS-66 draft text).
+#define TRANSACTION_LOAN_PAY                 84
 
 static inline bool is_transaction_type_field(field_t *field) {
     return field->data_type == STI_UINT16 && field->id == XRP_UINT16_TRANSACTION_TYPE;

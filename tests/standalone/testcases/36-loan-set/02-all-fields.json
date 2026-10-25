@@ -1,0 +1,23 @@
+{
+  "Account": "OWN_ADDR",
+  "Fee": "12",
+  "Sequence": 7,
+  "LastLedgerSequence": 6400000,
+  "SigningPubKey": "OWN_PUBKEY",
+  "TransactionType": "LoanSet",
+  "LoanBrokerID": "B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2B2",
+  "Counterparty": "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
+  "PrincipalRequested": "2500.5",
+  "InterestRate": 1250,
+  "LateInterestRate": 2000,
+  "CloseInterestRate": 300,
+  "OverpaymentInterestRate": 100,
+  "OverpaymentFee": 50,
+  "PaymentTotal": 3,
+  "PaymentInterval": 60,
+  "GracePeriod": 60,
+  "LoanOriginationFee": "1",
+  "LoanServiceFee": "0.25",
+  "LatePaymentFee": "5",
+  "ClosePaymentFee": "2"
+}

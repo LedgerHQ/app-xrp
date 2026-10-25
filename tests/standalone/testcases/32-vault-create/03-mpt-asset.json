@@ -1,0 +1,11 @@
+{
+  "Account": "OWN_ADDR",
+  "Fee": "12",
+  "Sequence": 7,
+  "LastLedgerSequence": 6400000,
+  "SigningPubKey": "OWN_PUBKEY",
+  "TransactionType": "VaultCreate",
+  "Asset": {
+    "mpt_issuance_id": "000000F05E7C5E7C5E7C5E7C5E7C5E7C5E7C5E7C5E7C5E7C"
+  }
+}

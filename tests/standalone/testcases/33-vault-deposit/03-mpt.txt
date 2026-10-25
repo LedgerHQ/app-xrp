@@ -1,0 +1,6 @@
+Transaction Type; Vault Deposit
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Vault ID; a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1
+Amount; MPT 1000000
+MPT Issuance ID; 000000f05e7c5e7c5e7c5e7c5e7c5e7c5e7c5e7c5e7c5e7c
+Fee; XRP 0.000012

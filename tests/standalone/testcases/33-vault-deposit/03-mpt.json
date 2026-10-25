@@ -1,0 +1,13 @@
+{
+  "Account": "OWN_ADDR",
+  "Fee": "12",
+  "Sequence": 7,
+  "LastLedgerSequence": 6400000,
+  "SigningPubKey": "OWN_PUBKEY",
+  "TransactionType": "VaultDeposit",
+  "VaultID": "A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1",
+  "Amount": {
+    "mpt_issuance_id": "000000F05E7C5E7C5E7C5E7C5E7C5E7C5E7C5E7C5E7C5E7C",
+    "value": "1000000"
+  }
+}

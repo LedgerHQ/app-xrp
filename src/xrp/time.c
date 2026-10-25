@@ -48,6 +48,9 @@ bool is_time(field_t* field) {
             case XRP_UINT32_EXPIRATION:
             case XRP_UINT32_CANCEL_AFTER:
             case XRP_UINT32_FINISH_AFTER:
+            case XRP_UINT32_START_DATE:
+            case XRP_UINT32_SUBSCRIPTION_DATE:
+            case XRP_UINT32_REDEMPTION_DATE:
                 return true;
             default:
                 return false;
@@ -58,8 +61,18 @@ bool is_time(field_t* field) {
 }
 
 bool is_time_delta(field_t* field) {
-    return field->data_type == STI_UINT32 &&
-           field->id == XRP_UINT32_SETTLE_DELAY;
+    if (field->data_type == STI_UINT32) {
+        switch (field->id) {
+            case XRP_UINT32_SETTLE_DELAY:
+            case XRP_UINT32_PAYMENT_INTERVAL:
+            case XRP_UINT32_GRACE_PERIOD:
+                return true;
+            default:
+                return false;
+        }
+    } else {
+        return false;
+    }
 }
 
 // Inspired from

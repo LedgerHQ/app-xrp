@@ -278,16 +278,36 @@ static int format_issued_currency(uint64_t value, char* buf, size_t size) {
     return parse_decimal_number(p, size, sign, exponent, mantissa);
 }
 
+// MPT amount: flag byte (0x20 = MPT, 0x40 = positive), 8-byte unsigned
+// value, then the 24-byte MPTokenIssuanceID that read_amount() exposes as
+// its own "MPT Issuance ID" field. Printed as "MPT <value>" in the token's
+// own smallest unit, since the AssetScale lives on the issuance, not here.
+static int format_mpt(field_t* field, field_value_t* dst) {
+    if ((field->data.ptr[0] & 0x40u) == 0) {
+        return -1;
+    }
+
+    uint64_t value = read_unsigned64(field->data.ptr + 1);
+    if (value >> 63u) {
+        return -1;
+    }
+
+    strncpy(dst->buf, "MPT ", sizeof(dst->buf));
+    return print_uint64_t(dst->buf + 4, sizeof(dst->buf) - 4, value);
+}
+
 void amount_formatter(field_t* field, field_value_t* dst) {
-    uint64_t value = read_unsigned64(field->data.ptr);
     int error;
 
     if (field->length == XRP_AMOUNT_LEN) {
-        error = format_xrp(value, dst);
+        error = format_xrp(read_unsigned64(field->data.ptr), dst);
     } else if (field->length == ISSUED_CURRENCY_LEN) {
+        uint64_t value = read_unsigned64(field->data.ptr);
         xrp_currency_t* currency = (xrp_currency_t*)&field->data.ptr[8];
         format_standard_currency(currency, dst->buf, sizeof(dst->buf));
         error = format_issued_currency(value, dst->buf, sizeof(dst->buf));
+    } else if (field->length == MPT_AMOUNT_LEN) {
+        error = format_mpt(field, dst);
     } else {
         error = 1;
     }
@@ -298,6 +318,93 @@ void amount_formatter(field_t* field, field_value_t* dst) {
 }
 
 void currency_formatter(field_t* field, field_value_t* dst) {
+    if (field->data_type == STI_ISSUE && field->length == XRP_MPT_ISSUE_SIZE) {
+        // Print the MPTokenIssuanceID the way explorers and xrpl.js do:
+        // 4-byte sequence followed by the 20-byte issuer. The codecs write
+        // the sequence byte-swapped in an Issue, so swap it back here.
+        uint8_t sequence[4] = {field->data.ptr[43], field->data.ptr[42],
+                               field->data.ptr[41], field->data.ptr[40]};
+        strncpy(dst->buf, "MPT ", sizeof(dst->buf));
+        read_hex(dst->buf + 4, sizeof(dst->buf) - 4, sequence,
+                 sizeof(sequence));
+        read_hex(dst->buf + 12, sizeof(dst->buf) - 12, field->data.ptr,
+                 XRP_ACCOUNT_SIZE);
+        return;
+    }
+
     xrp_currency_t* currency = (xrp_currency_t*)field->data.ptr;
     format_non_standard_currency(currency, dst);
+}
+
+void uint64_formatter(field_t* field, field_value_t* dst) {
+    uint64_t value = read_unsigned64(field->data.ptr);
+    if (print_uint64_t(dst->buf, sizeof(dst->buf), value) != 0) {
+        strncpy(dst->buf, "[ERROR DURING FORMATTING]", sizeof(dst->buf));
+    }
+}
+
+// Widest exponent printed in plain decimal; beyond that the value is
+// shown as <digits>e<exponent> so it always fits the buffer.
+#define NUMBER_PLAIN_EXP_MAX 20
+#define NUMBER_PLAIN_EXP_MIN -40
+
+// STNumber: int64 mantissa then int32 exponent, both big-endian, value =
+// mantissa * 10^exponent. rippled normalizes the mantissa to 17-19 digits,
+// so "1000" arrives as 1000000000000000000e-15. Zero is mantissa 0 with a
+// sentinel exponent. No currency is printed: the unit is the vault asset,
+// which is not part of the transaction.
+void number_formatter(field_t* field, field_value_t* dst) {
+    uint64_t raw = read_unsigned64(field->data.ptr);
+    int32_t exponent = (int32_t)(((uint32_t)field->data.ptr[8] << 24) |
+                                 ((uint32_t)field->data.ptr[9] << 16) |
+                                 ((uint32_t)field->data.ptr[10] << 8) |
+                                 (uint32_t)field->data.ptr[11]);
+
+    if (raw == 0) {
+        strncpy(dst->buf, "0", sizeof(dst->buf));
+        return;
+    }
+
+    bool negative = (raw >> 63u) != 0;
+    uint64_t mantissa = negative ? (~raw + 1u) : raw;
+
+    while (mantissa % 10 == 0) {
+        mantissa /= 10;
+        exponent++;
+    }
+
+    char digits[21];
+    if (print_uint64_t(digits, sizeof(digits), mantissa) != 0) {
+        strncpy(dst->buf, "[ERROR DURING FORMATTING]", sizeof(dst->buf));
+        return;
+    }
+    size_t len = strlen(digits);
+    char* p = dst->buf;
+    size_t room = sizeof(dst->buf);
+
+    if (negative) {
+        *p++ = '-';
+        room--;
+    }
+
+    if (exponent > NUMBER_PLAIN_EXP_MAX || exponent < NUMBER_PLAIN_EXP_MIN) {
+        snprintf(p, room, "%se%d", digits, exponent);
+    } else if (exponent >= 0) {
+        memcpy(p, digits, len);
+        memset(p + len, '0', exponent);
+        p[len + exponent] = '\0';
+    } else if ((int32_t)len + exponent > 0) {
+        size_t decimal_pos = len + exponent;
+        memcpy(p, digits, decimal_pos);
+        p[decimal_pos] = '.';
+        memcpy(p + decimal_pos + 1, digits + decimal_pos, len - decimal_pos);
+        p[len + 1] = '\0';
+    } else {
+        size_t zeros = (size_t)(-exponent) - len;
+        p[0] = '0';
+        p[1] = '.';
+        memset(p + 2, '0', zeros);
+        memcpy(p + 2 + zeros, digits, len);
+        p[2 + zeros + len] = '\0';
+    }
 }

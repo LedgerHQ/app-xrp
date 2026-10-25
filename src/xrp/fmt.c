@@ -65,6 +65,18 @@ void format_field(field_t* field, field_value_t* dst) {
         case STI_ISSUE:
             currency_formatter(field, dst);
             break;
+        case STI_UINT64:
+            uint64_formatter(field, dst);
+            break;
+        case STI_NUMBER:
+            number_formatter(field, dst);
+            break;
+        case STI_INT32:
+            int32_formatter(field, dst);
+            break;
+        case STI_HASH192:
+            hash_formatter192(field, dst);
+            break;
         default:
             strncpy(dst->buf, "[Not implemented]", sizeof(dst->buf));
             break;

@@ -1,0 +1,9 @@
+Transaction Type; Loan Broker Set
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Management Fee Rate; 1 %
+Cover Rate Minimum; 10 %
+Cover Rate Liquidation; 50 %
+Vault ID; a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1
+Fee; XRP 0.000012
+Data; desk-broker
+Debt Maximum; 0

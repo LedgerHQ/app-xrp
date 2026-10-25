@@ -1,0 +1,11 @@
+{
+  "Account": "OWN_ADDR",
+  "Fee": "12",
+  "Sequence": 7,
+  "LastLedgerSequence": 6400000,
+  "SigningPubKey": "OWN_PUBKEY",
+  "TransactionType": "Payment",
+  "Destination": "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
+  "Amount": "1000000",
+  "TakerPaysCurrency": "0000000000000000000000005553440000000000"
+}

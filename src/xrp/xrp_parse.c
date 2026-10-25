@@ -125,7 +125,32 @@ static bool is_supported_transaction_type(uint16_t t) {
         case TRANSACTION_AMM_VOTE:
         case TRANSACTION_AMM_BID:
         case TRANSACTION_AMM_DELETE:
+        case TRANSACTION_CREDENTIAL_CREATE:
+        case TRANSACTION_CREDENTIAL_ACCEPT:
+        case TRANSACTION_CREDENTIAL_DELETE:
+        case TRANSACTION_PERMISSIONED_DOMAIN_SET:
+        case TRANSACTION_PERMISSIONED_DOMAIN_DELETE:
+        case TRANSACTION_DELEGATE_SET:
+        case TRANSACTION_VAULT_CREATE:
+        case TRANSACTION_VAULT_SET:
+        case TRANSACTION_VAULT_DELETE:
+        case TRANSACTION_VAULT_DEPOSIT:
+        case TRANSACTION_VAULT_WITHDRAW:
+        case TRANSACTION_VAULT_CLAWBACK:
+        case TRANSACTION_LOAN_BROKER_SET:
+        case TRANSACTION_LOAN_BROKER_DELETE:
+        case TRANSACTION_LOAN_BROKER_COVER_DEPOSIT:
+        case TRANSACTION_LOAN_BROKER_COVER_WITHDRAW:
+        case TRANSACTION_LOAN_BROKER_COVER_CLAWBACK:
+        case TRANSACTION_LOAN_SET:
+        case TRANSACTION_LOAN_DELETE:
+        case TRANSACTION_LOAN_MANAGE:
+        case TRANSACTION_LOAN_PAY:
             return true;
+        // MPToken* and Batch are named (general.c) but not clear-signed:
+        // Batch nests a TransactionType per inner transaction, which
+        // post_process_field() already forces to blind signing, and the
+        // MPToken issuance fields have no formatter yet.
         default:
             return false;
     }
@@ -275,7 +300,21 @@ err_t read_amount(parseContext_t* context, field_t* field) {
     err_t err;
 
     CHECK(peak_next_byte(context, &first_byte));
-    if ((first_byte >> 7u) == 0) {
+    if ((first_byte >> 7u) == 0 && (first_byte & 0x20u) != 0) {
+        // MPT amount: 1 flag byte, 8-byte value, 24-byte MPTokenIssuanceID.
+        // Bit 0x20 only means MPT when bit 0x80 (issued currency) is clear:
+        // in an issued amount bits 5-0 are exponent bits. Bit 0x40 is
+        // "positive"; a negative MPT amount is never valid in a transaction
+        // and is rejected by amount_formatter().
+        CHECK(read_fixed_size_field(context, field, MPT_AMOUNT_LEN));
+
+        field_t* issuance_id;
+        CHECK(append_new_field(context, &issuance_id));
+        issuance_id->data_type = STI_HASH192;
+        issuance_id->id = XRP_HASH192_MPTOKEN_ISSUANCE_ID;
+        issuance_id->data.ptr = field->data.ptr + 9;
+        issuance_id->length = XRP_HASH192_SIZE;
+    } else if ((first_byte >> 7u) == 0) {
         CHECK(read_fixed_size_field(context, field, XRP_AMOUNT_LEN));
     } else {
         CHECK(read_fixed_size_field(context, field, ISSUED_CURRENCY_LEN));
@@ -337,14 +376,15 @@ err_t read_vector256_field(parseContext_t* context, field_t* field) {
         // it generically and let the array index tell entries apart.
         //
         // The XRPL protocol also has Vector256 fields other than
-        // NFTokenOffers (Indexes, Hashes, Amendments, CredentialIDs), but
-        // this app only recognizes NFTokenOffers (field id 4) in
-        // resolve_field_name()'s STI_VECTOR256 case (fields.c): any other
-        // Vector256 field's own id resolves to "Unknown" and forces blind
-        // signing before these synthesized entries are ever displayed. That
-        // is why it's safe to hardcode this label here rather than branch
-        // on field->id.
-        hash256->id = XRP_HASH256_NFTOKEN_OFFER;
+        // NFTokenOffers and CredentialIDs (Indexes, Hashes, Amendments),
+        // but this app only recognizes those two in resolve_field_name()'s
+        // STI_VECTOR256 case (fields.c): any other Vector256 field's own id
+        // resolves to "Unknown" and forces blind signing before these
+        // synthesized entries are ever displayed. That is why it's safe to
+        // pick the label from just these two ids.
+        hash256->id = field->id == XRP_VECTOR256_CREDENTIAL_IDS
+                          ? XRP_HASH256_CREDENTIAL_ID
+                          : XRP_HASH256_NFTOKEN_OFFER;
         hash256->data.hash256 =
             (hash256_t*)(field->data.ptr + (i * XRP_VECTOR256_SIZE));
         hash256->length = XRP_VECTOR256_SIZE;
@@ -364,6 +404,17 @@ err_t read_issue(parseContext_t* context, field_t* field) {
     }
 
     if (!is_all_zeros(context->data + context->offset, 20)) {
+        // An MPT asset is encoded as the 20-byte issuer, then ACCOUNT_ONE
+        // (19 zero bytes and 0x01) in the issuer slot of an IOU, then the
+        // 4-byte sequence; currency_formatter() reassembles the
+        // MPTokenIssuanceID from it.
+        const uint8_t* issuer_slot = context->data + context->offset + 20;
+        if (has_data(context, XRP_MPT_ISSUE_SIZE) &&
+            is_all_zeros(issuer_slot, XRP_ACCOUNT_SIZE - 1) &&
+            issuer_slot[XRP_ACCOUNT_SIZE - 1] == 0x01) {
+            return read_fixed_size_field(context, field, XRP_MPT_ISSUE_SIZE);
+        }
+
         CHECK(read_fixed_size_field(context, field, XRP_ISSUE_SIZE));
         field_t* issuer;
         CHECK(append_new_field(context, &issuer));
@@ -550,8 +601,28 @@ err_t read_field_value(parseContext_t* context, field_t* field) {
         case STI_ISSUE:
             err = read_issue(context, field);
             break;
+        case STI_UINT64:
+            err = read_fixed_size_field(context, field, 8);
+            break;
+        case STI_NUMBER:
+            err = read_fixed_size_field(context, field, XRP_NUMBER_SIZE);
+            break;
+        case STI_INT32:
+            err = read_fixed_size_field(context, field, 4);
+            break;
+        case STI_HASH192:
+            err = read_fixed_size_field(context, field, XRP_HASH192_SIZE);
+            break;
         default:
-            err.err = NOT_SUPPORTED;
+            // A data type this parser has no reader for. Its length is
+            // unknown, so nothing after it can be read; the caller stops
+            // parsing here and the transaction goes through the
+            // blind-signing flow (the signature covers the raw bytes as a
+            // whole, so no field is lost from what gets signed). Before
+            // this case existed, the app answered 0x6800 | NOT_SUPPORTED
+            // (0x680b on current SDKs) to any LoanSet because
+            // PrincipalRequested is an STNumber.
+            err.err = BLIND_SIGN_REQUIRED;
             break;
     }
 
@@ -681,6 +752,12 @@ err_t parse_tx_internal(parseContext_t* context) {
     context->has_empty_pub_key = false;
     context->object_depth = 0;
 
+    // Set when parsing stopped before the end of the input: a data type
+    // without a reader, or a TransactionType that must not be trusted.
+    // Whatever was parsed is still shown, but only under the blind-signing
+    // warning, never as a normal review.
+    bool stopped_early = false;
+
     while (context->offset != context->length) {
         if (context->offset > context->length) {
             err.err = EXCEPTION_OVERFLOW;
@@ -689,7 +766,16 @@ err_t parse_tx_internal(parseContext_t* context) {
 
         field_t* field;
         CHECK(append_new_field(context, &field));
-        CHECK(read_field(context, field));
+        err = read_field(context, field);
+        if (err.err == BLIND_SIGN_REQUIRED) {
+            // The field that stopped us has no usable value: drop it.
+            CHECK(remove_last_field(context, field));
+            stopped_early = true;
+            break;
+        }
+        if (err.err != SUCCESS) {
+            return err;
+        }
 
         if (is_field_hidden(field)) {
             // This must be done after all data has been read since we
@@ -708,7 +794,7 @@ err_t parse_tx_internal(parseContext_t* context) {
 
     sort_fields(&context->result);
 
-    if (context->transaction_type == TRANSACTION_INVALID ||
+    if (stopped_early || context->transaction_type == TRANSACTION_INVALID ||
         !is_supported_transaction_type(context->transaction_type)) {
         err.err = BLIND_SIGN_REQUIRED;
         return err;

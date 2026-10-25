@@ -1,0 +1,7 @@
+Transaction Type; Vault Create
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Fee; XRP 0.000012
+Assets Maximum; 0
+Withdrawal Policy; 1
+Asset; USD
+Issuer;   rhub8VRN55s9    4qWKDv6jmDy     1pUykJzF3wq   

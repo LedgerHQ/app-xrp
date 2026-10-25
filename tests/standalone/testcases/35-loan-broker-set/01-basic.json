@@ -1,0 +1,14 @@
+{
+  "Account": "OWN_ADDR",
+  "Fee": "12",
+  "Sequence": 7,
+  "LastLedgerSequence": 6400000,
+  "SigningPubKey": "OWN_PUBKEY",
+  "TransactionType": "LoanBrokerSet",
+  "VaultID": "A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1",
+  "ManagementFeeRate": 1000,
+  "DebtMaximum": "0",
+  "CoverRateMinimum": 10000,
+  "CoverRateLiquidation": 50000,
+  "Data": "6465736b2d62726f6b6572"
+}

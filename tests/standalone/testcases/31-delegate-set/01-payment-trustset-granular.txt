@@ -1,0 +1,7 @@
+Transaction Type; Delegate Set
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Fee; XRP 0.000012
+Authorize;   rPT1Sjq2YGrB    MTttX4GZHjK     u9dyfzbpAYe   
+Permission [1]; Payment
+Permission [2]; Set Trust Line
+Permission [3]; Trustline Authorize
