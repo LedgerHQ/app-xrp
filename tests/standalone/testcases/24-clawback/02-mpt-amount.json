@@ -1,0 +1,13 @@
+{
+    "TransactionType": "Clawback",
+    "Account": "OWN_ADDR",
+    "Amount": {
+        "mpt_issuance_id": "00000001A407AF5856CCF3C42619DAA925813FC955C72983",
+        "value": "500"
+    },
+    "Holder": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+    "Fee": "10",
+    "Flags": 0,
+    "Sequence": 3,
+    "SigningPubKey": "OWN_PUBKEY"
+}

@@ -1,0 +1,6 @@
+Transaction Type; Clawback
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Amount; MPT 500
+MPT Issuance ID; 00000001a407af5856ccf3c42619daa925813fc955c72983
+Fee; XRP 0.00001
+Holder;   rHb9CJAWyB4r    j91VRWn96Dk     ukG4bwdtyTh   

@@ -1,0 +1,15 @@
+{
+    "TransactionType": "EscrowCreate",
+    "Account": "OWN_ADDR",
+    "Destination": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+    "Amount": {
+        "mpt_issuance_id": "00000001A407AF5856CCF3C42619DAA925813FC955C72983",
+        "value": "2500"
+    },
+    "CancelAfter": 533257958,
+    "FinishAfter": 533171558,
+    "Fee": "20",
+    "Flags": 0,
+    "Sequence": 3,
+    "SigningPubKey": "OWN_PUBKEY"
+}

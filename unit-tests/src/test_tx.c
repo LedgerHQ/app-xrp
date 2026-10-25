@@ -41,6 +41,9 @@ static const char* testcases[] = {
     //"../../tests/standalone/testcases/01-payment/19-really-stupid-tx.raw",
     "../../tests/standalone/testcases/01-payment/20-spoofed-xrp-currency.raw",
     "../../tests/standalone/testcases/01-payment/23-xrp-nonstandard-spoof.raw",
+    "../../tests/standalone/testcases/01-payment/29-delegate.raw",
+    "../../tests/standalone/testcases/01-payment/30-credential-ids.raw",
+    "../../tests/standalone/testcases/01-payment/31-mpt-amount.raw",
     "../../tests/standalone/testcases/02-set-regular-key/01-basic.raw",
     "../../tests/standalone/testcases/02-set-regular-key/02-delete.raw",
     "../../tests/standalone/testcases/02-set-regular-key/"
@@ -53,6 +56,7 @@ static const char* testcases[] = {
     "05-both-condition-destination.raw",
     "../../tests/standalone/testcases/03-escrow-create/"
     "06-all-common-fields.raw",
+    "../../tests/standalone/testcases/03-escrow-create/07-mpt-amount.raw",
     "../../tests/standalone/testcases/04-escrow-finish/01-time-based.raw",
     "../../tests/standalone/testcases/04-escrow-finish/02-condition-based.raw",
     "../../tests/standalone/testcases/05-escrow-cancel/01-basic.raw",
@@ -121,6 +125,7 @@ static const char* testcases[] = {
     "../../tests/standalone/testcases/22-nftoken-cancel-offer/"
     "02-large-vector.raw",
     "../../tests/standalone/testcases/24-clawback/01-basic.raw",
+    "../../tests/standalone/testcases/24-clawback/02-mpt-amount.raw",
     "../../tests/standalone/testcases/25-amm-create/01-basic.raw",
     "../../tests/standalone/testcases/26-amm-deposit/01-one-sided.raw",
     "../../tests/standalone/testcases/26-amm-deposit/02-two-sided.raw",
@@ -133,6 +138,24 @@ static const char* testcases[] = {
     "../../tests/standalone/testcases/28-amm-bid/01-basic.raw",
     "../../tests/standalone/testcases/28-amm-bid/02-min-max.raw",
     "../../tests/standalone/testcases/29-amm-vote/01-basic.raw",
+    "../../tests/standalone/testcases/30-mptoken-issuance-create/01-basic.raw",
+    "../../tests/standalone/testcases/30-mptoken-issuance-create/"
+    "02-all-fields-flags.raw",
+    "../../tests/standalone/testcases/30-mptoken-issuance-create/"
+    "03-transfer-fee.raw",
+    "../../tests/standalone/testcases/30-mptoken-issuance-create/"
+    "04-metadata-binary.raw",
+    "../../tests/standalone/testcases/30-mptoken-issuance-create/"
+    "05-maximum-amount-zero.raw",
+    "../../tests/standalone/testcases/30-mptoken-issuance-create/"
+    "06-maximum-amount-uint64-max.raw",
+    "../../tests/standalone/testcases/31-mptoken-issuance-destroy/01-basic.raw",
+    "../../tests/standalone/testcases/32-mptoken-issuance-set/01-lock.raw",
+    "../../tests/standalone/testcases/32-mptoken-issuance-set/"
+    "02-unlock-holder.raw",
+    "../../tests/standalone/testcases/33-mptoken-authorize/01-basic.raw",
+    "../../tests/standalone/testcases/33-mptoken-authorize/"
+    "02-unauthorize-holder.raw",
     NULL,
 };
 
@@ -175,6 +198,14 @@ static const char* negative_testcases[] = {
     // must not clear-sign as plain XRP with an attacker-chosen issuer.
     "../../tests/standalone/testcases/01-payment/"
     "28-all-zero-currency-issued-amount.raw",
+    // An MPT amount without the positive bit is negative. No transaction
+    // may carry one, and it must not be shown as a positive value.
+    "../../tests/standalone/testcases/01-payment/"
+    "32-negative-mpt-amount.raw",
+    // No MPT amount exceeds 0x7FFFFFFFFFFFFFFF; a larger value is outside the
+    // protocol and must not reach the review.
+    "../../tests/standalone/testcases/01-payment/"
+    "33-mpt-amount-above-max.raw",
     // NFTokenAcceptOffer only references an offer by hash; the price lives
     // on the NFTokenOffer ledger object, outside the signed bytes. A clear
     // sign review would therefore show the same screen for a fair trade and
@@ -183,6 +214,32 @@ static const char* negative_testcases[] = {
     "03-nftoken-accept-offer.raw",
     "../../tests/standalone/testcases/blind-sign/"
     "04-nftoken-accept-offer-broker.raw",
+    NULL,
+};
+
+// Transactions the app can parse but must not clear-sign: parse_tx must ask
+// for blind signing, not reject them outright.
+static const char* blind_sign_testcases[] = {
+    // CheckCreate has no flags of its own, so any bit besides
+    // tfFullyCanonicalSig cannot be shown.
+    "../../tests/standalone/testcases/blind-sign/"
+    "07-check-create-unknown-flag.raw",
+    // ImmutableFlags belongs to DynamicMPT, which Mainnet has not enabled.
+    "../../tests/standalone/testcases/blind-sign/"
+    "08-mptoken-issuance-set-immutable-flags.raw",
+    // tfMPTCanHoldConfidentialBalance belongs to ConfidentialTransfer, which
+    // Mainnet has not enabled.
+    "../../tests/standalone/testcases/blind-sign/"
+    "09-mptoken-issuance-create-confidential-flag.raw",
+    // tfMPTSetCanLock has no label on MPTokenIssuanceSet.
+    "../../tests/standalone/testcases/blind-sign/"
+    "10-mptoken-issuance-set-can-lock-flag.raw",
+    // MPTokenAuthorize has only tfMPTUnauthorize; any other bit has no label.
+    "../../tests/standalone/testcases/blind-sign/"
+    "11-mptoken-authorize-unknown-flag.raw",
+    // DomainID has no name in the app.
+    "../../tests/standalone/testcases/blind-sign/"
+    "12-mptoken-issuance-create-domain-id.raw",
     NULL,
 };
 
@@ -336,10 +393,28 @@ void test_invalid_transactions(void** state) {
     }
 }
 
+void test_blind_sign_transactions(void** state) {
+    (void)state;
+
+    for (const char** testcase = blind_sign_testcases; *testcase != NULL;
+         testcase++) {
+        size_t size;
+        uint8_t* data = load_transaction_data(*testcase, &size);
+
+        memset(&parse_context, 0, sizeof(parse_context));
+        parse_context.data = data;
+        parse_context.length = size;
+        assert_int_equal(parse_tx(&parse_context), BLIND_SIGN_REQUIRED);
+
+        free(data);
+    }
+}
+
 int main() {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_transactions),
         cmocka_unit_test(test_invalid_transactions),
+        cmocka_unit_test(test_blind_sign_transactions),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

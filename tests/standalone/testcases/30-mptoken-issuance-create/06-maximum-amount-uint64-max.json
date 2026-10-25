@@ -1,0 +1,9 @@
+{
+    "TransactionType": "MPTokenIssuanceCreate",
+    "Account": "OWN_ADDR",
+    "MaximumAmount": "18446744073709551615",
+    "Fee": "15",
+    "Flags": 0,
+    "Sequence": 3,
+    "SigningPubKey": "OWN_PUBKEY"
+}

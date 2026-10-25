@@ -1,0 +1,10 @@
+{
+    "TransactionType": "CheckCreate",
+    "Account": "OWN_ADDR",
+    "Destination": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+    "SendMax": "1000000",
+    "Fee": "15",
+    "Flags": 65536,
+    "Sequence": 3,
+    "SigningPubKey": "OWN_PUBKEY"
+}

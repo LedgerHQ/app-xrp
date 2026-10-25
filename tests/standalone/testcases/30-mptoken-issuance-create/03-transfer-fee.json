@@ -1,0 +1,9 @@
+{
+    "TransactionType": "MPTokenIssuanceCreate",
+    "Account": "OWN_ADDR",
+    "TransferFee": 50000,
+    "Fee": "15",
+    "Flags": 32,
+    "Sequence": 3,
+    "SigningPubKey": "OWN_PUBKEY"
+}

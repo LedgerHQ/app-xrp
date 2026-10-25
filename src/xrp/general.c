@@ -20,6 +20,7 @@
 
 #include <string.h>
 
+#include "amount.h"
 #include "ascii_strings.h"
 #include "flags.h"
 #include "fmt.h"
@@ -105,6 +106,14 @@ static const char* resolve_transaction_name(uint16_t value) {
             return "AMM Bid";
         case TRANSACTION_AMM_DELETE:
             return "AMM Delete";
+        case TRANSACTION_MPTOKEN_ISSUANCE_CREATE:
+            return "MPToken Issuance Create";
+        case TRANSACTION_MPTOKEN_ISSUANCE_DESTROY:
+            return "MPToken Issuance Destroy";
+        case TRANSACTION_MPTOKEN_ISSUANCE_SET:
+            return "MPToken Issuance Set";
+        case TRANSACTION_MPTOKEN_AUTHORIZE:
+            return "MPToken Authorize";
         default:
             return "Unknown";
     }
@@ -136,9 +145,21 @@ void uint32_formatter(field_t* field, field_value_t* dst) {
     }
 }
 
+void uint64_formatter(field_t* field, field_value_t* dst) {
+    uint64_t value = read_unsigned64(field->data.ptr);
+    if (print_uint64_t(dst->buf, sizeof(dst->buf), value) != 0) {
+        strncpy(dst->buf, "Invalid value", sizeof(dst->buf));
+    }
+}
+
 void hash_formatter128(field_t* field, field_value_t* dst) {
     read_hex(dst->buf, sizeof(dst->buf), field->data.hash128->buf,
              sizeof(field->data.hash128->buf));
+}
+
+// A fixed-width field with no richer display, such as an MPTokenIssuanceID.
+void hex_formatter(field_t* field, field_value_t* dst) {
+    read_hex(dst->buf, sizeof(dst->buf), field->data.ptr, field->length);
 }
 
 void hash_formatter256(field_t* field, field_value_t* dst) {
@@ -153,6 +174,7 @@ static bool should_format_blob_as_string(field_t* field) {
         case XRP_VL_MEMO_FORMAT:
         case XRP_VL_MEMO_DATA:
         case XRP_VL_URI:
+        case XRP_VL_MPTOKEN_METADATA:
             return is_purely_ascii(field->data.ptr, field->length, false);
         default:
             return false;

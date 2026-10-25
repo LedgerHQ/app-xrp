@@ -41,26 +41,25 @@ static void normalize(uint64_t* mantissa_param, int16_t* exponent_param) {
     }
 }
 
-static int print_uint64_t(char* dst, uint16_t len, uint64_t value) {
-    uint16_t num_digits = 0, i;
-    uint64_t base = 1;
+// Collects digits least significant first, so every uint64_t value prints.
+int print_uint64_t(char* dst, uint16_t len, uint64_t value) {
+    char digits[UINT64_MAX_DIGITS];
+    uint16_t num_digits = 0;
 
-    while (base <= value) {
-        base *= 10;
-        num_digits++;
-    }
+    do {
+        digits[num_digits++] = int_to_number_char(value % 10);
+        value /= 10;
+    } while (value > 0);
 
     if (num_digits > len - 1) {
         return -1;
     }
 
-    base /= 10;
-    for (i = 0; i < num_digits; i++) {
-        dst[i] = int_to_number_char((value / base) % 10);
-        base /= 10;
+    for (uint16_t i = 0; i < num_digits; i++) {
+        dst[i] = digits[num_digits - 1 - i];
     }
 
-    dst[i] = '\x00';
+    dst[num_digits] = '\x00';
 
     return 0;
 }
@@ -284,6 +283,11 @@ void amount_formatter(field_t* field, field_value_t* dst) {
 
     if (field->length == XRP_AMOUNT_LEN) {
         error = format_xrp(value, dst);
+    } else if (field->length == MPT_AMOUNT_LEN) {
+        // The issuance ID is its own row, appended by read_amount.
+        uint64_t units = read_unsigned64(field->data.ptr + 1);
+        strncpy(dst->buf, "MPT ", sizeof(dst->buf));
+        error = print_uint64_t(dst->buf + 4, sizeof(dst->buf) - 4, units);
     } else if (field->length == ISSUED_CURRENCY_LEN) {
         xrp_currency_t* currency = (xrp_currency_t*)&field->data.ptr[8];
         format_standard_currency(currency, dst->buf, sizeof(dst->buf));

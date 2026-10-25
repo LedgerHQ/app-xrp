@@ -392,6 +392,74 @@ static void format_amm_withdraw_flags(uint32_t value, field_value_t* dst) {
     }
 }
 
+static void format_mptoken_issuance_create_flags(uint32_t value,
+                                                 field_value_t* dst) {
+// MPTokenIssuanceCreate flags
+#define TF_MPT_CAN_LOCK 0x00000002u
+#define TF_MPT_REQUIRE_AUTH 0x00000004u
+#define TF_MPT_CAN_ESCROW 0x00000008u
+#define TF_MPT_CAN_TRADE 0x00000010u
+#define TF_MPT_CAN_TRANSFER 0x00000020u
+#define TF_MPT_CAN_CLAWBACK 0x00000040u
+// tfMPTCanHoldConfidentialBalance (0x00000080u) is left out: it belongs to
+// the ConfidentialTransfer amendment, so a transaction setting it blind signs.
+// Keep in sync with the checks below (see ACCOUNT_SET_KNOWN_FLAGS).
+#define MPTOKEN_ISSUANCE_CREATE_KNOWN_FLAGS                      \
+    (TF_MPT_CAN_LOCK | TF_MPT_REQUIRE_AUTH | TF_MPT_CAN_ESCROW | \
+     TF_MPT_CAN_TRADE | TF_MPT_CAN_TRANSFER | TF_MPT_CAN_CLAWBACK)
+
+    size_t offset = 0;
+    if (HAS_FLAG(value, TF_MPT_CAN_LOCK)) {
+        offset = append_item(dst, offset, "Can Lock");
+    }
+    if (HAS_FLAG(value, TF_MPT_REQUIRE_AUTH)) {
+        offset = append_item(dst, offset, "Require Auth");
+    }
+    if (HAS_FLAG(value, TF_MPT_CAN_ESCROW)) {
+        offset = append_item(dst, offset, "Can Escrow");
+    }
+    if (HAS_FLAG(value, TF_MPT_CAN_TRADE)) {
+        offset = append_item(dst, offset, "Can Trade");
+    }
+    if (HAS_FLAG(value, TF_MPT_CAN_TRANSFER)) {
+        offset = append_item(dst, offset, "Can Transfer");
+    }
+    if (HAS_FLAG(value, TF_MPT_CAN_CLAWBACK)) {
+        append_item(dst, offset, "Can Clawback");
+    }
+}
+
+static void format_mptoken_issuance_set_flags(uint32_t value,
+                                              field_value_t* dst) {
+// MPTokenIssuanceSet flags
+#define TF_MPT_LOCK 0x00000001u
+#define TF_MPT_UNLOCK 0x00000002u
+// The tfMPTSetCan* bits (0x00000004u to 0x00000100u) are left out: the app has
+// no label for them, so a transaction setting one blind signs.
+// Keep in sync with the checks below (see ACCOUNT_SET_KNOWN_FLAGS).
+#define MPTOKEN_ISSUANCE_SET_KNOWN_FLAGS (TF_MPT_LOCK | TF_MPT_UNLOCK)
+
+    size_t offset = 0;
+    if (HAS_FLAG(value, TF_MPT_LOCK)) {
+        offset = append_item(dst, offset, "Lock");
+    }
+    if (HAS_FLAG(value, TF_MPT_UNLOCK)) {
+        append_item(dst, offset, "Unlock");
+    }
+}
+
+static void format_mptoken_authorize_flags(uint32_t value, field_value_t* dst) {
+// MPTokenAuthorize flags
+#define TF_MPT_UNAUTHORIZE 0x00000001u
+// Keep in sync with the checks below (see ACCOUNT_SET_KNOWN_FLAGS).
+#define MPTOKEN_AUTHORIZE_KNOWN_FLAGS TF_MPT_UNAUTHORIZE
+
+    size_t offset = 0;
+    if (HAS_FLAG(value, TF_MPT_UNAUTHORIZE)) {
+        append_item(dst, offset, "Unauthorize");
+    }
+}
+
 void format_flags(field_t* field, field_value_t* dst) {
     uint32_t value = field->data.u32;
     switch (parse_context.transaction_type) {
@@ -422,6 +490,15 @@ void format_flags(field_t* field, field_value_t* dst) {
         case TRANSACTION_AMM_WITHDRAW:
             format_amm_withdraw_flags(value, dst);
             break;
+        case TRANSACTION_MPTOKEN_ISSUANCE_CREATE:
+            format_mptoken_issuance_create_flags(value, dst);
+            break;
+        case TRANSACTION_MPTOKEN_ISSUANCE_SET:
+            format_mptoken_issuance_set_flags(value, dst);
+            break;
+        case TRANSACTION_MPTOKEN_AUTHORIZE:
+            format_mptoken_authorize_flags(value, dst);
+            break;
         default:
             snprintf(dst->buf, sizeof(dst->buf),
                      "No flags for transaction type %d",
@@ -441,7 +518,8 @@ void format_flags(field_t* field, field_value_t* dst) {
 // labels for the bits it recognizes, so an unrecognized bit combined with a
 // recognized one would otherwise vanish from the review while still being
 // signed. Keep this switch's case list in sync with format_flags() above:
-// a type missing here is simply not checked, not misclassified.
+// a type missing here has no flags of its own, so any bit besides
+// tfFullyCanonicalSig is unknown.
 bool has_unknown_flags(uint16_t transaction_type, uint32_t value) {
     uint32_t known = TF_FULLY_CANONICAL_SIG;
 
@@ -473,9 +551,17 @@ bool has_unknown_flags(uint16_t transaction_type, uint32_t value) {
         case TRANSACTION_AMM_WITHDRAW:
             known |= AMM_WITHDRAW_KNOWN_FLAGS;
             break;
+        case TRANSACTION_MPTOKEN_ISSUANCE_CREATE:
+            known |= MPTOKEN_ISSUANCE_CREATE_KNOWN_FLAGS;
+            break;
+        case TRANSACTION_MPTOKEN_ISSUANCE_SET:
+            known |= MPTOKEN_ISSUANCE_SET_KNOWN_FLAGS;
+            break;
+        case TRANSACTION_MPTOKEN_AUTHORIZE:
+            known |= MPTOKEN_AUTHORIZE_KNOWN_FLAGS;
+            break;
         default:
-            // No specific-flag formatter for this type: nothing to check.
-            return false;
+            break;
     }
 
     return (value & ~known) != 0;

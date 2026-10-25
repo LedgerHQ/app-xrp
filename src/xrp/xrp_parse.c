@@ -125,6 +125,10 @@ static bool is_supported_transaction_type(uint16_t t) {
         case TRANSACTION_AMM_VOTE:
         case TRANSACTION_AMM_BID:
         case TRANSACTION_AMM_DELETE:
+        case TRANSACTION_MPTOKEN_ISSUANCE_CREATE:
+        case TRANSACTION_MPTOKEN_ISSUANCE_DESTROY:
+        case TRANSACTION_MPTOKEN_ISSUANCE_SET:
+        case TRANSACTION_MPTOKEN_AUTHORIZE:
             return true;
         default:
             return false;
@@ -275,7 +279,30 @@ err_t read_amount(parseContext_t* context, field_t* field) {
     err_t err;
 
     CHECK(peak_next_byte(context, &first_byte));
-    if ((first_byte >> 7u) == 0) {
+    if ((first_byte & 0x80u) == 0 && (first_byte & 0x20u) != 0) {
+        // An MPT amount: bit 0x20 set, which no valid XRP amount sets.
+        CHECK(read_fixed_size_field(context, field, MPT_AMOUNT_LEN));
+
+        // Without the positive bit it is negative, which no transaction may
+        // carry, and the review shows only the magnitude.
+        if ((first_byte & 0x40u) == 0) {
+            err.err = INVALID_STATE;
+            return err;
+        }
+
+        // No MPT amount exceeds 0x7FFFFFFFFFFFFFFF.
+        if ((field->data.ptr[1] & 0x80u) != 0) {
+            err.err = INVALID_STATE;
+            return err;
+        }
+
+        field_t* issuance;
+        CHECK(append_new_field(context, &issuance));
+        issuance->data_type = STI_UINT192;
+        issuance->id = XRP_UINT192_MPTOKEN_ISSUANCE_ID;
+        issuance->data.ptr = field->data.ptr + 1 + XRP_AMOUNT_LEN;
+        issuance->length = MPT_ISSUANCE_ID_LEN;
+    } else if ((first_byte >> 7u) == 0) {
         CHECK(read_fixed_size_field(context, field, XRP_AMOUNT_LEN));
     } else {
         CHECK(read_fixed_size_field(context, field, ISSUED_CURRENCY_LEN));
@@ -333,18 +360,13 @@ err_t read_vector256_field(parseContext_t* context, field_t* field) {
         field_t* hash256;
         CHECK(append_new_field(context, &hash256));
         hash256->data_type = STI_HASH256;
-        // A Vector256 entry carries no buy/sell semantics of its own; label
-        // it generically and let the array index tell entries apart.
-        //
-        // The XRPL protocol also has Vector256 fields other than
-        // NFTokenOffers (Indexes, Hashes, Amendments, CredentialIDs), but
-        // this app only recognizes NFTokenOffers (field id 4) in
-        // resolve_field_name()'s STI_VECTOR256 case (fields.c): any other
-        // Vector256 field's own id resolves to "Unknown" and forces blind
-        // signing before these synthesized entries are ever displayed. That
-        // is why it's safe to hardcode this label here rather than branch
-        // on field->id.
-        hash256->id = XRP_HASH256_NFTOKEN_OFFER;
+        // An entry has no field ID of its own: label it after its vector and
+        // let the array index tell entries apart. Only NFTokenOffers and
+        // CredentialIDs are named in resolve_field_name(); any other vector's
+        // own id resolves to "Unknown" and forces blind signing first.
+        hash256->id = field->id == XRP_VECTOR256_CREDENTIAL_IDS
+                          ? XRP_HASH256_CREDENTIAL_ID
+                          : XRP_HASH256_NFTOKEN_OFFER;
         hash256->data.hash256 =
             (hash256_t*)(field->data.ptr + (i * XRP_VECTOR256_SIZE));
         hash256->length = XRP_VECTOR256_SIZE;
@@ -513,6 +535,12 @@ err_t read_field_value(parseContext_t* context, field_t* field) {
         case STI_UINT16:
             CHECK(read_fixed_size_field(context, field, 2));
             field->data.u16 = field->data.ptr[1] | (field->data.ptr[0] << 8);
+            break;
+        case STI_UINT64:
+            err = read_fixed_size_field(context, field, 8);
+            break;
+        case STI_UINT192:
+            err = read_fixed_size_field(context, field, 24);
             break;
         case STI_UINT32:
             CHECK(read_fixed_size_field(context, field, 4));

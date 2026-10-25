@@ -41,11 +41,17 @@ void format_field(field_t* field, field_value_t* dst) {
         case STI_UINT32:
             uint32_formatter(field, dst);
             break;
+        case STI_UINT64:
+            uint64_formatter(field, dst);
+            break;
         case STI_HASH128:
             hash_formatter128(field, dst);
             break;
         case STI_HASH256:
             hash_formatter256(field, dst);
+            break;
+        case STI_UINT192:
+            hex_formatter(field, dst);
             break;
         case STI_AMOUNT:
             amount_formatter(field, dst);

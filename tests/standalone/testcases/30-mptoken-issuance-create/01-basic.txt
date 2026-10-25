@@ -1,0 +1,5 @@
+Transaction Type; MPToken Issuance Create
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Maximum Amount; 1000000
+Fee; XRP 0.000015
+Asset Scale; 2

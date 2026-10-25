@@ -1,0 +1,4 @@
+Transaction Type; MPToken Issuance Create
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Fee; XRP 0.000015
+MPToken Metadata; 00017f80ff0a

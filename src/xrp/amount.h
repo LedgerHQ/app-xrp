@@ -29,7 +29,16 @@ bool has_non_standard_currency(field_t *field);
 bool is_all_zeros(const uint8_t *data, uint8_t length);
 bool is_valid_currency(const uint8_t *currency_data);
 
+// Writes value in decimal; 0 if it fit in len bytes with its terminator.
+int print_uint64_t(char *dst, uint16_t len, uint64_t value);
+
+// 18446744073709551615 has 20 digits.
+#define UINT64_MAX_DIGITS 20
+
 #define XRP_AMOUNT_LEN      8
 #define ISSUED_CURRENCY_LEN 48
+// 1 flag byte, the 8-byte value, then the 24-byte MPTokenIssuanceID.
+#define MPT_AMOUNT_LEN      33
+#define MPT_ISSUANCE_ID_LEN 24
 
 #endif  // LEDGER_APP_XRP_AMOUNT_H

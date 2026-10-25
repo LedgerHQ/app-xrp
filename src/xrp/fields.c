@@ -105,6 +105,13 @@ const char* resolve_field_name(field_t* field) {
         }
     }
 
+    if (field->data_type == STI_UINT64) {
+        switch (field->id) {
+            case 24:
+                return "Maximum Amount";
+        }
+    }
+
     if (field->data_type == STI_HASH128) {
         switch (field->id) {
             case 1:
@@ -139,6 +146,8 @@ const char* resolve_field_name(field_t* field) {
                 return "NFToken Sell Offer";
             case 0xFE:
                 return "NFToken Offer";
+            case 0xFD:
+                return "Credential ID";
         }
     }
 
@@ -213,6 +222,15 @@ const char* resolve_field_name(field_t* field) {
                 return "Fulfillment";
             case 17:
                 return "Condition";
+            case 30:
+                return "MPToken Metadata";
+        }
+    }
+
+    if (field->data_type == STI_UINT192) {
+        switch (field->id) {
+            case 1:
+                return "MPT Issuance ID";
         }
     }
 
@@ -221,6 +239,8 @@ const char* resolve_field_name(field_t* field) {
             // vector 256
             case 4:
                 return "NFToken Offers";
+            case 5:
+                return "Credential IDs";
         }
     }
 
@@ -242,6 +262,10 @@ const char* resolve_field_name(field_t* field) {
                 return "Regular Key";
             case 9:
                 return "NFToken Minter";
+            case 11:
+                return "Holder";
+            case 12:
+                return "Delegate";
         }
     }
 
@@ -282,6 +306,8 @@ const char* resolve_field_name(field_t* field) {
     if (field->data_type == STI_UINT8) {
         switch (field->id) {
             // 8-bit integers
+            case 5:
+                return "Asset Scale";
             case 16:
                 return "Tick Size";
         }

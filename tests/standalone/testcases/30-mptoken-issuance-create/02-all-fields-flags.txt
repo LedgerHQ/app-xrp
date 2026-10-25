@@ -1,0 +1,8 @@
+Transaction Type; MPToken Issuance Create
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Transfer Fee; 314
+Flags; Can Lock, Require Auth, Can Escrow, Can Trade, Can Transfer, Can Clawback
+Maximum Amount; 9223372036854775807
+Fee; XRP 0.000015
+MPToken Metadata; {"t":"TBILL","n":"T-Bill Yield Token","ac":"rwa"}
+Asset Scale; 6

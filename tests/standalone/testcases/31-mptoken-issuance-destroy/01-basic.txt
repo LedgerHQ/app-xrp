@@ -1,0 +1,4 @@
+Transaction Type; MPToken Issuance Destroy
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Fee; XRP 0.000015
+MPT Issuance ID; 00000001a407af5856ccf3c42619daa925813fc955c72983

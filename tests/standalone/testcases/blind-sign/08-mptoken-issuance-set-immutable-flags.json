@@ -1,0 +1,10 @@
+{
+    "TransactionType": "MPTokenIssuanceSet",
+    "Account": "OWN_ADDR",
+    "MPTokenIssuanceID": "00000001A407AF5856CCF3C42619DAA925813FC955C72983",
+    "ImmutableFlags": 2,
+    "Fee": "15",
+    "Flags": 0,
+    "Sequence": 3,
+    "SigningPubKey": "OWN_PUBKEY"
+}
