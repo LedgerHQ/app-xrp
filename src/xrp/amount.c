@@ -284,6 +284,16 @@ void amount_formatter(field_t* field, field_value_t* dst) {
 
     if (field->length == XRP_AMOUNT_LEN) {
         error = format_xrp(value, dst);
+    } else if (field->length == MPT_AMOUNT_LEN) {
+        // The issuance ID is its own row, appended by read_amount.
+        uint64_t units = read_unsigned64(field->data.ptr + 1);
+        strncpy(dst->buf, "MPT ", sizeof(dst->buf));
+        if (units == 0) {
+            strncpy(dst->buf + 4, "0", sizeof(dst->buf) - 4);
+            error = 0;
+        } else {
+            error = print_uint64_t(dst->buf + 4, sizeof(dst->buf) - 4, units);
+        }
     } else if (field->length == ISSUED_CURRENCY_LEN) {
         xrp_currency_t* currency = (xrp_currency_t*)&field->data.ptr[8];
         format_standard_currency(currency, dst->buf, sizeof(dst->buf));

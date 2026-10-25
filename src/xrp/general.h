@@ -26,6 +26,7 @@ void uint16_formatter(field_t *field, field_value_t *dst);
 void uint32_formatter(field_t *field, field_value_t *dst);
 void hash_formatter128(field_t *field, field_value_t *dst);
 void hash_formatter256(field_t *field, field_value_t *dst);
+void hex_formatter(field_t *field, field_value_t *dst);
 void blob_formatter(field_t *field, field_value_t *dst);
 void account_formatter(field_t *field, field_value_t *dst);
 void vector_formatter256(field_t *field, field_value_t *dst);

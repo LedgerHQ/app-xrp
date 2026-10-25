@@ -1,0 +1,6 @@
+Transaction Type; Payment
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Amount; MPT 100
+MPT Issuance ID; 00000001a407af5856ccf3c42619daa925813fc955c72983
+Fee; XRP 0.000015
+Destination;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   

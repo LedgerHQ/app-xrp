@@ -31,5 +31,8 @@ bool is_valid_currency(const uint8_t *currency_data);
 
 #define XRP_AMOUNT_LEN      8
 #define ISSUED_CURRENCY_LEN 48
+// 1 flag byte, the 8-byte value, then the 24-byte MPTokenIssuanceID.
+#define MPT_AMOUNT_LEN      33
+#define MPT_ISSUANCE_ID_LEN 24
 
 #endif  // LEDGER_APP_XRP_AMOUNT_H

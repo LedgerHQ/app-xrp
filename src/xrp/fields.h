@@ -27,6 +27,7 @@ typedef enum {
     // Normal field types
     STI_UINT16 = 0x01,
     STI_UINT32 = 0x02,
+    STI_UINT64 = 0x03,
     STI_HASH128 = 0x04,
     STI_HASH256 = 0x05,
     STI_AMOUNT = 0x06,
@@ -37,6 +38,7 @@ typedef enum {
     STI_UINT8 = 0x10,
     STI_PATHSET = 0x12,
     STI_VECTOR256 = 0x13,
+    STI_UINT192 = 0x15,
     STI_ISSUE = 0x18,
 
     // Custom field types
@@ -97,6 +99,8 @@ typedef enum {
 // of its own, so this display-only value is picked far outside the range
 // rippled actually assigns to Hash256 fields.
 #define XRP_HASH256_NFTOKEN_OFFER 0xFE
+// The same for an entry of CredentialIDs.
+#define XRP_HASH256_CREDENTIAL_ID 0xFD
 // AMOUNT
 #define XRP_UINT64_AMOUNT                    0x01
 #define XRP_UINT64_BALANCE                   0x02
@@ -141,6 +145,7 @@ typedef enum {
 #define XRP_ACCOUNT_UNAUTHORIZE                0x06
 #define XRP_ACCOUNT_REGULAR_KEY                0x08
 #define XRP_ACCOUNT_NFTOKEN_MINTER             0x09
+#define XRP_ACCOUNT_DELEGATE                   0x0C
 #define XRP_ACCOUNT_OTHER_CHAIN_SOURCE         0x12
 #define XRP_ACCOUNT_OTHER_CHAIN_DESTINATION    0x13
 #define XRP_ACCOUNT_ATTESTATION_SIGNER_ACCOUNT 0x14
@@ -149,6 +154,9 @@ typedef enum {
 #define XRP_ACCOUNT_ISSUING_CHAIN_DOOR         0x17
 // VECTOR256
 #define XRP_VECTOR256_NF_TOKEN_OFFERS 0x04
+#define XRP_VECTOR256_CREDENTIAL_IDS  0x05
+// UINT192
+#define XRP_UINT192_MPTOKEN_ISSUANCE_ID 0x01
 // STOBJECT
 #define XRP_STOBJECT_MEMO         0x0A
 #define XRP_STOBJECT_SIGNER_ENTRY 0x0B

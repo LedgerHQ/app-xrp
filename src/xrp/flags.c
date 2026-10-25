@@ -441,7 +441,8 @@ void format_flags(field_t* field, field_value_t* dst) {
 // labels for the bits it recognizes, so an unrecognized bit combined with a
 // recognized one would otherwise vanish from the review while still being
 // signed. Keep this switch's case list in sync with format_flags() above:
-// a type missing here is simply not checked, not misclassified.
+// a type missing here has no flags of its own, so any bit besides
+// tfFullyCanonicalSig is unknown.
 bool has_unknown_flags(uint16_t transaction_type, uint32_t value) {
     uint32_t known = TF_FULLY_CANONICAL_SIG;
 
@@ -474,8 +475,7 @@ bool has_unknown_flags(uint16_t transaction_type, uint32_t value) {
             known |= AMM_WITHDRAW_KNOWN_FLAGS;
             break;
         default:
-            // No specific-flag formatter for this type: nothing to check.
-            return false;
+            break;
     }
 
     return (value & ~known) != 0;

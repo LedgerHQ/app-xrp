@@ -141,6 +141,11 @@ void hash_formatter128(field_t* field, field_value_t* dst) {
              sizeof(field->data.hash128->buf));
 }
 
+// A fixed-width field with no richer display, such as an MPTokenIssuanceID.
+void hex_formatter(field_t* field, field_value_t* dst) {
+    read_hex(dst->buf, sizeof(dst->buf), field->data.ptr, field->length);
+}
+
 void hash_formatter256(field_t* field, field_value_t* dst) {
     read_hex(dst->buf, sizeof(dst->buf), field->data.hash256->buf,
              sizeof(field->data.hash256->buf));
