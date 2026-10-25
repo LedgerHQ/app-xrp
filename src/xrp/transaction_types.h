@@ -55,9 +55,21 @@
 #define TRANSACTION_AMM_VOTE               38
 #define TRANSACTION_AMM_BID                39
 #define TRANSACTION_AMM_DELETE             40
+#define TRANSACTION_VAULT_CREATE           65
+#define TRANSACTION_VAULT_SET              66
+#define TRANSACTION_VAULT_DELETE           67
+#define TRANSACTION_VAULT_DEPOSIT          68
+#define TRANSACTION_VAULT_WITHDRAW         69
+#define TRANSACTION_VAULT_CLAWBACK         70
 
 static inline bool is_transaction_type_field(field_t *field) {
     return field->data_type == STI_UINT16 && field->id == XRP_UINT16_TRANSACTION_TYPE;
+}
+
+// Single Asset Vault transactions (XLS-65)
+static inline bool is_vault_transaction(uint16_t transaction_type) {
+    return transaction_type >= TRANSACTION_VAULT_CREATE &&
+           transaction_type <= TRANSACTION_VAULT_CLAWBACK;
 }
 
 #endif  // LEDGER_APP_XRP_TRANSACTIONTYPES_H

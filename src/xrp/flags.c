@@ -392,6 +392,23 @@ static void format_amm_withdraw_flags(uint32_t value, field_value_t* dst) {
     }
 }
 
+static void format_vault_create_flags(uint32_t value, field_value_t* dst) {
+// VaultCreate flags
+#define TF_VAULT_PRIVATE 0x00010000u
+#define TF_VAULT_SHARE_NON_TRANSFERABLE 0x00020000u
+// Keep in sync with the checks below (see ACCOUNT_SET_KNOWN_FLAGS).
+#define VAULT_CREATE_KNOWN_FLAGS \
+    (TF_VAULT_PRIVATE | TF_VAULT_SHARE_NON_TRANSFERABLE)
+
+    size_t offset = 0;
+    if (HAS_FLAG(value, TF_VAULT_PRIVATE)) {
+        offset = append_item(dst, offset, "Private");
+    }
+    if (HAS_FLAG(value, TF_VAULT_SHARE_NON_TRANSFERABLE)) {
+        append_item(dst, offset, "Non-Transferable Shares");
+    }
+}
+
 void format_flags(field_t* field, field_value_t* dst) {
     uint32_t value = field->data.u32;
     switch (parse_context.transaction_type) {
@@ -421,6 +438,9 @@ void format_flags(field_t* field, field_value_t* dst) {
             break;
         case TRANSACTION_AMM_WITHDRAW:
             format_amm_withdraw_flags(value, dst);
+            break;
+        case TRANSACTION_VAULT_CREATE:
+            format_vault_create_flags(value, dst);
             break;
         default:
             snprintf(dst->buf, sizeof(dst->buf),
@@ -472,6 +492,17 @@ bool has_unknown_flags(uint16_t transaction_type, uint32_t value) {
             break;
         case TRANSACTION_AMM_WITHDRAW:
             known |= AMM_WITHDRAW_KNOWN_FLAGS;
+            break;
+        case TRANSACTION_VAULT_CREATE:
+            known |= VAULT_CREATE_KNOWN_FLAGS;
+            break;
+        case TRANSACTION_VAULT_SET:
+        case TRANSACTION_VAULT_DELETE:
+        case TRANSACTION_VAULT_DEPOSIT:
+        case TRANSACTION_VAULT_WITHDRAW:
+        case TRANSACTION_VAULT_CLAWBACK:
+            // These types define no flags of their own: any bit besides the
+            // universal one is unknown, rather than shown as "No flags".
             break;
         default:
             // No specific-flag formatter for this type: nothing to check.

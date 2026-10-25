@@ -1,0 +1,17 @@
+{
+    "TransactionType": "VaultCreate",
+    "Account": "OWN_ADDR",
+    "Asset": {
+        "currency": "USD",
+        "issuer": "rExKpRKXNz25UAjbckCRtQsJFcSfjL9Er3"
+    },
+    "AssetsMaximum": "2750000",
+    "MPTokenMetadata": "7B227469636B6572223A225348415245222C226E616D65223A225661756C7420736861726573227D",
+    "DomainID": "F2FF83860A4DC203988ED1A22BA1F21237F04ABDBD0C4C951103CFBED121DE78",
+    "WithdrawalPolicy": 1,
+    "Data": "4578616D706C65207661756C74",
+    "Scale": 6,
+    "Flags": 196608,
+    "Fee": "15",
+    "SigningPubKey": "OWN_PUBKEY"
+}

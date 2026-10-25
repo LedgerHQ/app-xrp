@@ -33,8 +33,40 @@
 #define PAGE_W 16
 #define ADDR_DST_OFFSET (PAGE_W * 3 + 2)
 
+// Vault withdrawal policy and vault kind values (rippled Protocol.h)
+#define VAULT_STRATEGY_FIRST_COME_FIRST_SERVE 1
+#define VAULT_KIND_OPEN_ENDED 0
+#define VAULT_KIND_CLOSED_ENDED 1
+
+// The name of an enumerated 8-bit value, or NULL to show it as a number.
+static const char* resolve_uint8_value_name(field_t* field) {
+    uint8_t value = field->data.u8;
+
+    if (field->id == XRP_UINT8_WITHDRAWAL_POLICY &&
+        value == VAULT_STRATEGY_FIRST_COME_FIRST_SERVE) {
+        return "First Come, First Served";
+    }
+
+    if (field->id == XRP_UINT8_VAULT_KIND) {
+        if (value == VAULT_KIND_OPEN_ENDED) {
+            return "Open-Ended";
+        }
+        if (value == VAULT_KIND_CLOSED_ENDED) {
+            return "Closed-Ended";
+        }
+    }
+
+    return NULL;
+}
+
 void uint8_formatter(field_t* field, field_value_t* dst) {
-    snprintf(dst->buf, sizeof(dst->buf), "%u", field->data.u8);
+    const char* name = resolve_uint8_value_name(field);
+
+    if (name != NULL) {
+        strncpy(dst->buf, name, sizeof(dst->buf));
+    } else {
+        snprintf(dst->buf, sizeof(dst->buf), "%u", field->data.u8);
+    }
 }
 
 static const char* resolve_transaction_name(uint16_t value) {
@@ -105,6 +137,18 @@ static const char* resolve_transaction_name(uint16_t value) {
             return "AMM Bid";
         case TRANSACTION_AMM_DELETE:
             return "AMM Delete";
+        case TRANSACTION_VAULT_CREATE:
+            return "Vault Create";
+        case TRANSACTION_VAULT_SET:
+            return "Vault Set";
+        case TRANSACTION_VAULT_DELETE:
+            return "Vault Delete";
+        case TRANSACTION_VAULT_DEPOSIT:
+            return "Vault Deposit";
+        case TRANSACTION_VAULT_WITHDRAW:
+            return "Vault Withdraw";
+        case TRANSACTION_VAULT_CLAWBACK:
+            return "Vault Clawback";
         default:
             return "Unknown";
     }
@@ -153,6 +197,8 @@ static bool should_format_blob_as_string(field_t* field) {
         case XRP_VL_MEMO_FORMAT:
         case XRP_VL_MEMO_DATA:
         case XRP_VL_URI:
+        case XRP_VL_DATA:
+        case XRP_VL_MPTOKEN_METADATA:
             return is_purely_ascii(field->data.ptr, field->length, false);
         default:
             return false;

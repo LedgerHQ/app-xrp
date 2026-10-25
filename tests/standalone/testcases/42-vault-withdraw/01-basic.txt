@@ -1,0 +1,6 @@
+Transaction Type; Vault Withdraw
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Vault ID; e6f0a1fbb43c89196dcfcbef85908f19ab4c5f7cc4f4c452284697757683d7ef
+Amount; USD 1500.25
+Issuer;   rExKpRKXNz25    UAjbckCRtQs     JFcSfjL9Er3   
+Fee; XRP 0.000015

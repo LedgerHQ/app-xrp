@@ -20,6 +20,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 #include "limitations.h"
 
@@ -32,6 +33,7 @@ typedef enum {
     STI_AMOUNT = 0x06,
     STI_VL = 0x07,
     STI_ACCOUNT = 0x08,
+    STI_NUMBER = 0x09,
     STI_OBJECT = 0x0E,
     STI_ARRAY = 0x0F,
     STI_UINT8 = 0x10,
@@ -46,7 +48,10 @@ typedef enum {
 // Small collection of used field IDs
 
 // UINT8
-#define XRP_UINT8_TICK_SIZE 0x10
+#define XRP_UINT8_SCALE             0x04
+#define XRP_UINT8_TICK_SIZE         0x10
+#define XRP_UINT8_WITHDRAWAL_POLICY 0x14
+#define XRP_UINT8_VAULT_KIND        0x16
 // UINT16
 #define XRP_UINT16_TRANSACTION_TYPE 0x02
 #define XRP_UINT16_SIGNER_WEIGHT    0x03
@@ -79,6 +84,8 @@ typedef enum {
 #define XRP_UINT32_TICKET_COUNT          0x28
 #define XRP_UINT32_TICKET_SEQUENCE       0x29
 #define XRP_UINT32_NFTOKEN_TAXON         0x2A
+#define XRP_UINT32_SUBSCRIPTION_DATE     0x4B
+#define XRP_UINT32_REDEMPTION_DATE       0x4C
 // HASH128
 #define XRP_HASH128_EMAIL_HASH 0x01
 // HASH256
@@ -93,6 +100,8 @@ typedef enum {
 #define XRP_HASH256_CHECK_ID           0x18
 #define XRP_HASH256_NFTOKEN_BUY_OFFER  0x1C
 #define XRP_HASH256_NFTOKEN_SELL_OFFER 0x1D
+#define XRP_HASH256_DOMAIN_ID          0x22
+#define XRP_HASH256_VAULT_ID           0x23
 // Not a real XRPL field code: a Vector256 entry has no per-element field ID
 // of its own, so this display-only value is picked far outside the range
 // rippled actually assigns to Hash256 fields.
@@ -117,21 +126,24 @@ typedef enum {
 #define XRP_UINT64_SIGNATURE_REWARD          0x1D
 #define XRP_UINT64_MIN_ACCOUNT_CREATE_AMOUNT 0x1E
 #define XRP_UINT64_LPTOKEN_BALANCE           0x1F
+// NUMBER
+#define XRP_NUMBER_ASSETS_MAXIMUM 0x03
 // VL (Blob)
-#define XRP_VL_PUBLIC_KEY      0x01
-#define XRP_VL_MESSAGE_KEY     0x02
-#define XRP_VL_SIGNING_PUB_KEY 0x03
-#define XRP_VL_TXN_SIGNATURE   0x04
-#define XRP_VL_URI             0x05
-#define XRP_VL_SIGNATURE       0x06
-#define XRP_VL_DOMAIN          0x07
-#define XRP_VL_MEMO_TYPE       0x0C
-#define XRP_VL_MEMO_DATA       0x0D
-#define XRP_VL_MEMO_FORMAT     0x0E
-#define XRP_VL_FULFILLMENT     0x10
-#define XRP_VL_CONDITION       0x11
-#define XRP_VL_DID_DOCUMENT    0x1A
-#define XRP_VL_DATA            0x1B
+#define XRP_VL_PUBLIC_KEY       0x01
+#define XRP_VL_MESSAGE_KEY      0x02
+#define XRP_VL_SIGNING_PUB_KEY  0x03
+#define XRP_VL_TXN_SIGNATURE    0x04
+#define XRP_VL_URI              0x05
+#define XRP_VL_SIGNATURE        0x06
+#define XRP_VL_DOMAIN           0x07
+#define XRP_VL_MEMO_TYPE        0x0C
+#define XRP_VL_MEMO_DATA        0x0D
+#define XRP_VL_MEMO_FORMAT      0x0E
+#define XRP_VL_FULFILLMENT      0x10
+#define XRP_VL_CONDITION        0x11
+#define XRP_VL_DID_DOCUMENT     0x1A
+#define XRP_VL_DATA             0x1B
+#define XRP_VL_MPTOKEN_METADATA 0x1E
 // AccountID
 #define XRP_ACCOUNT_ACCOUNT                    0x01
 #define XRP_ACCOUNT_OWNER                      0x02
@@ -141,6 +153,7 @@ typedef enum {
 #define XRP_ACCOUNT_UNAUTHORIZE                0x06
 #define XRP_ACCOUNT_REGULAR_KEY                0x08
 #define XRP_ACCOUNT_NFTOKEN_MINTER             0x09
+#define XRP_ACCOUNT_HOLDER                     0x0B
 #define XRP_ACCOUNT_OTHER_CHAIN_SOURCE         0x12
 #define XRP_ACCOUNT_OTHER_CHAIN_DESTINATION    0x13
 #define XRP_ACCOUNT_ATTESTATION_SIGNER_ACCOUNT 0x14
@@ -236,6 +249,20 @@ typedef struct {
 typedef struct {
     char buf[MAX_FIELD_LEN];
 } field_value_t;
+
+// A field a vault transaction takes a default for when it omits it. The
+// parser adds it (post_process_transaction) with no bytes, so that the review
+// shows what the omission means.
+typedef struct {
+    uint16_t transaction_type;
+    field_type_t data_type;
+    uint8_t id;
+} default_field_t;
+
+extern const default_field_t DEFAULT_FIELDS[];
+extern const size_t DEFAULT_FIELD_COUNT;
+
+bool is_default_field(const field_t *field, uint16_t transaction_type);
 
 bool is_normal_account_field(field_t *field);
 const char *resolve_field_name(field_t *field);

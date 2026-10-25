@@ -48,6 +48,8 @@ bool is_time(field_t* field) {
             case XRP_UINT32_EXPIRATION:
             case XRP_UINT32_CANCEL_AFTER:
             case XRP_UINT32_FINISH_AFTER:
+            case XRP_UINT32_SUBSCRIPTION_DATE:
+            case XRP_UINT32_REDEMPTION_DATE:
                 return true;
             default:
                 return false;

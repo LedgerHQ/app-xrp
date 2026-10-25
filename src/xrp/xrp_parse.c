@@ -92,6 +92,22 @@ static bool find_top_level_flags_value(parseContext_t* context, uint32_t* value,
     return found;
 }
 
+// Counts the fields of this type and id outside any array or object.
+static uint8_t count_top_level_fields(parseContext_t* context,
+                                      field_type_t data_type, uint8_t id) {
+    uint8_t count = 0;
+
+    for (uint8_t i = 0; i < context->result.num_fields; ++i) {
+        field_t* field = &context->result.fields[i];
+        if (field->data_type == data_type && field->id == id &&
+            field->array_info.type == ARRAY_NONE && field->object_depth == 0) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
 static bool is_supported_transaction_type(uint16_t t) {
     switch (t) {
         case TRANSACTION_PAYMENT:
@@ -125,6 +141,12 @@ static bool is_supported_transaction_type(uint16_t t) {
         case TRANSACTION_AMM_VOTE:
         case TRANSACTION_AMM_BID:
         case TRANSACTION_AMM_DELETE:
+        case TRANSACTION_VAULT_CREATE:
+        case TRANSACTION_VAULT_SET:
+        case TRANSACTION_VAULT_DELETE:
+        case TRANSACTION_VAULT_DEPOSIT:
+        case TRANSACTION_VAULT_WITHDRAW:
+        case TRANSACTION_VAULT_CLAWBACK:
             return true;
         default:
             return false;
@@ -275,6 +297,14 @@ err_t read_amount(parseContext_t* context, field_t* field) {
     err_t err;
 
     CHECK(peak_next_byte(context, &first_byte));
+    // MPT-denominated vaults are not supported yet: refuse a vault
+    // transaction's MPT amount.
+    if (is_vault_transaction(context->transaction_type) &&
+        (first_byte >> 7u) == 0 && (first_byte & AMOUNT_MPT_BIT) != 0) {
+        err.err = NOT_SUPPORTED;
+        return err;
+    }
+
     if ((first_byte >> 7u) == 0) {
         CHECK(read_fixed_size_field(context, field, XRP_AMOUNT_LEN));
     } else {
@@ -355,11 +385,27 @@ err_t read_vector256_field(parseContext_t* context, field_t* field) {
     return err;
 }
 
+// rippled's noAccount() (AccountID 1): MPT-denominated vaults are not
+// supported yet.
+static bool is_no_account(const uint8_t* account) {
+    return is_all_zeros(account, XRP_ACCOUNT_SIZE - 1) &&
+           account[XRP_ACCOUNT_SIZE - 1] == 0x01;
+}
+
 err_t read_issue(parseContext_t* context, field_t* field) {
     err_t err;
 
     if (!has_data(context, 20)) {
         err.err = EXCEPTION_OVERFLOW;
+        return err;
+    }
+
+    // MPT-denominated vaults are not supported yet: refuse a vault
+    // transaction's MPT asset.
+    if (is_vault_transaction(context->transaction_type) &&
+        has_data(context, XRP_ISSUE_SIZE) &&
+        is_no_account(context->data + context->offset + XRP_CURRENCY_SIZE)) {
+        err.err = NOT_SUPPORTED;
         return err;
     }
 
@@ -550,6 +596,20 @@ err_t read_field_value(parseContext_t* context, field_t* field) {
         case STI_ISSUE:
             err = read_issue(context, field);
             break;
+        case STI_NUMBER:
+            // Only the vault transactions carry a Number.
+            if (!is_vault_transaction(context->transaction_type)) {
+                err.err = NOT_SUPPORTED;
+                break;
+            }
+            err = read_fixed_size_field(context, field, NUMBER_LEN);
+            // Refuse a Number shown otherwise than as a plain decimal:
+            // 1e-40000 would read as a cap, while rippled normalizes it to
+            // zero, which means no cap.
+            if (err.err == SUCCESS && !is_number_in_range(field->data.ptr)) {
+                err.err = INVALID_STATE;
+            }
+            break;
         default:
             err.err = NOT_SUPPORTED;
             break;
@@ -658,6 +718,24 @@ err_t post_process_transaction(parseContext_t* context) {
         field->data.ptr = NULL;  // Special value to indicate empty regular key
     }
 
+    // A vault transaction that omits a field takes its default, which may be
+    // no limit: show it.
+    for (size_t i = 0; i < DEFAULT_FIELD_COUNT; i++) {
+        const default_field_t* d = &DEFAULT_FIELDS[i];
+        if (d->transaction_type != context->transaction_type ||
+            count_top_level_fields(context, d->data_type, d->id) != 0) {
+            continue;
+        }
+        field_t* field;
+        CHECK(append_new_field(context, &field));
+        field->data_type = d->data_type;
+        field->id = d->id;
+        field->length = 0;
+        field->data.ptr = NULL;
+        field->array_info.type = ARRAY_NONE;
+        field->object_depth = 0;
+    }
+
     return err;
 }
 
@@ -724,6 +802,14 @@ err_t parse_tx_internal(parseContext_t* context) {
     if (flags_duplicate ||
         (has_flags &&
          has_unknown_flags(context->transaction_type, flags_value))) {
+        err.err = BLIND_SIGN_REQUIRED;
+        return err;
+    }
+
+    // The first top-level Asset decides how a VaultCreate's AssetsMaximum
+    // is shown (fmt.c). rippled rejects a transaction with a field twice, so
+    // a second one forces blind signing, as a second Flags field does.
+    if (count_top_level_fields(context, STI_ISSUE, XRP_ISSUE_ASSET) > 1) {
         err.err = BLIND_SIGN_REQUIRED;
         return err;
     }

@@ -21,11 +21,94 @@
 
 #include "common.h"
 #include "flags.h"
+#include "sign_transaction.h"
+#include "transaction_types.h"
 
 #define HIDE(t, i)                                     \
     if (field->data_type == (t) && field->id == (i) && \
         field->array_info.type == 0)                   \
     return true
+
+// The defaults, from rippled 3.4.1
+const default_field_t DEFAULT_FIELDS[] = {
+    // VaultCreate.cpp:260: no limit
+    {TRANSACTION_VAULT_CREATE, STI_NUMBER, XRP_NUMBER_ASSETS_MAXIMUM},
+    // VaultClawback.cpp:63-76 and 282: all the holder has
+    {TRANSACTION_VAULT_CLAWBACK, STI_AMOUNT, XRP_UINT64_AMOUNT},
+};
+const size_t DEFAULT_FIELD_COUNT =
+    sizeof(DEFAULT_FIELDS) / sizeof(DEFAULT_FIELDS[0]);
+
+// A parsed field of these types always has bytes, so length 0 marks an
+// added one.
+bool is_default_field(const field_t* field, uint16_t transaction_type) {
+    if (field->length != 0 || field->array_info.type != ARRAY_NONE) {
+        return false;
+    }
+    for (size_t i = 0; i < DEFAULT_FIELD_COUNT; i++) {
+        const default_field_t* d = &DEFAULT_FIELDS[i];
+        if (d->transaction_type == transaction_type &&
+            d->data_type == field->data_type && d->id == field->id) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// A bit per transaction type from VaultCreate (65) on
+#define TYPE_BIT(t) (1u << ((t) - TRANSACTION_VAULT_CREATE))
+
+#define VAULT_CREATE TYPE_BIT(TRANSACTION_VAULT_CREATE)
+#define VAULT_SET TYPE_BIT(TRANSACTION_VAULT_SET)
+#define VAULT_DELETE TYPE_BIT(TRANSACTION_VAULT_DELETE)
+#define VAULT_DEPOSIT TYPE_BIT(TRANSACTION_VAULT_DEPOSIT)
+#define VAULT_WITHDRAW TYPE_BIT(TRANSACTION_VAULT_WITHDRAW)
+#define VAULT_CLAWBACK TYPE_BIT(TRANSACTION_VAULT_CLAWBACK)
+
+typedef struct {
+    field_type_t data_type;
+    uint8_t id;
+    uint32_t types;
+} scoped_field_t;
+
+// The fields named for the vault transactions, each with the types that carry
+// it in rippled 3.4.1's transactions.macro. In any other transaction type
+// they keep no name, as before these types were supported.
+static const scoped_field_t SCOPED_FIELDS[] = {
+    {STI_UINT8, XRP_UINT8_SCALE, VAULT_CREATE},
+    {STI_UINT8, XRP_UINT8_WITHDRAWAL_POLICY, VAULT_CREATE},
+    {STI_UINT8, XRP_UINT8_VAULT_KIND, VAULT_CREATE},
+    {STI_UINT32, XRP_UINT32_SUBSCRIPTION_DATE, VAULT_CREATE},
+    {STI_UINT32, XRP_UINT32_REDEMPTION_DATE, VAULT_CREATE},
+    {STI_HASH256, XRP_HASH256_DOMAIN_ID, VAULT_CREATE | VAULT_SET},
+    {STI_HASH256, XRP_HASH256_VAULT_ID,
+     VAULT_SET | VAULT_DELETE | VAULT_DEPOSIT | VAULT_WITHDRAW |
+         VAULT_CLAWBACK},
+    {STI_VL, XRP_VL_DATA, VAULT_CREATE | VAULT_SET},
+    {STI_VL, XRP_VL_MPTOKEN_METADATA, VAULT_CREATE},
+    {STI_ACCOUNT, XRP_ACCOUNT_HOLDER, VAULT_CLAWBACK},
+    {STI_NUMBER, XRP_NUMBER_ASSETS_MAXIMUM, VAULT_CREATE | VAULT_SET},
+};
+
+static uint32_t type_bit(uint16_t transaction_type) {
+    if (!is_vault_transaction(transaction_type)) {
+        return 0;
+    }
+    return TYPE_BIT(transaction_type);
+}
+
+// Whether a field of SCOPED_FIELDS is in a type that carries it. Any other
+// field is named in every type.
+static bool is_field_in_scope(const field_t* field, uint16_t transaction_type) {
+    for (size_t i = 0; i < sizeof(SCOPED_FIELDS) / sizeof(SCOPED_FIELDS[0]);
+         i++) {
+        const scoped_field_t* scoped = &SCOPED_FIELDS[i];
+        if (field->data_type == scoped->data_type && field->id == scoped->id) {
+            return (scoped->types & type_bit(transaction_type)) != 0;
+        }
+    }
+    return true;
+}
 
 bool is_normal_account_field(field_t* field) {
     return field->data_type == STI_ACCOUNT &&
@@ -38,6 +121,10 @@ bool is_normal_account_field(field_t* field) {
 static const char UNKNOWN_FIELD_NAME[] = "Unknown";
 
 const char* resolve_field_name(field_t* field) {
+    if (!is_field_in_scope(field, parse_context.transaction_type)) {
+        return UNKNOWN_FIELD_NAME;
+    }
+
     if (field->data_type == STI_UINT16) {
         switch (field->id) {
             case 2:
@@ -102,6 +189,10 @@ const char* resolve_field_name(field_t* field) {
                 return "Ticket Sequence";
             case 42:
                 return "NFToken Taxon";
+            case 75:
+                return "Subscription Date";
+            case 76:
+                return "Redemption Date";
         }
     }
 
@@ -137,6 +228,10 @@ const char* resolve_field_name(field_t* field) {
                 return "NFToken Buy Offer";
             case 29:
                 return "NFToken Sell Offer";
+            case 34:
+                return "Domain ID";
+            case 35:
+                return "Vault ID";
             case 0xFE:
                 return "NFToken Offer";
         }
@@ -213,6 +308,10 @@ const char* resolve_field_name(field_t* field) {
                 return "Fulfillment";
             case 17:
                 return "Condition";
+            case 27:
+                return "Data";
+            case 30:
+                return "Token Metadata";
         }
     }
 
@@ -242,6 +341,8 @@ const char* resolve_field_name(field_t* field) {
                 return "Regular Key";
             case 9:
                 return "NFToken Minter";
+            case 11:
+                return "Holder";
         }
     }
 
@@ -282,8 +383,22 @@ const char* resolve_field_name(field_t* field) {
     if (field->data_type == STI_UINT8) {
         switch (field->id) {
             // 8-bit integers
+            case 4:
+                return "Scale";
             case 16:
                 return "Tick Size";
+            case 20:
+                return "Withdrawal Policy";
+            case 22:
+                return "Vault Kind";
+        }
+    }
+
+    if (field->data_type == STI_NUMBER) {
+        switch (field->id) {
+            // numbers (XLS-65)
+            case 3:
+                return "Assets Maximum";
         }
     }
 

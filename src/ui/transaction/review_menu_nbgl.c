@@ -31,6 +31,8 @@ static nbgl_contentTagValue_t pair;
 static nbgl_contentTagValueList_t pairList;
 static parseResult_t* transaction;
 static resultAction_t approval_menu_callback;
+static nbgl_contentCenter_t asset_warning_info;
+static nbgl_warning_t asset_warning;
 
 static void build_title(const field_t* field, field_name_t* title) {
     const char* name = resolve_field_name((field_t*)field);
@@ -108,7 +110,32 @@ void display_review_menu(parseResult_t* transaction_param,
     pairList.callback = getPair;
     pairList.startIndex = 0;
 
-    nbgl_useCaseReview(TYPE_TRANSACTION, &pairList, &ICON_APP_HOME,
-                       "Review transaction", NULL, "Sign transaction?",
-                       reviewChoice);
+    if (!has_number_without_asset(transaction)) {
+        nbgl_useCaseReview(TYPE_TRANSACTION, &pairList, &ICON_APP_HOME,
+                           "Review transaction", NULL, "Sign transaction?",
+                           reviewChoice);
+        return;
+    }
+
+    // Some amounts are in the base units of an asset the transaction does
+    // not name, the vault's: say so before the review, since a host could
+    // swap the vault ID for one in another asset and the amounts would read
+    // the same.
+    memset(&asset_warning_info, 0, sizeof(asset_warning_info));
+    asset_warning_info.icon = &LARGE_WARNING_ICON;
+    asset_warning_info.title = "Asset not verified";
+#ifdef HAVE_SE_TOUCH
+    asset_warning_info.description =
+        "Amounts are in base units of the vault's asset, drops for XRP. "
+        "Verify the vault ID.";
+#else
+    // A Nano shows two short lines under the title
+    asset_warning_info.description = "In base units of the vault's asset";
+#endif
+    memset(&asset_warning, 0, sizeof(asset_warning));
+    asset_warning.info = &asset_warning_info;
+
+    nbgl_useCaseAdvancedReview(TYPE_TRANSACTION, &pairList, &ICON_APP_HOME,
+                               "Review transaction", NULL, "Sign transaction?",
+                               NULL, &asset_warning, reviewChoice);
 }

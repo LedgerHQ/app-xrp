@@ -1,0 +1,6 @@
+Transaction Type; Vault Create
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Fee; XRP 0.000015
+Assets Maximum; 2750000.5
+Asset; 0158415500000000c1f76ff6ecb0bac600000000
+Issuer;   rExKpRKXNz25    UAjbckCRtQs     JFcSfjL9Er3   

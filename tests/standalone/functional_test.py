@@ -266,11 +266,30 @@ def test_blind_sign_enabled(
     assert reply and reply.status == Errors.SW_SUCCESS
 
 
+# The label of an amount in an asset the transaction does not name (fmt.c):
+# its review starts with an "Asset not verified" warning.
+NUMBER_WITHOUT_ASSET_LABEL = "(vault asset, base units)"
+
+# Vault transactions the parser refuses: a vault of an MPT, not supported yet,
+# and a Number not shown as a plain decimal.
+REFUSED_VAULT_TXS = (
+    "38-vault-create/06-mpt-vault.raw",
+    "38-vault-create/07-number-out-of-range.raw",
+    "41-vault-deposit/02-mpt-vault.raw",
+)
+
+
+def _has_asset_warning(raw_tx_path: str) -> bool:
+    expected = Path(raw_tx_path).with_suffix(".txt")
+    return expected.exists() and NUMBER_WITHOUT_ASSET_LABEL in expected.read_text()
+
+
 def test_sign_valid_tx(
     backend: BackendInterface,
     device: Device,
     navigator: Navigator,
     scenario_navigator: NavigateWithScenario,
+    default_screenshot_path: Path,
     raw_tx_path: str,
 ):
     if raw_tx_path.endswith("19-really-stupid-tx.raw"):
@@ -295,6 +314,12 @@ def test_sign_valid_tx(
         pytest.skip(f"skip unrecognized-field tx from '{Path(raw_tx_path).stem}'")
     if raw_tx_path.endswith("28-all-zero-currency-issued-amount.raw"):
         pytest.skip(f"skip all-zero-currency tx from '{Path(raw_tx_path).stem}'")
+    if raw_tx_path.endswith("29-vault-field-in-payment.raw"):
+        pytest.skip(f"skip vault-field tx from '{Path(raw_tx_path).stem}'")
+    if raw_tx_path.endswith("30-number-in-payment.raw"):
+        pytest.skip(f"skip number-field tx from '{Path(raw_tx_path).stem}'")
+    if raw_tx_path.endswith(REFUSED_VAULT_TXS):
+        pytest.skip(f"skip refused vault tx from '{Path(raw_tx_path).stem}'")
 
     xrp = XRPClient(backend, navigator)
 
@@ -310,6 +335,16 @@ def test_sign_valid_tx(
     else:
         text = "^Hold to sign$"
     with xrp.sign(DEFAULT_BIP32_PATH + tx):
+        if _has_asset_warning(raw_tx_path):
+            # A custom warning: one page, passed with the right button on
+            # Nano, with "Continue anyway" on touch devices.
+            instructions = [NavInsID.RIGHT_CLICK] if device.is_nano else [NavInsID.USE_CASE_CHOICE_REJECT]
+            navigator.navigate_and_compare(
+                default_screenshot_path,
+                f"{snapdir}/warning",
+                instructions,
+                screen_change_after_last_instruction=False,
+            )
         scenario_navigator.review_approve(test_name=snapdir, custom_screen_text=text)
 
     reply = xrp.get_async_response()
@@ -357,6 +392,23 @@ def test_sign_all_zero_currency_issued_amount(backend: BackendInterface, navigat
     xrp = XRPClient(backend, navigator)
 
     tx_path = Path(__file__).parent / "testcases/01-payment/28-all-zero-currency-issued-amount.raw"
+    with open(tx_path, "rb") as fp:
+        tx = fp.read()
+
+    backend.raise_policy = RaisePolicy.RAISE_ALL_BUT_0x9000
+    with pytest.raises(ExceptionRAPDU) as err:
+        with xrp.sign(DEFAULT_BIP32_PATH + tx):
+            pass  # error is synchronous — returned before yield
+    assert err.value.status != Errors.SW_SUCCESS
+
+
+@pytest.mark.parametrize("tx_file", REFUSED_VAULT_TXS)
+def test_sign_refused_vault_tx(backend: BackendInterface, navigator: Navigator, tx_file: str):
+    """A vault of an MPT, not supported yet, and a Number not shown as a plain
+    decimal must be rejected."""
+    xrp = XRPClient(backend, navigator)
+
+    tx_path = Path(__file__).parent / "testcases" / tx_file
     with open(tx_path, "rb") as fp:
         tx = fp.read()
 

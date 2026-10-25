@@ -1,0 +1,11 @@
+{
+    "TransactionType": "VaultCreate",
+    "Account": "OWN_ADDR",
+    "Asset": {
+        "mpt_issuance_id": "0000012FA407AF5856CCF3C42619DAA925813FC955C72983"
+    },
+    "Fee": "15",
+    "Flags": 0,
+    "SigningPubKey": "OWN_PUBKEY",
+    "_comment": "A vault of an MPT: not supported yet, so refused."
+}

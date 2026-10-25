@@ -7,6 +7,7 @@
 // clang-format on
 #include <string.h>
 
+#include "../src/globals.h"
 #include "../src/xrp/fmt.h"
 #include "../src/xrp/xrp_helpers.h"
 #include "../src/xrp/xrp_parse.h"
@@ -133,6 +134,19 @@ static const char* testcases[] = {
     "../../tests/standalone/testcases/28-amm-bid/01-basic.raw",
     "../../tests/standalone/testcases/28-amm-bid/02-min-max.raw",
     "../../tests/standalone/testcases/29-amm-vote/01-basic.raw",
+    "../../tests/standalone/testcases/38-vault-create/01-xrp.raw",
+    "../../tests/standalone/testcases/38-vault-create/02-issued-full.raw",
+    "../../tests/standalone/testcases/38-vault-create/03-closed-ended.raw",
+    "../../tests/standalone/testcases/38-vault-create/04-xrp-maximum.raw",
+    "../../tests/standalone/testcases/38-vault-create/05-nonstandard-asset.raw",
+    "../../tests/standalone/testcases/39-vault-set/01-basic.raw",
+    "../../tests/standalone/testcases/39-vault-set/02-no-limit.raw",
+    "../../tests/standalone/testcases/40-vault-delete/01-basic.raw",
+    "../../tests/standalone/testcases/41-vault-deposit/01-xrp.raw",
+    "../../tests/standalone/testcases/42-vault-withdraw/01-basic.raw",
+    "../../tests/standalone/testcases/43-vault-clawback/01-basic.raw",
+    "../../tests/standalone/testcases/43-vault-clawback/02-all.raw",
+    "../../tests/standalone/testcases/43-vault-clawback/03-zero.raw",
     NULL,
 };
 
@@ -184,6 +198,51 @@ static const char* negative_testcases[] = {
     "../../tests/standalone/testcases/blind-sign/"
     "04-nftoken-accept-offer-broker.raw",
     NULL,
+};
+
+// Transactions the parser must not clear-sign, each with the result it must
+// give: a refusal (NOT_SUPPORTED, INVALID_STATE) or blind signing
+// (BLIND_SIGN_REQUIRED).
+typedef struct {
+    const char* path;
+    int expected_err;
+} expected_error_testcase_t;
+
+static const expected_error_testcase_t expected_error_testcases[] = {
+    // Vaults of an MPT are not supported yet.
+    {"../../tests/standalone/testcases/38-vault-create/06-mpt-vault.raw",
+     NOT_SUPPORTED},
+    {"../../tests/standalone/testcases/41-vault-deposit/02-mpt-vault.raw",
+     NOT_SUPPORTED},
+    // A Number not shown as a plain decimal: 1e-40000, which rippled
+    // normalizes to zero (no cap).
+    {"../../tests/standalone/testcases/38-vault-create/"
+     "07-number-out-of-range.raw",
+     INVALID_STATE},
+    // A VaultCreate flag bit no formatter names, or any flag bit on a vault
+    // type that defines none, must not vanish from the review.
+    {"../../tests/standalone/testcases/blind-sign/"
+     "05-vault-create-unknown-flag.raw",
+     BLIND_SIGN_REQUIRED},
+    {"../../tests/standalone/testcases/blind-sign/06-vault-deposit-flag.raw",
+     BLIND_SIGN_REQUIRED},
+    // A second top-level Asset would decide how AssetsMaximum is shown.
+    {"../../tests/standalone/testcases/blind-sign/"
+     "07-vault-create-duplicate-asset.raw",
+     BLIND_SIGN_REQUIRED},
+    // A field of another vault type is not named in this one.
+    {"../../tests/standalone/testcases/blind-sign/"
+     "08-vault-deposit-domain-id.raw",
+     BLIND_SIGN_REQUIRED},
+    // A vault field in another type is not named there, as before vaults
+    // were supported.
+    {"../../tests/standalone/testcases/01-payment/"
+     "29-vault-field-in-payment.raw",
+     BLIND_SIGN_REQUIRED},
+    // Only the vault transactions carry a Number.
+    {"../../tests/standalone/testcases/01-payment/30-number-in-payment.raw",
+     NOT_SUPPORTED},
+    {NULL, 0},
 };
 
 static uint8_t* load_transaction_data(const char* filename, size_t* size) {
@@ -290,6 +349,10 @@ static void check_transaction_results(const char* filename,
         assert_string_equal(field_value.buf, expected_value);
     }
 
+    // Every expected line was matched by a field.
+    char extra[4096];
+    assert_null(fgets(extra, sizeof(extra), fp));
+
     fclose(fp);
 }
 
@@ -331,6 +394,20 @@ void test_invalid_transactions(void** state) {
         parse_context.data = data;
         parse_context.length = size;
         assert_int_not_equal(parse_tx(&parse_context), 0);
+
+        free(data);
+    }
+
+    for (const expected_error_testcase_t* testcase = expected_error_testcases;
+         testcase->path != NULL; testcase++) {
+        size_t size;
+        uint8_t* data = load_transaction_data(testcase->path, &size);
+
+        memset(&parse_context, 0, sizeof(parse_context));
+        parse_context.data = data;
+        parse_context.length = size;
+        printf("[*] %s\n", testcase->path);
+        assert_int_equal(parse_tx(&parse_context), testcase->expected_err);
 
         free(data);
     }

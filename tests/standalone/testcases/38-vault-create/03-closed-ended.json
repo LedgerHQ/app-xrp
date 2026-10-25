@@ -1,0 +1,15 @@
+{
+    "TransactionType": "VaultCreate",
+    "Account": "OWN_ADDR",
+    "Asset": {
+        "currency": "USD",
+        "issuer": "rExKpRKXNz25UAjbckCRtQsJFcSfjL9Er3"
+    },
+    "AssetsMaximum": "1000000.5",
+    "VaultKind": 1,
+    "SubscriptionDate": 849398400,
+    "RedemptionDate": 1007164800,
+    "Fee": "15",
+    "Flags": 0,
+    "SigningPubKey": "OWN_PUBKEY"
+}
