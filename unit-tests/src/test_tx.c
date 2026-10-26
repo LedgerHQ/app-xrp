@@ -7,6 +7,7 @@
 // clang-format on
 #include <string.h>
 
+#include "../src/globals.h"
 #include "../src/xrp/fmt.h"
 #include "../src/xrp/xrp_helpers.h"
 #include "../src/xrp/xrp_parse.h"
@@ -133,6 +134,9 @@ static const char* testcases[] = {
     "../../tests/standalone/testcases/28-amm-bid/01-basic.raw",
     "../../tests/standalone/testcases/28-amm-bid/02-min-max.raw",
     "../../tests/standalone/testcases/29-amm-vote/01-basic.raw",
+    "../../tests/standalone/testcases/53-batch/01-two-payments.raw",
+    "../../tests/standalone/testcases/53-batch/02-mixed-inner-types.raw",
+    "../../tests/standalone/testcases/53-batch/03-multi-sign.raw",
     NULL,
 };
 
@@ -183,6 +187,56 @@ static const char* negative_testcases[] = {
     "03-nftoken-accept-offer.raw",
     "../../tests/standalone/testcases/blind-sign/"
     "04-nftoken-accept-offer-broker.raw",
+    NULL,
+};
+
+// Batch transactions whose review cannot show every inner transaction: they
+// must go to blind signing, and the blind signing review must list none of
+// their inner transactions.
+static const char* batch_blind_sign_testcases[] = {
+    "../../tests/standalone/testcases/blind-sign/"
+    "13-batch-inner-fee.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "14-batch-inner-without-inner-flag.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "15-batch-inner-memos.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "16-batch-inner-nftoken-accept-offer.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "17-batch-two-modes.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "18-batch-signers.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "19-batch-inner-clear-regular-key.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "20-batch-one-inner.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "21-batch-inner-nftoken-cancel-offer.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "22-batch-nested-batch.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "23-batch-nine-inner.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "24-batch-inner-txn-signature.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "25-batch-inner-signing-pub-key.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "26-batch-no-mode.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "27-batch-inner-without-account.raw",
+    // 53-batch/01 with an Amount field of XRP 10 inserted between the two
+    // RawTransaction objects (hand-spliced, no .json)
+    "../../tests/standalone/testcases/blind-sign/"
+    "28-batch-field-outside-raw-transaction.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "29-batch-outer-nftoken-offers.raw",
+    // 53-batch/01 preceded by a stray RawTransactions array, read before the
+    // top-level TransactionType, then the same array inside Memos
+    // (hand-spliced, no .json)
+    "../../tests/standalone/testcases/blind-sign/"
+    "30-batch-raw-transactions-before-type.raw",
+    "../../tests/standalone/testcases/blind-sign/"
+    "31-batch-raw-transactions-in-memos-before-type.raw",
     NULL,
 };
 
@@ -336,10 +390,41 @@ void test_invalid_transactions(void** state) {
     }
 }
 
+void test_batch_blind_sign_transactions(void** state) {
+    (void)state;
+
+    for (const char** testcase = batch_blind_sign_testcases; *testcase != NULL;
+         testcase++) {
+        printf("[*] %s\n", *testcase);
+        size_t size;
+        uint8_t* data = load_transaction_data(*testcase, &size);
+
+        memset(&parse_context, 0, sizeof(parse_context));
+        parse_context.data = data;
+        parse_context.length = size;
+        assert_int_equal(parse_tx(&parse_context), BLIND_SIGN_REQUIRED);
+
+        parseResult_t* transaction = &parse_context.result;
+        assert_true(transaction->num_fields > 0);
+        for (int i = 0; i < transaction->num_fields; ++i) {
+            field_t* field = &transaction->fields[i];
+            assert_int_not_equal(field->array_info.type,
+                                 XRP_STARRAY_RAW_TRANSACTIONS);
+            assert_int_not_equal(field->data_type, STI_ARRAY);
+            assert_int_not_equal(field->data_type, STI_OBJECT);
+            assert_true(field->object_depth == 0 ||
+                        field->array_info.type == XRP_STARRAY_MEMOS);
+        }
+
+        free(data);
+    }
+}
+
 int main() {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_transactions),
         cmocka_unit_test(test_invalid_transactions),
+        cmocka_unit_test(test_batch_blind_sign_transactions),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

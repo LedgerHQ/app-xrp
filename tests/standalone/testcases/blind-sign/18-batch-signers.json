@@ -1,0 +1,43 @@
+{
+  "TransactionType": "Batch",
+  "Account": "OWN_ADDR",
+  "Flags": 65536,
+  "Sequence": 3,
+  "Fee": "40",
+  "SigningPubKey": "OWN_PUBKEY",
+  "RawTransactions": [
+    {
+      "RawTransaction": {
+        "TransactionType": "Payment",
+        "Account": "OWN_ADDR",
+        "Flags": 1073741824,
+        "Sequence": 4,
+        "Fee": "0",
+        "SigningPubKey": "",
+        "Destination": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+        "Amount": "1000000"
+      }
+    },
+    {
+      "RawTransaction": {
+        "TransactionType": "Payment",
+        "Account": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+        "Flags": 1073741824,
+        "Sequence": 1,
+        "Fee": "0",
+        "SigningPubKey": "",
+        "Destination": "rTooLkitCksh5mQa67eaa2JaWHDBnHkpy",
+        "Amount": "2500000"
+      }
+    }
+  ],
+  "BatchSigners": [
+    {
+      "BatchSigner": {
+        "Account": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+        "SigningPubKey": "02B79DA34F4551CA976B66AA78A55C43707EC2BB2BEC39F95BD53F24E2E45A9E67",
+        "TxnSignature": "3045022100111111111111111111111111111111111111111111111111111111111111111102202222222222222222222222222222222222222222222222222222222222222222"
+      }
+    }
+  ]
+}

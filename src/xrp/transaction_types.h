@@ -55,6 +55,7 @@
 #define TRANSACTION_AMM_VOTE               38
 #define TRANSACTION_AMM_BID                39
 #define TRANSACTION_AMM_DELETE             40
+#define TRANSACTION_BATCH                  71
 
 static inline bool is_transaction_type_field(field_t *field) {
     return field->data_type == STI_UINT16 && field->id == XRP_UINT16_TRANSACTION_TYPE;
