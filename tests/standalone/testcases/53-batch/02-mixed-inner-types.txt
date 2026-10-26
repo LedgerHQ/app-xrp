@@ -1,0 +1,24 @@
+Transaction Type; Batch
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Flags; Independent
+Fee; XRP 0.00004
+Memo Type [1]; text/plain
+Memo Data [1]; Pay rent
+Transaction Type [1]; Set Trust Line
+Account [1];   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Flags [1]; Set No Ripple
+Limit Amount [1]; USD 10
+Issuer [1];   rsP3mgGb2tcY    UrxiLFiHJiQ     XhsziegtwBc   
+Transaction Type [2]; Create Offer
+Account [2];   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Flags [2]; Sell
+Taker Pays [2]; USD 10
+Issuer [2];   rsP3mgGb2tcY    UrxiLFiHJiQ     XhsziegtwBc   
+Taker Gets [2]; XRP 5
+Transaction Type [3]; Account Setting
+Account [3];   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Set Flag [3]; Require Dest
+Ticket Sequence [3]; 12
+Transaction Type [4]; Set Regular Key
+Account [4];   rsP3mgGb2tcY    UrxiLFiHJiQ     XhsziegtwBc   
+Regular Key [4];   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   

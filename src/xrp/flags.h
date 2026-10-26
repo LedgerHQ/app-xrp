@@ -24,6 +24,15 @@
 
 // Universal Transaction flags (hidden)
 #define TF_FULLY_CANONICAL_SIG 0x80000000u
+// Set on every inner transaction of a Batch (hidden)
+#define TF_INNER_BATCH_TXN 0x40000000u
+
+// Batch modes: a Batch sets exactly one of them
+#define TF_ALL_OR_NOTHING 0x00010000u
+#define TF_ONLY_ONE       0x00020000u
+#define TF_UNTIL_FAILURE  0x00040000u
+#define TF_INDEPENDENT    0x00080000u
+#define BATCH_MODE_FLAGS  (TF_ALL_OR_NOTHING | TF_ONLY_ONE | TF_UNTIL_FAILURE | TF_INDEPENDENT)
 
 bool is_flag(const field_t *field);
 bool is_flag_hidden(const field_t *field);

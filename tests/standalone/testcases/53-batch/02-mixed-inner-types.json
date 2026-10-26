@@ -1,0 +1,72 @@
+{
+  "TransactionType": "Batch",
+  "Account": "OWN_ADDR",
+  "Flags": 524288,
+  "Sequence": 3,
+  "Fee": "40",
+  "SigningPubKey": "OWN_PUBKEY",
+  "RawTransactions": [
+    {
+      "RawTransaction": {
+        "TransactionType": "TrustSet",
+        "Account": "OWN_ADDR",
+        "Flags": 1073872896,
+        "Sequence": 4,
+        "Fee": "0",
+        "SigningPubKey": "",
+        "LimitAmount": {
+          "currency": "USD",
+          "issuer": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+          "value": "10"
+        }
+      }
+    },
+    {
+      "RawTransaction": {
+        "TransactionType": "OfferCreate",
+        "Account": "OWN_ADDR",
+        "Flags": 1074266112,
+        "Sequence": 5,
+        "Fee": "0",
+        "SigningPubKey": "",
+        "TakerPays": {
+          "currency": "USD",
+          "issuer": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+          "value": "10"
+        },
+        "TakerGets": "5000000"
+      }
+    },
+    {
+      "RawTransaction": {
+        "TransactionType": "AccountSet",
+        "Account": "OWN_ADDR",
+        "Flags": 1073741824,
+        "Sequence": 0,
+        "Fee": "0",
+        "SigningPubKey": "",
+        "TicketSequence": 12,
+        "SetFlag": 1
+      }
+    },
+    {
+      "RawTransaction": {
+        "TransactionType": "SetRegularKey",
+        "Account": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+        "Flags": 1073741824,
+        "Sequence": 8,
+        "Fee": "0",
+        "SigningPubKey": "",
+        "RegularKey": "rTooLkitCksh5mQa67eaa2JaWHDBnHkpy"
+      }
+    }
+  ],
+  "Memos": [
+    {
+      "Memo": {
+        "MemoType": "746578742F706C61696E",
+        "MemoData": "5061792072656E74"
+      }
+    }
+  ]
+}

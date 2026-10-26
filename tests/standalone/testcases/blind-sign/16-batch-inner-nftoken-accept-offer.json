@@ -1,0 +1,33 @@
+{
+  "TransactionType": "Batch",
+  "Account": "OWN_ADDR",
+  "Flags": 65536,
+  "Sequence": 3,
+  "Fee": "40",
+  "SigningPubKey": "OWN_PUBKEY",
+  "RawTransactions": [
+    {
+      "RawTransaction": {
+        "TransactionType": "Payment",
+        "Account": "OWN_ADDR",
+        "Flags": 1073741824,
+        "Sequence": 4,
+        "Fee": "0",
+        "SigningPubKey": "",
+        "Destination": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+        "Amount": "1000000"
+      }
+    },
+    {
+      "RawTransaction": {
+        "TransactionType": "NFTokenAcceptOffer",
+        "Account": "OWN_ADDR",
+        "Flags": 1073741824,
+        "Sequence": 5,
+        "Fee": "0",
+        "SigningPubKey": "",
+        "NFTokenSellOffer": "68CD1F6F906494EA08C9CB5CAFA64DFA90D4E834B7151899B73231DE5A0C3B77"
+      }
+    }
+  ]
+}

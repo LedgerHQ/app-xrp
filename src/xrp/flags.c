@@ -392,9 +392,30 @@ static void format_amm_withdraw_flags(uint32_t value, field_value_t* dst) {
     }
 }
 
+static void format_batch_flags(uint32_t value, field_value_t* dst) {
+    size_t offset = 0;
+    if (HAS_FLAG(value, TF_ALL_OR_NOTHING)) {
+        offset = append_item(dst, offset, "All or Nothing");
+    }
+
+    if (HAS_FLAG(value, TF_ONLY_ONE)) {
+        offset = append_item(dst, offset, "Only One");
+    }
+
+    if (HAS_FLAG(value, TF_UNTIL_FAILURE)) {
+        offset = append_item(dst, offset, "Until Failure");
+    }
+
+    if (HAS_FLAG(value, TF_INDEPENDENT)) {
+        append_item(dst, offset, "Independent");
+    }
+}
+
 void format_flags(field_t* field, field_value_t* dst) {
     uint32_t value = field->data.u32;
-    switch (parse_context.transaction_type) {
+    // A Batch inner transaction's flags belong to its own type
+    uint16_t transaction_type = field_transaction_type(&parse_context, field);
+    switch (transaction_type) {
         case TRANSACTION_ACCOUNT_SET:
             format_account_set_flags(field, value, dst);
             break;
@@ -422,10 +443,12 @@ void format_flags(field_t* field, field_value_t* dst) {
         case TRANSACTION_AMM_WITHDRAW:
             format_amm_withdraw_flags(value, dst);
             break;
+        case TRANSACTION_BATCH:
+            format_batch_flags(value, dst);
+            break;
         default:
             snprintf(dst->buf, sizeof(dst->buf),
-                     "No flags for transaction type %d",
-                     parse_context.transaction_type);
+                     "No flags for transaction type %d", transaction_type);
             return;
     }
 
@@ -472,6 +495,9 @@ bool has_unknown_flags(uint16_t transaction_type, uint32_t value) {
             break;
         case TRANSACTION_AMM_WITHDRAW:
             known |= AMM_WITHDRAW_KNOWN_FLAGS;
+            break;
+        case TRANSACTION_BATCH:
+            known |= BATCH_MODE_FLAGS;
             break;
         default:
             // No specific-flag formatter for this type: nothing to check.

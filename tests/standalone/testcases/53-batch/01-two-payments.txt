@@ -1,0 +1,12 @@
+Transaction Type; Batch
+Account;   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Flags; All or Nothing
+Fee; XRP 0.00004
+Transaction Type [1]; Payment
+Account [1];   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Amount [1]; XRP 1
+Destination [1];   rsP3mgGb2tcY    UrxiLFiHJiQ     XhsziegtwBc   
+Transaction Type [2]; Payment
+Account [2];   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   
+Amount [2]; XRP 2.5
+Destination [2];   rTooLkitCks     h5mQa67eaa2     JaWHDBnHkpy   

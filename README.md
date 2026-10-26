@@ -27,6 +27,7 @@ The XRP wallet app comes with the following features:
   - AMMWithdrawal
   - AccountSet
   - AccountDelete
+  - Batch
   - CheckCancel
   - CheckCash
   - CheckCreate
@@ -82,6 +83,10 @@ and right buttons on your device, as indicated by arrows on the screen.
 Fields in arrays are suffixed with their array index in square brackets. See example below.
 
 ![Array field in review menu](img/review-array.png)
+
+The fields of each inner transaction of a Batch are suffixed with the index of
+that inner transaction. Its Fee, SigningPubKey, Sequence and LastLedgerSequence
+are not shown; Fee and SigningPubKey are also checked.
 
 PathSet fields have their index information shown in square brackets on the
 form `[Pi: Sj]`, where `i` is the path index and `j` is the step index within

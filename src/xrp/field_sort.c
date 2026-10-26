@@ -19,6 +19,7 @@
 
 #include <string.h>
 
+#include "sign_transaction.h"
 #include "transaction_types.h"
 
 uint8_t get_priority_score(field_t* field) {
@@ -26,7 +27,10 @@ uint8_t get_priority_score(field_t* field) {
         return 0;
     }
 
-    if (is_normal_account_field(field)) {
+    // The account of a Batch inner transaction follows its type too
+    if (is_normal_account_field(field) ||
+        (field->data_type == STI_ACCOUNT && field->id == XRP_ACCOUNT_ACCOUNT &&
+         batch_inner_index(&parse_context, field) != 0)) {
         return 1;
     }
 
@@ -34,6 +38,14 @@ uint8_t get_priority_score(field_t* field) {
 }
 
 bool is_preceding(field_t* field, field_t* other_field) {
+    // Keep each Batch inner transaction's fields together, in order, after
+    // the outer fields
+    uint8_t inner = batch_inner_index(&parse_context, field);
+    uint8_t other_inner = batch_inner_index(&parse_context, other_field);
+    if (inner != other_inner) {
+        return inner < other_inner;
+    }
+
     return get_priority_score(field) < get_priority_score(other_field);
 }
 

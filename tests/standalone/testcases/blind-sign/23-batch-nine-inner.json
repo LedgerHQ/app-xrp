@@ -1,0 +1,118 @@
+{
+  "TransactionType": "Batch",
+  "Account": "OWN_ADDR",
+  "Flags": 65536,
+  "Sequence": 3,
+  "Fee": "40",
+  "SigningPubKey": "OWN_PUBKEY",
+  "RawTransactions": [
+    {
+      "RawTransaction": {
+        "TransactionType": "Payment",
+        "Account": "OWN_ADDR",
+        "Flags": 1073741824,
+        "Sequence": 4,
+        "Fee": "0",
+        "SigningPubKey": "",
+        "Destination": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+        "Amount": "1000000"
+      }
+    },
+    {
+      "RawTransaction": {
+        "TransactionType": "Payment",
+        "Account": "OWN_ADDR",
+        "Flags": 1073741824,
+        "Sequence": 5,
+        "Fee": "0",
+        "SigningPubKey": "",
+        "Destination": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+        "Amount": "1000000"
+      }
+    },
+    {
+      "RawTransaction": {
+        "TransactionType": "Payment",
+        "Account": "OWN_ADDR",
+        "Flags": 1073741824,
+        "Sequence": 6,
+        "Fee": "0",
+        "SigningPubKey": "",
+        "Destination": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+        "Amount": "1000000"
+      }
+    },
+    {
+      "RawTransaction": {
+        "TransactionType": "Payment",
+        "Account": "OWN_ADDR",
+        "Flags": 1073741824,
+        "Sequence": 7,
+        "Fee": "0",
+        "SigningPubKey": "",
+        "Destination": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+        "Amount": "1000000"
+      }
+    },
+    {
+      "RawTransaction": {
+        "TransactionType": "Payment",
+        "Account": "OWN_ADDR",
+        "Flags": 1073741824,
+        "Sequence": 8,
+        "Fee": "0",
+        "SigningPubKey": "",
+        "Destination": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+        "Amount": "1000000"
+      }
+    },
+    {
+      "RawTransaction": {
+        "TransactionType": "Payment",
+        "Account": "OWN_ADDR",
+        "Flags": 1073741824,
+        "Sequence": 9,
+        "Fee": "0",
+        "SigningPubKey": "",
+        "Destination": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+        "Amount": "1000000"
+      }
+    },
+    {
+      "RawTransaction": {
+        "TransactionType": "Payment",
+        "Account": "OWN_ADDR",
+        "Flags": 1073741824,
+        "Sequence": 10,
+        "Fee": "0",
+        "SigningPubKey": "",
+        "Destination": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+        "Amount": "1000000"
+      }
+    },
+    {
+      "RawTransaction": {
+        "TransactionType": "Payment",
+        "Account": "OWN_ADDR",
+        "Flags": 1073741824,
+        "Sequence": 11,
+        "Fee": "0",
+        "SigningPubKey": "",
+        "Destination": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+        "Amount": "1000000"
+      }
+    },
+    {
+      "RawTransaction": {
+        "TransactionType": "Payment",
+        "Account": "OWN_ADDR",
+        "Flags": 1073741824,
+        "Sequence": 12,
+        "Fee": "0",
+        "SigningPubKey": "",
+        "Destination": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+        "Amount": "1000000"
+      }
+    }
+  ]
+}
